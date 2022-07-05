@@ -17,6 +17,8 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:30.1.1-jre")
+
+    implementation(project(":algoutils-student"))
 }
 
 tasks.named<Test>("test") {
