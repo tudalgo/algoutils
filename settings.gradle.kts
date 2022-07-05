@@ -1,2 +1,2 @@
 rootProject.name = "algoutils"
-include(":algoutils-student")
+include("algoutils-student", "algoutils-tutor")
