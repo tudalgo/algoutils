@@ -1,5 +1,6 @@
-package reflection;
+package org.tudalgo.algoutils.reflect;
 
+import org.junit.jupiter.api.Assertions;
 import org.mockito.invocation.Invocation;
 import org.sourcegrade.docwatcher.api.MethodDocumentation;
 import org.sourcegrade.docwatcher.api.SourceDocumentation;
@@ -692,7 +693,7 @@ public class MethodTester {
      */
     public void assertConstructsNotUsed(List<Class<? extends CtCodeElement>> disallowedConstructs) {
         assureMethodResolved();
-        Launcher spoon = assertDoesNotThrow(() -> getClassTester().assureSpoonLauncherModelsBuild().getSpoon(),
+        Launcher spoon = Assertions.assertDoesNotThrow(() -> getClassTester().assureSpoonLauncherModelsBuild().getSpoon(),
             "Could not Create Spoon Launcher");
         CtType<?> type = assertDoesNotThrow(
             () -> spoon.getModel().getAllTypes().stream().filter(CtType::isTopLevel).findFirst().orElseThrow(),

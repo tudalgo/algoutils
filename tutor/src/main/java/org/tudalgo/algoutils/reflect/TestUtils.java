@@ -1,4 +1,4 @@
-package reflection;
+package org.tudalgo.algoutils.reflect;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
