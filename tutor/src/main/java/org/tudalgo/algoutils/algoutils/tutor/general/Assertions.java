@@ -1,8 +1,8 @@
-package algoutils.tutor.general;
+package org.tudalgo.algoutils.algoutils.tutor.general;
 
 import java.util.concurrent.Callable;
 
-import algoutils.student.CrashException;
+import org.tudalgo.algoutils.student.CrashException;
 import org.opentest4j.AssertionFailedError;
 
 public class Assertions {
