@@ -48,4 +48,39 @@ public interface Call<R> {
     default <E extends Exception> E assertException(Class<E> type) throws AssertionFailedError {
         return assertException(type, () -> null);
     }
+
+    /**
+     * Asserts that the call resulted in a result of type {@code type} and returns the result.
+     * Otherwise, an {@link AssertionFailedError} containing the message supplied by {@code messageSupplier} will be thrown.
+     * <br>
+     * {@code messageSupplier} is allowed to supply {@code null}.
+     *
+     * @param messageSupplier a supplier for the message if the exception was not thrown
+     * @return the result resulted by the call
+     * @throws AssertionFailedError if the call resulted in an exception
+     */
+    R assertResult(Supplier<String> messageSupplier) throws AssertionFailedError;
+
+    /**
+     * Asserts that the call resulted in a result of type {@code type} and returns the result.
+     * Otherwise, an {@link AssertionFailedError} containing {@code message} will be thrown.
+     *
+     * @param message the message if the expected exception was not thrown
+     * @return the result resulted by the call
+     * @throws AssertionFailedError if the call resulted in an exception
+     */
+    default R assertResult(String message) throws AssertionFailedError {
+        return assertResult(() -> message);
+    }
+
+    /**
+     * Asserts that the call resulted in a result of type {@code type} and returns the result.
+     * Otherwise, an {@link AssertionFailedError} will be thrown.
+     *
+     * @return the result resulted by the call
+     * @throws AssertionFailedError if the call resulted in an exception
+     */
+    default R assertResult() throws AssertionFailedError {
+        return assertResult(() -> null);
+    }
 }
