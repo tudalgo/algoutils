@@ -22,7 +22,7 @@ public class CallImpl {
         }
 
         @Override
-        public <E extends Exception> E assertException(
+        public <E extends Exception> E assertExceptional(
             Class<E> type,
             Supplier<String> messageSupplier
         ) throws AssertionFailedError {
@@ -46,7 +46,7 @@ public class CallImpl {
         }
 
         @Override
-        public R assertResult(Supplier<String> messageSupplier) throws AssertionFailedError {
+        public R assertNormal(Supplier<String> messageSupplier) throws AssertionFailedError {
             var prefix = messageSupplier.get();
             var message = new StringBuilder();
             if (prefix != null) {
@@ -73,7 +73,7 @@ public class CallImpl {
         }
 
         @Override
-        public <E extends Exception> E assertException(
+        public <E extends Exception> E assertExceptional(
             Class<E> type,
             Supplier<String> messageSupplier
         ) throws AssertionFailedError {
@@ -87,7 +87,7 @@ public class CallImpl {
         }
 
         @Override
-        public R assertResult(Supplier<String> messageSupplier) throws AssertionFailedError {
+        public R assertNormal(Supplier<String> messageSupplier) throws AssertionFailedError {
             return result;
         }
     }
