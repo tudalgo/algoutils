@@ -1,9 +1,7 @@
-package algoutils.student;
+package org.tudalgo.algoutils.student;
 
 /**
  * A utility class that contains some useful methods for student implementations.
- *
- * @author Ruben Deisenroth
  */
 public final class Student {
     /**

@@ -1,4 +1,4 @@
-package reflection;
+package org.tudalgo.algoutils.reflect;
 
 /**
  * An attribute Matcher based on {@link IdentifierMatcher}.

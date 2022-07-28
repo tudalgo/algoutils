@@ -1,4 +1,4 @@
-package reflection;
+package org.tudalgo.algoutils.reflect;
 
 import net.bytebuddy.ByteBuddy;
 import org.mockito.MockingDetails;

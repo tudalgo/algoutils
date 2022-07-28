@@ -1,4 +1,4 @@
-package reflection;
+package org.tudalgo.algoutils.reflect;
 
 /**
  * An identifier Matcher.
