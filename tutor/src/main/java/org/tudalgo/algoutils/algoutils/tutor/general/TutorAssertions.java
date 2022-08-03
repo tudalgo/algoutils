@@ -5,7 +5,8 @@ import java.util.function.Supplier;
 
 import org.opentest4j.AssertionFailedError;
 import org.tudalgo.algoutils.algoutils.tutor.general.call.Call;
-import org.tudalgo.algoutils.algoutils.tutor.general.call.CallImpl;
+import org.tudalgo.algoutils.algoutils.tutor.general.call.ExceptionalResult;
+import org.tudalgo.algoutils.algoutils.tutor.general.call.NormalResult;
 import org.tudalgo.algoutils.student.CrashException;
 
 public class TutorAssertions {
@@ -20,11 +21,11 @@ public class TutorAssertions {
      */
     public static <R> Call<R> call(Callable<R> callable) {
         try {
-            return new CallImpl.NormalResult<>(callable.call());
+            return new NormalResult<>(callable.call());
         } catch (CrashException exception) {
             throw new AssertionFailedError("not implemented");
         } catch (Exception exception) {
-            return new CallImpl.ExceptionalResult<>(exception);
+            return new ExceptionalResult<>(exception);
         }
     }
 
