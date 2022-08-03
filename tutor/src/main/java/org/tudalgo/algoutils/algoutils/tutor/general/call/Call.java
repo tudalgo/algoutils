@@ -37,7 +37,7 @@ public interface Call<R> {
     }
 
     /**
-     * Asserts that the call resulted in an throwable of type {@code type} and returns the throwable.
+     * Asserts that the call resulted in n throwable of type {@code type} and returns the throwable.
      * Otherwise, an {@link AssertionFailedError} will be thrown.
      *
      * @param type the type of the expected throwable
