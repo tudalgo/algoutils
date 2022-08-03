@@ -5,15 +5,15 @@ import java.util.function.Supplier;
 
 import org.opentest4j.AssertionFailedError;
 import org.tudalgo.algoutils.algoutils.tutor.general.call.Call;
-import org.tudalgo.algoutils.algoutils.tutor.general.call.ExceptionalResult;
 import org.tudalgo.algoutils.algoutils.tutor.general.call.NormalResult;
+import org.tudalgo.algoutils.algoutils.tutor.general.call.ThrowableResult;
 import org.tudalgo.algoutils.student.CrashException;
 
 public class TutorAssertions {
 
     /**
      * Calls {@code callable} and returns a corresponding {@link Call} object.
-     * If the call of {@code callable} results in an {@link CrashException}, an exception of type {@link AssertionFailedError} with message <i>not implemented</i> will be thrown directly.
+     * If the call of {@code callable} results in an {@link CrashException}, a throwable of type {@link AssertionFailedError} with message <i>not implemented</i> will be thrown directly.
      *
      * @param callable the callable to call
      * @param <R>      the type of the object returned by {@code callable}
@@ -25,7 +25,7 @@ public class TutorAssertions {
         } catch (CrashException exception) {
             throw new AssertionFailedError("not implemented");
         } catch (Exception exception) {
-            return new ExceptionalResult<>(exception);
+            return new ThrowableResult<>(exception);
         }
     }
 
@@ -65,40 +65,40 @@ public class TutorAssertions {
     }
 
     /**
-     * Shortcut for  {@link #call(Callable)} and {@link Call#assertExceptional(Class, Supplier)}.
+     * Shortcut for  {@link #call(Callable)} and {@link Call#assertThrows(Class, Supplier)}.
      *
      * @param callable        see {@link #call(Callable)}
-     * @param messageSupplier see {@link Call#assertExceptional(Class, Supplier)}
-     * @param <E>             see {@link Call#assertExceptional(Class, Supplier)}
-     * @return see {@link Call#assertExceptional(Class, Supplier)}
+     * @param messageSupplier see {@link Call#assertThrows(Class, Supplier)}
+     * @param <E>             see {@link Call#assertThrows(Class, Supplier)}
+     * @return see {@link Call#assertThrows(Class, Supplier)}
      */
-    public static <E extends Exception> E assertExceptional(Callable<?> callable, Class<E> type,
-                                                            Supplier<String> messageSupplier) {
-        return call(callable).assertExceptional(type, messageSupplier);
+    public static <E extends Throwable> E assertThrowable(Callable<?> callable, Class<E> type,
+                                                          Supplier<String> messageSupplier) {
+        return call(callable).assertThrows(type, messageSupplier);
     }
 
     /**
-     * Shortcut for  {@link #call(Callable)} and {@link Call#assertExceptional(Class, String)}.
+     * Shortcut for  {@link #call(Callable)} and {@link Call#assertThrows(Class, String)}.
      *
      * @param callable see {@link #call(Callable)}
-     * @param type     see {@link Call#assertExceptional(Class, String)}
-     * @param message  see {@link Call#assertExceptional(Class, String)}
-     * @param <E>      see {@link Call#assertExceptional(Class, String)}
-     * @return see {@link Call#assertExceptional(Class, String)}
+     * @param type     see {@link Call#assertThrows(Class, String)}
+     * @param message  see {@link Call#assertThrows(Class, String)}
+     * @param <T>      see {@link Call#assertThrows(Class, String)}
+     * @return see {@link Call#assertThrows(Class, String)}
      */
-    public static <E extends Exception> E assertExceptional(Callable<?> callable, Class<E> type, String message) {
-        return call(callable).assertExceptional(type, message);
+    public static <T extends Throwable> T assertThrowable(Callable<?> callable, Class<T> type, String message) {
+        return call(callable).assertThrows(type, message);
     }
 
     /**
-     * Shortcut for  {@link #call(Callable)} and {@link Call#assertExceptional(Class)}.
+     * Shortcut for  {@link #call(Callable)} and {@link Call#assertThrows(Class)}.
      *
      * @param callable see {@link #call(Callable)}
-     * @param type     see {@link Call#assertExceptional(Class)}
-     * @param <E>      see {@link Call#assertExceptional(Class)}
-     * @return see {@link Call#assertExceptional(Class)}
+     * @param type     see {@link Call#assertThrows(Class)}
+     * @param <E>      see {@link Call#assertThrows(Class)}
+     * @return see {@link Call#assertThrows(Class)}
      */
-    public static <E extends Exception> E assertExceptional(Callable<?> callable, Class<E> type) {
-        return call(callable).assertExceptional(type);
+    public static <E extends Throwable> E assertThrowable(Callable<?> callable, Class<E> type) {
+        return call(callable).assertThrows(type);
     }
 }

@@ -7,26 +7,26 @@ import static java.lang.String.format;
 import org.opentest4j.AssertionFailedError;
 
 /**
- * An instance of {@link ExceptionalResult} represents a call that resulted in an exception.
+ * An instance of {@link ThrowableResult} represents a call that resulted in an {@link Throwable}.
  *
  * @param <R> the type of expected result
  */
-public class ExceptionalResult<R> implements Call<R> {
+public class ThrowableResult<R> implements Call<R> {
 
-    private final Exception exception;
+    private final Throwable throwable;
 
-    public ExceptionalResult(Exception exception) {
-        this.exception = exception;
+    public ThrowableResult(Throwable throwable) {
+        this.throwable = throwable;
     }
 
     @Override
-    public <E extends Exception> E assertExceptional(
-        Class<E> type,
+    public <T extends Throwable> T assertThrows(
+        Class<T> type,
         Supplier<String> messageSupplier
     ) throws AssertionFailedError {
-        if (exception.getClass() == type) {
+        if (throwable.getClass() == type) {
             //noinspection unchecked
-            return (E) exception;
+            return (T) throwable;
         }
         var additionalMessage = messageSupplier.get();
         var message = new StringBuilder();
@@ -35,12 +35,12 @@ public class ExceptionalResult<R> implements Call<R> {
         }
         message.append(
             format(
-                "expected exception of type %s, but exception of type %s was thrown",
+                "expected throwable of type %s, but throwable of type %s was thrown",
                 type.getSimpleName(),
-                exception.getClass().getSimpleName()
+                throwable.getClass().getSimpleName()
             )
         );
-        throw new AssertionFailedError(message.toString(), exception);
+        throw new AssertionFailedError(message.toString(), throwable);
     }
 
     @Override
@@ -51,8 +51,8 @@ public class ExceptionalResult<R> implements Call<R> {
             message.append(prefix).append(": ");
         }
         message.append(format(
-            "expected no exception, but exception of type %s was thrown", exception.getClass().getSimpleName())
+            "expected no throwable, but throwable of type %s was thrown", throwable.getClass().getSimpleName())
         );
-        throw new AssertionFailedError(message.toString(), exception);
+        throw new AssertionFailedError(message.toString(), throwable);
     }
 }

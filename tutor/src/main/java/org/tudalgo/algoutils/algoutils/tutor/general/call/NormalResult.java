@@ -20,8 +20,8 @@ public class NormalResult<R> implements Call<R> {
     }
 
     @Override
-    public <E extends Exception> E assertExceptional(
-        Class<E> type,
+    public <T extends Throwable> T assertThrows(
+        Class<T> type,
         Supplier<String> messageSupplier
     ) throws AssertionFailedError {
         var prefix = messageSupplier.get();
@@ -29,7 +29,7 @@ public class NormalResult<R> implements Call<R> {
         if (prefix != null) {
             message.append(prefix).append(": ");
         }
-        message.append(format("expected exception of type %s, but no exception was thrown", type.getSimpleName()));
+        message.append(format("expected throwable of type %s, but no throwable was thrown", type.getSimpleName()));
         throw new AssertionFailedError(message.toString());
     }
 
