@@ -5,7 +5,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AlgoUtils"
+rootProject.name = "algo-utils"
 
 sequenceOf(
     "student",
