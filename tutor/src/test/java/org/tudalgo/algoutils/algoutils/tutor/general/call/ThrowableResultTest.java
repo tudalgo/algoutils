@@ -22,7 +22,7 @@ class ThrowableResultTest {
     }
 
     @Test
-    void assertNormal() {
+    void testAssertNormal() {
         var result = new ThrowableResult<>(new RuntimeException());
         var actual = (AssertionFailedError) null;
         actual = assertThrows(AssertionFailedError.class, result::assertNormal);
