@@ -15,21 +15,21 @@ public class ThrowableResult<R> implements Call<R> {
 
     private final Throwable throwable;
 
-    public ThrowableResult(Throwable throwable) {
+    public ThrowableResult(final Throwable throwable) {
         this.throwable = throwable;
     }
 
     @Override
     public <T extends Throwable> T assertThrows(
-        Class<T> type,
-        Supplier<String> messageSupplier
+        final Class<T> type,
+        final Supplier<String> messageSupplier
     ) throws AssertionFailedError {
-        if (throwable.getClass() == type) {
+        if (this.throwable.getClass() == type) {
             //noinspection unchecked
-            return (T) throwable;
+            return (T) this.throwable;
         }
-        var additionalMessage = messageSupplier.get();
-        var message = new StringBuilder();
+        final var additionalMessage = messageSupplier.get();
+        final var message = new StringBuilder();
         if (additionalMessage != null) {
             message.append(additionalMessage).append(": ");
         }
@@ -37,22 +37,22 @@ public class ThrowableResult<R> implements Call<R> {
             format(
                 "expected throwable of type %s, but throwable of type %s was thrown",
                 type.getSimpleName(),
-                throwable.getClass().getSimpleName()
+                this.throwable.getClass().getSimpleName()
             )
         );
-        throw new AssertionFailedError(message.toString(), throwable);
+        throw new AssertionFailedError(message.toString(), this.throwable);
     }
 
     @Override
-    public R assertNormal(Supplier<String> messageSupplier) throws AssertionFailedError {
-        var prefix = messageSupplier.get();
-        var message = new StringBuilder();
+    public R assertNormal(final Supplier<String> messageSupplier) throws AssertionFailedError {
+        final var prefix = messageSupplier.get();
+        final var message = new StringBuilder();
         if (prefix != null) {
             message.append(prefix).append(": ");
         }
         message.append(format(
-            "expected no throwable, but throwable of type %s was thrown", throwable.getClass().getSimpleName())
+            "expected no throwable, but throwable of type %s was thrown", this.throwable.getClass().getSimpleName())
         );
-        throw new AssertionFailedError(message.toString(), throwable);
+        throw new AssertionFailedError(message.toString(), this.throwable);
     }
 }

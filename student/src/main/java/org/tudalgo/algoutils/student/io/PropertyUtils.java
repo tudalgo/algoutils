@@ -23,13 +23,13 @@ public final class PropertyUtils {
      * @param path the path to the property file
      * @return the properties
      */
-    public static Properties getProperties(String path) {
+    public static Properties getProperties(final String path) {
         return PROPERTIES_MAP.computeIfAbsent(path, fn -> {
-            var properties = new Properties();
-            var stream = PropertyUtils.class.getResourceAsStream("/" + fn);
+            final var properties = new Properties();
+            final var stream = PropertyUtils.class.getResourceAsStream("/" + fn);
             try {
                 properties.load(stream);
-            } catch (IOException | IllegalArgumentException | NullPointerException e) {
+            } catch (final IOException | IllegalArgumentException | NullPointerException e) {
                 throw new RuntimeException(format("cannot load properties from file %s", path), e);
             }
             return properties;
@@ -43,7 +43,7 @@ public final class PropertyUtils {
      * @param key  the name of the property
      * @return the value of the property
      */
-    public static String getStringProperty(String path, String key) {
+    public static String getStringProperty(final String path, final String key) {
         return getProperties(path).getProperty(key);
     }
 
@@ -54,11 +54,11 @@ public final class PropertyUtils {
      * @param key  the name of the property
      * @return the value of the property
      */
-    public static boolean getBooleanProperty(String path, String key) {
-        var value = getStringProperty(path, key);
+    public static boolean getBooleanProperty(final String path, final String key) {
+        final var value = getStringProperty(path, key);
         try {
             return Boolean.parseBoolean(value);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new RuntimeException(format("cannot parse boolean from %s", value), e);
         }
     }
@@ -70,8 +70,8 @@ public final class PropertyUtils {
      * @param key  the name of the property
      * @return the value of the property
      */
-    public static char getCharProperty(String path, String key) {
-        var value = getStringProperty(path, key);
+    public static char getCharProperty(final String path, final String key) {
+        final var value = getStringProperty(path, key);
         if (value.length() > 1) {
             throw new RuntimeException(format("cannot parse char from %s", value));
         }
@@ -86,11 +86,11 @@ public final class PropertyUtils {
      * @param key  the name of the property
      * @return the value of the property
      */
-    public static double getDoubleProperty(String path, String key) {
-        var value = getStringProperty(path, key);
+    public static double getDoubleProperty(final String path, final String key) {
+        final var value = getStringProperty(path, key);
         try {
             return Double.parseDouble(value);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new RuntimeException(format("cannot parse double from %s", value), e);
         }
     }
@@ -102,11 +102,11 @@ public final class PropertyUtils {
      * @param key  the name of the property
      * @return the value of the property
      */
-    public static int getIntProperty(String path, String key) {
-        var value = getStringProperty(path, key);
+    public static int getIntProperty(final String path, final String key) {
+        final var value = getStringProperty(path, key);
         try {
             return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new RuntimeException(format("cannot parse int from %s", value), e);
         }
     }
@@ -118,11 +118,11 @@ public final class PropertyUtils {
      * @param key  the name of the property
      * @return the value of the property
      */
-    public static long getLongProperty(String path, String key) {
-        var value = getStringProperty(path, key);
+    public static long getLongProperty(final String path, final String key) {
+        final var value = getStringProperty(path, key);
         try {
             return Long.parseLong(value);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new RuntimeException(format("cannot parse long from %s", value), e);
         }
     }

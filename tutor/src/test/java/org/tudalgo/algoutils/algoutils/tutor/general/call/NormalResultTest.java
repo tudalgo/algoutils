@@ -10,7 +10,7 @@ class NormalResultTest {
 
     @Test
     void testAssertThrows() {
-        var result = new NormalResult<>(1);
+        final var result = new NormalResult<>(1);
         Throwable actual;
         actual = Assertions.assertThrows(AssertionFailedError.class, () -> result.assertThrows(RuntimeException.class));
         assertEquals("expected throwable of type RuntimeException, but no throwable was thrown", actual.getMessage());
@@ -22,7 +22,7 @@ class NormalResultTest {
 
     @Test
     void testAssertNormal() {
-        var result = new NormalResult<>(1);
+        final var result = new NormalResult<>(1);
         assertEquals(1, result.assertNormal());
         assertEquals(1, result.assertNormal("test"));
         assertEquals(1, result.assertNormal(() -> "test"));

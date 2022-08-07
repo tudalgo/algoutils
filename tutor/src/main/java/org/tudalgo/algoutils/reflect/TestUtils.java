@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author Ruben Deisenroth
  */
-public class TestUtils {
+public final class TestUtils {
 
     /**
      * Don't let anyone instantiate this class.
@@ -41,7 +41,7 @@ public class TestUtils {
      * @param actual   the actual modifier count
      * @param name     the name of the field to be checked
      */
-    public static void assertModifier(int expected, int actual, String name) {
+    public static void assertModifier(final int expected, final int actual, final String name) {
         if (expected < 0) {
             return;
         }
@@ -55,7 +55,7 @@ public class TestUtils {
      * @param expected the expected modifier count
      * @param clazz    the class to be checked
      */
-    public static void assertModifier(int expected, Class<?> clazz) {
+    public static void assertModifier(final int expected, final Class<?> clazz) {
         assertModifier(expected, clazz.getModifiers(), "Klasse " + clazz.getName());
     }
 
@@ -65,7 +65,7 @@ public class TestUtils {
      * @param expected the expected modifier count
      * @param method   the method to be checked
      */
-    public static void assertModifier(int expected, Method method) {
+    public static void assertModifier(final int expected, final Method method) {
         assertModifier(expected, method.getModifiers(),
             "Methode " + method.getDeclaringClass() + "." + method.getName());
     }
@@ -76,7 +76,7 @@ public class TestUtils {
      * @param expected    the expected modifier count
      * @param constructor the constructor to be checked
      */
-    public static void assertModifier(int expected, Constructor<?> constructor) {
+    public static void assertModifier(final int expected, final Constructor<?> constructor) {
         assertModifier(expected, constructor.getModifiers(),
             "Konstruktor " + constructor.getDeclaringClass() + "." + constructor.getName());
     }
@@ -87,7 +87,7 @@ public class TestUtils {
      * @param expected the expected modifier count
      * @param attribut the field to be checked
      */
-    public static void assertModifier(int expected, Field attribut) {
+    public static void assertModifier(final int expected, final Field attribut) {
         assertModifier(expected, attribut.getModifiers(),
             "Attribut " + attribut.getDeclaringClass() + "." + attribut.getName());
     }
@@ -99,14 +99,14 @@ public class TestUtils {
      * @param s2 the second string used for the calculation  of the similarity
      * @return the similarity
      */
-    public static double similarity(String s1, String s2) {
+    public static double similarity(final String s1, final String s2) {
         String longer = s1;
         String shorter = s2;
         if (s1.length() < s2.length()) {
             longer = s2;
             shorter = s1;
         }
-        int longerLength = longer.length();
+        final int longerLength = longer.length();
         if (longerLength == 0) {
             return 1.0;
             /* both strings are zero length */
@@ -133,7 +133,7 @@ public class TestUtils {
         s1 = s1.toLowerCase();
         s2 = s2.toLowerCase();
 
-        int[] costs = new int[s2.length() + 1];
+        final int[] costs = new int[s2.length() + 1];
         for (int i = 0; i <= s1.length(); i++) {
             int lastValue = i;
             for (int j = 0; j <= s2.length(); j++) {
@@ -165,8 +165,8 @@ public class TestUtils {
      * @return the found classes
      * @throws IOException if an I/O Exception occurs
      */
-    public static Class<?>[] getClasses(String packageName) throws IOException {
-        var cycle = TestCycleResolver.getTestCycle();
+    public static Class<?>[] getClasses(final String packageName) throws IOException {
+        final var cycle = TestCycleResolver.getTestCycle();
         if (cycle != null) {
             // Autograder Run
             return cycle.getSubmission().getClassNames().stream()

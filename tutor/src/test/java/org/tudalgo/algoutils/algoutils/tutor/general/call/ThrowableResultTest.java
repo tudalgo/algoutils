@@ -10,8 +10,8 @@ class ThrowableResultTest {
 
     @Test
     void testAssertThrows() {
-        var expected = new RuntimeException();
-        var result = new ThrowableResult<>(expected);
+        final var expected = new RuntimeException();
+        final var result = new ThrowableResult<>(expected);
         var actual = (RuntimeException) null;
         actual = Assertions.assertDoesNotThrow(() -> result.assertThrows(RuntimeException.class));
         assertSame(expected, actual);
@@ -23,7 +23,7 @@ class ThrowableResultTest {
 
     @Test
     void testAssertNormal() {
-        var result = new ThrowableResult<>(new RuntimeException());
+        final var result = new ThrowableResult<>(new RuntimeException());
         var actual = (AssertionFailedError) null;
         actual = assertThrows(AssertionFailedError.class, result::assertNormal);
         assertEquals("expected no throwable, but throwable of type RuntimeException was thrown", actual.getMessage());
