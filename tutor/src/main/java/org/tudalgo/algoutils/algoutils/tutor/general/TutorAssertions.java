@@ -72,8 +72,8 @@ public class TutorAssertions {
      * @param <E>             see {@link Call#assertThrows(Class, Supplier)}
      * @return see {@link Call#assertThrows(Class, Supplier)}
      */
-    public static <E extends Throwable> E assertThrowable(Callable<?> callable, Class<E> type,
-                                                          Supplier<String> messageSupplier) {
+    public static <E extends Throwable> E assertThrows(Callable<?> callable, Class<E> type,
+                                                       Supplier<String> messageSupplier) {
         return call(callable).assertThrows(type, messageSupplier);
     }
 
@@ -86,7 +86,7 @@ public class TutorAssertions {
      * @param <T>      see {@link Call#assertThrows(Class, String)}
      * @return see {@link Call#assertThrows(Class, String)}
      */
-    public static <T extends Throwable> T assertThrowable(Callable<?> callable, Class<T> type, String message) {
+    public static <T extends Throwable> T assertThrows(Callable<?> callable, Class<T> type, String message) {
         return call(callable).assertThrows(type, message);
     }
 
@@ -98,7 +98,7 @@ public class TutorAssertions {
      * @param <E>      see {@link Call#assertThrows(Class)}
      * @return see {@link Call#assertThrows(Class)}
      */
-    public static <E extends Throwable> E assertThrowable(Callable<?> callable, Class<E> type) {
+    public static <E extends Throwable> E assertThrows(Callable<?> callable, Class<E> type) {
         return call(callable).assertThrows(type);
     }
 }
