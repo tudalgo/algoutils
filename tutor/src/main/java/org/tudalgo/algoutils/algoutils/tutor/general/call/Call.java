@@ -32,7 +32,7 @@ public interface Call<R> {
      * @return the throwable resulted by the call
      * @throws AssertionFailedError if the call did not result in a throwable of type {@code type}
      */
-    default <E extends Throwable> E assertThrows(Class<E> type, String message) throws AssertionFailedError {
+    default <E extends Throwable> E assertThrows(final Class<E> type, final String message) throws AssertionFailedError {
         return assertThrows(type, () -> message);
     }
 
@@ -45,7 +45,7 @@ public interface Call<R> {
      * @return the throwable resulted by the call
      * @throws AssertionFailedError if the call did not result in a throwable of type {@code type}
      */
-    default <E extends Throwable> E assertThrows(Class<E> type) throws AssertionFailedError {
+    default <E extends Throwable> E assertThrows(final Class<E> type) throws AssertionFailedError {
         return assertThrows(type, () -> null);
     }
 
@@ -69,7 +69,7 @@ public interface Call<R> {
      * @return the result resulted by the call
      * @throws AssertionFailedError if the call resulted in a throwable
      */
-    default R assertNormal(String message) throws AssertionFailedError {
+    default R assertNormal(final String message) throws AssertionFailedError {
         return assertNormal(() -> message);
     }
 

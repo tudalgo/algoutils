@@ -13,7 +13,7 @@ public final class Student {
      * @throws CrashException if the method is called.
      * @see CrashException
      */
-    public static <V> V crash(String... messages) {
+    public static <V> V crash(final String... messages) {
         throw new CrashException(String.join("\n", messages));
     }
 }

@@ -27,7 +27,7 @@ public class IdentifierMatcher {
      * @param packageName    the package name
      * @param similarity     the minimum required similarity
      */
-    public IdentifierMatcher(String identifierName, String packageName, double similarity) {
+    public IdentifierMatcher(final String identifierName, final String packageName, final double similarity) {
         this.identifierName = identifierName;
         this.packageName = packageName;
         this.similarity = similarity;
@@ -39,7 +39,7 @@ public class IdentifierMatcher {
      * @param identifierName the identifier to match
      * @param similarity     the minimum required similarity
      */
-    public IdentifierMatcher(String identifierName, double similarity) {
+    public IdentifierMatcher(final String identifierName, final double similarity) {
         this(identifierName, null, similarity);
     }
 }

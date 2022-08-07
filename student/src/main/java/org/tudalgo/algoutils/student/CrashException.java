@@ -9,7 +9,7 @@ public class CrashException extends RuntimeException {
      *
      * @param message the detail message.
      */
-    public CrashException(String message) {
+    public CrashException(final String message) {
         super(message);
     }
 }

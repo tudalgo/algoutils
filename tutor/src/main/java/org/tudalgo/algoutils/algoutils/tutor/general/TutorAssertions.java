@@ -19,12 +19,12 @@ public class TutorAssertions {
      * @param <R>      the type of the object returned by {@code callable}
      * @return a {@link Call} object representing the callable
      */
-    public static <R> Call<R> call(Callable<R> callable) {
+    public static <R> Call<R> call(final Callable<R> callable) {
         try {
             return new NormalResult<>(callable.call());
-        } catch (CrashException exception) {
+        } catch (final CrashException exception) {
             throw new AssertionFailedError("not implemented");
-        } catch (Exception exception) {
+        } catch (final Exception exception) {
             return new ThrowableResult<>(exception);
         }
     }
@@ -37,7 +37,7 @@ public class TutorAssertions {
      * @param <R>             see {@link Call#assertNormal(Supplier)}
      * @return see {@link Call#assertNormal(Supplier)}
      */
-    public static <R> R assertNormal(Callable<R> callable, Supplier<String> messageSupplier) {
+    public static <R> R assertNormal(final Callable<R> callable, final Supplier<String> messageSupplier) {
         return call(callable).assertNormal(messageSupplier);
     }
 
@@ -49,7 +49,7 @@ public class TutorAssertions {
      * @param <R>      see {@link Call#assertNormal(String)}
      * @return see {@link Call#assertNormal(String)}
      */
-    public static <R> R assertNormal(Callable<R> callable, String message) {
+    public static <R> R assertNormal(final Callable<R> callable, final String message) {
         return call(callable).assertNormal(message);
     }
 
@@ -60,7 +60,7 @@ public class TutorAssertions {
      * @param <R>      see {@link Call#assertNormal()}
      * @return see {@link Call#assertNormal()}
      */
-    public static <R> R assertNormal(Callable<R> callable) {
+    public static <R> R assertNormal(final Callable<R> callable) {
         return call(callable).assertNormal();
     }
 
@@ -72,8 +72,8 @@ public class TutorAssertions {
      * @param <E>             see {@link Call#assertThrows(Class, Supplier)}
      * @return see {@link Call#assertThrows(Class, Supplier)}
      */
-    public static <E extends Throwable> E assertThrows(Callable<?> callable, Class<E> type,
-                                                       Supplier<String> messageSupplier) {
+    public static <E extends Throwable> E assertThrows(final Callable<?> callable, final Class<E> type,
+                                                       final Supplier<String> messageSupplier) {
         return call(callable).assertThrows(type, messageSupplier);
     }
 
@@ -86,7 +86,7 @@ public class TutorAssertions {
      * @param <T>      see {@link Call#assertThrows(Class, String)}
      * @return see {@link Call#assertThrows(Class, String)}
      */
-    public static <T extends Throwable> T assertThrows(Callable<?> callable, Class<T> type, String message) {
+    public static <T extends Throwable> T assertThrows(final Callable<?> callable, final Class<T> type, final String message) {
         return call(callable).assertThrows(type, message);
     }
 
@@ -98,7 +98,7 @@ public class TutorAssertions {
      * @param <E>      see {@link Call#assertThrows(Class)}
      * @return see {@link Call#assertThrows(Class)}
      */
-    public static <E extends Throwable> E assertThrows(Callable<?> callable, Class<E> type) {
+    public static <E extends Throwable> E assertThrows(final Callable<?> callable, final Class<E> type) {
         return call(callable).assertThrows(type);
     }
 }

@@ -30,7 +30,7 @@ public class AttributeMatcher extends IdentifierMatcher {
      * @param type            the  expected attribute type
      * @param allowSuperClass the indicator whether to also match super implementations
      */
-    public AttributeMatcher(String name, double similarity, int modifier, Class<?> type, boolean allowSuperClass) {
+    public AttributeMatcher(final String name, final double similarity, final int modifier, final Class<?> type, final boolean allowSuperClass) {
         super(name, similarity);
         this.modifier = modifier;
         this.type = type;
@@ -46,7 +46,7 @@ public class AttributeMatcher extends IdentifierMatcher {
      * @param modifier   the expected access modifier
      * @param type       the  expected attribute type
      */
-    public AttributeMatcher(String name, double similarity, int modifier, Class<?> type) {
+    public AttributeMatcher(final String name, final double similarity, final int modifier, final Class<?> type) {
         this(name, similarity, modifier, type, false);
     }
 
@@ -58,7 +58,7 @@ public class AttributeMatcher extends IdentifierMatcher {
      * @param type            the  expected attribute type
      * @param allowSuperClass the indicator whether to also match super implementations
      */
-    public AttributeMatcher(String name, double similarity, Class<?> type, boolean allowSuperClass) {
+    public AttributeMatcher(final String name, final double similarity, final Class<?> type, final boolean allowSuperClass) {
         this(name, similarity, -1, type, allowSuperClass);
     }
 
@@ -70,7 +70,7 @@ public class AttributeMatcher extends IdentifierMatcher {
      * @param similarity the minimum required similarity
      * @param type       the  expected attribute type
      */
-    public AttributeMatcher(String name, double similarity, Class<?> type) {
+    public AttributeMatcher(final String name, final double similarity, final Class<?> type) {
         this(name, similarity, -1, type);
     }
 }

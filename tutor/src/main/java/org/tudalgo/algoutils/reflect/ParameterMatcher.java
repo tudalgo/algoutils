@@ -27,7 +27,7 @@ public class ParameterMatcher extends IdentifierMatcher {
      * @param allowSubTypes  the indicator whether to also match subtypes derived from {@link
      *                       #parameterType}
      */
-    public ParameterMatcher(String identifierName, double similarity, Class<?> parameterType, boolean allowSubTypes) {
+    public ParameterMatcher(final String identifierName, final double similarity, final Class<?> parameterType, final boolean allowSubTypes) {
         super(identifierName, similarity);
         this.parameterType = parameterType;
         this.allowSubTypes = allowSubTypes;
@@ -40,7 +40,7 @@ public class ParameterMatcher extends IdentifierMatcher {
      * @param similarity     the minimum required similarity
      * @param parameterType  the expected parameter type
      */
-    public ParameterMatcher(String identifierName, double similarity, Class<?> parameterType) {
+    public ParameterMatcher(final String identifierName, final double similarity, final Class<?> parameterType) {
         super(identifierName, similarity);
         this.parameterType = parameterType;
     }
@@ -50,7 +50,7 @@ public class ParameterMatcher extends IdentifierMatcher {
      *
      * @param parameterType the expected parameter type
      */
-    public ParameterMatcher(Class<?> parameterType) {
+    public ParameterMatcher(final Class<?> parameterType) {
         this(null, 0, parameterType);
     }
 
@@ -61,7 +61,7 @@ public class ParameterMatcher extends IdentifierMatcher {
      * @param allowSubTypes the indicator whether to also match subtypes derived from {@link
      *                      #parameterType}
      */
-    public ParameterMatcher(Class<?> parameterType, boolean allowSubTypes) {
+    public ParameterMatcher(final Class<?> parameterType, final boolean allowSubTypes) {
         this(null, 0, parameterType, allowSubTypes);
     }
 }

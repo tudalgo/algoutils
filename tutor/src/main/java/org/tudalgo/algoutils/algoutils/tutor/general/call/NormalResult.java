@@ -15,17 +15,17 @@ public class NormalResult<R> implements Call<R> {
 
     private final R result;
 
-    public NormalResult(R result) {
+    public NormalResult(final R result) {
         this.result = result;
     }
 
     @Override
     public <T extends Throwable> T assertThrows(
-        Class<T> type,
-        Supplier<String> messageSupplier
+            final Class<T> type,
+            final Supplier<String> messageSupplier
     ) throws AssertionFailedError {
-        var prefix = messageSupplier.get();
-        var message = new StringBuilder();
+        final var prefix = messageSupplier.get();
+        final var message = new StringBuilder();
         if (prefix != null) {
             message.append(prefix).append(": ");
         }
@@ -34,7 +34,7 @@ public class NormalResult<R> implements Call<R> {
     }
 
     @Override
-    public R assertNormal(Supplier<String> messageSupplier) throws AssertionFailedError {
-        return result;
+    public R assertNormal(final Supplier<String> messageSupplier) throws AssertionFailedError {
+        return this.result;
     }
 }

@@ -73,8 +73,8 @@ public class MethodTester {
      * @param allowSuperClass the indicator @param allowSuperClass the indicator if super class
      *                        check are allowed
      */
-    public MethodTester(ClassTester<?> classTester, String methodName, double similarity, int accessModifier,
-                        Class<?> returnType, List<ParameterMatcher> parameters, boolean allowSuperClass) {
+    public MethodTester(final ClassTester<?> classTester, final String methodName, final double similarity, final int accessModifier,
+                        final Class<?> returnType, final List<ParameterMatcher> parameters, final boolean allowSuperClass) {
         this.classTester = classTester;
         this.methodIdentifier = new IdentifierMatcher(methodName, similarity);
         this.accessModifier = accessModifier;
@@ -93,8 +93,8 @@ public class MethodTester {
      * @param returnType     the expected return type of the method
      * @param parameters     the expected parameters of the method
      */
-    public MethodTester(ClassTester<?> classTester, String methodName, double similarity, int accessModifier,
-                        Class<?> returnType, List<ParameterMatcher> parameters) {
+    public MethodTester(final ClassTester<?> classTester, final String methodName, final double similarity, final int accessModifier,
+                        final Class<?> returnType, final List<ParameterMatcher> parameters) {
         this(classTester, methodName, similarity, accessModifier, returnType, parameters, false);
     }
 
@@ -109,9 +109,9 @@ public class MethodTester {
      * @param parameters      the expected parameters of the method
      * @param allowSuperClass the indicator if super class check are allowed
      */
-    public MethodTester(ClassTester<?> classTester, String methodName, double similarity, int accessModifier,
-                        Class<?> returnType, ArrayList<ParameterMatcher> parameters, boolean allowSuperClass,
-                        boolean looseReturnTypeChecking) {
+    public MethodTester(final ClassTester<?> classTester, final String methodName, final double similarity, final int accessModifier,
+                        final Class<?> returnType, final ArrayList<ParameterMatcher> parameters, final boolean allowSuperClass,
+                        final boolean looseReturnTypeChecking) {
         this(classTester, methodName, similarity, accessModifier, returnType, parameters, allowSuperClass);
         this.looseReturnTypeChecking = looseReturnTypeChecking;
     }
@@ -125,8 +125,8 @@ public class MethodTester {
      * @param accessModifier the expected access modifier count
      * @param returnType     the expected return type of the method
      */
-    public MethodTester(ClassTester<?> classTester, String methodName, double similarity, int accessModifier,
-                        Class<?> returnType) {
+    public MethodTester(final ClassTester<?> classTester, final String methodName, final double similarity, final int accessModifier,
+                        final Class<?> returnType) {
         this(classTester, methodName, similarity, accessModifier, returnType, null);
     }
 
@@ -138,7 +138,7 @@ public class MethodTester {
      * @param similarity     the minimum matching similarity
      * @param accessModifier the expected access modifier count
      */
-    public MethodTester(ClassTester<?> classTester, String methodName, double similarity, int accessModifier) {
+    public MethodTester(final ClassTester<?> classTester, final String methodName, final double similarity, final int accessModifier) {
         this(classTester, methodName, similarity, accessModifier, null, null);
     }
 
@@ -151,8 +151,8 @@ public class MethodTester {
      * @param returnType  the expected return type of the method
      * @param parameters  the expected parameters of the method
      */
-    public MethodTester(ClassTester<?> classTester, String methodName, double similarity, Class<?> returnType,
-                        ArrayList<ParameterMatcher> parameters) {
+    public MethodTester(final ClassTester<?> classTester, final String methodName, final double similarity, final Class<?> returnType,
+                        final ArrayList<ParameterMatcher> parameters) {
         this(classTester, methodName, similarity, -1, returnType, parameters);
     }
 
@@ -163,7 +163,7 @@ public class MethodTester {
      * @param methodName  the expected method name to test
      * @param similarity  the minimum matching similarity
      */
-    public MethodTester(ClassTester<?> classTester, String methodName, double similarity) {
+    public MethodTester(final ClassTester<?> classTester, final String methodName, final double similarity) {
         this(classTester, methodName, similarity, -1, null);
     }
 
@@ -173,7 +173,7 @@ public class MethodTester {
      * @param classTester the class tester used to invoke the method
      * @param methodName  the expected method name to test
      */
-    public MethodTester(ClassTester<?> classTester, String methodName) {
+    public MethodTester(final ClassTester<?> classTester, final String methodName) {
         this(classTester, methodName, 1, -1, null);
     }
 
@@ -183,7 +183,7 @@ public class MethodTester {
      * @param methodName the method name used in the message
      * @return a predefined message for an invalid return type.
      */
-    public static String getInvalidReturnTypeMessage(String methodName) {
+    public static String getInvalidReturnTypeMessage(final String methodName) {
         return String.format("falscher Rückgabetyp für Methode %s", methodName);
     }
 
@@ -193,7 +193,7 @@ public class MethodTester {
      * @param methodName the method name used in the message
      * @return a predefined should not have parameter message
      */
-    public static String getShouldNotHaveParameterMessage(String methodName) {
+    public static String getShouldNotHaveParameterMessage(final String methodName) {
         return String.format("Methode %s sollte keine Parameter haben.", methodName);
     }
 
@@ -206,13 +206,13 @@ public class MethodTester {
      * @return the number of matched parameters
      */
     public static int countMatchingParameters(
-        List<ParameterMatcher> expectedParameters,
-        List<Parameter> actualParameters,
-        boolean ignoreNames) {
+        final List<ParameterMatcher> expectedParameters,
+        final List<Parameter> actualParameters,
+        final boolean ignoreNames) {
         int count = 0;
         for (int i = 0; i < expectedParameters.size(); i++) {
-            var matcher = expectedParameters.get(i);
-            var param = actualParameters.get(i);
+            final var matcher = expectedParameters.get(i);
+            final var param = actualParameters.get(i);
             if (param.getType() != matcher.parameterType) {
                 continue;
             }
@@ -235,8 +235,8 @@ public class MethodTester {
      * @param ignoreNames the indicator  whether to ignore parameter names
      * @return the number of matched parameters
      */
-    public static int countMatchingParameters(Method m, String methodName, List<ParameterMatcher> parameters,
-                                              boolean ignoreNames) {
+    public static int countMatchingParameters(final Method m, final String methodName, final List<ParameterMatcher> parameters,
+                                              final boolean ignoreNames) {
         assertMethodNotNull(m, methodName);
         if (parameters == null || parameters.isEmpty()) {
             return 0;
@@ -251,18 +251,18 @@ public class MethodTester {
      * @param actualParameters   the actual parameters
      * @param ignoreNames        the indicator whether to ignore parameter names
      */
-    public static void assertParametersMatch(List<ParameterMatcher> expectedParameters,
-                                             List<Parameter> actualParameters,
-                                             boolean ignoreNames) {
+    public static void assertParametersMatch(final List<ParameterMatcher> expectedParameters,
+                                             final List<Parameter> actualParameters,
+                                             final boolean ignoreNames) {
 
         if (expectedParameters == null || expectedParameters.isEmpty()) {
             assertTrue(actualParameters == null || actualParameters.isEmpty(),
                 "Es sollen keine Parameter vorhanden sein.");
         } else {
             for (int i = 0; i < expectedParameters.size(); i++) {
-                var matcher = expectedParameters.get(i);
+                final var matcher = expectedParameters.get(i);
                 assertTrue(i < actualParameters.size(), "Zu wenige Parameter.");
-                var param = actualParameters.get(i);
+                final var param = actualParameters.get(i);
                 if (matcher.allowSubTypes) {
                     assertInstanceOf(matcher.parameterType, param.getType(),
                         "Falscher Parametertyp an Index " + "i. (Subtypen erlaubt)");
@@ -289,8 +289,8 @@ public class MethodTester {
      * @param parameters  the expected parameter
      * @param ignoreNames the indicator whether to ignore parameter names
      */
-    public static void assertParametersMatch(Method m, String methodName, List<ParameterMatcher> parameters,
-                                             boolean ignoreNames) {
+    public static void assertParametersMatch(final Method m, final String methodName, final List<ParameterMatcher> parameters,
+                                             final boolean ignoreNames) {
         assertMethodNotNull(m, methodName);
         assertParametersMatch(parameters, List.of(m.getParameters()), ignoreNames);
     }
@@ -299,7 +299,7 @@ public class MethodTester {
      * Tests whether the method parameters matches with the expected parameters.
      */
     public void assertParametersMatch() {
-        assertParametersMatch(theMethod, methodIdentifier.identifierName, parameters, false);
+        assertParametersMatch(this.theMethod, this.methodIdentifier.identifierName, this.parameters, false);
     }
 
     /**
@@ -308,7 +308,7 @@ public class MethodTester {
      * @param m    the method to check
      * @param name the expected method name of the method to check
      */
-    public static void assertMethodNotNull(Method m, String name) {
+    public static void assertMethodNotNull(final Method m, final String name) {
         assertNotNull(m, getMethodNotFoundMessage(name));
     }
 
@@ -318,7 +318,7 @@ public class MethodTester {
      * @param methodName the expected method name
      * @return a predefined class tester {@code null} message
      */
-    public static String getClassTesterNullMessage(String methodName) {
+    public static String getClassTesterNullMessage(final String methodName) {
         return String.format("Fehlerhafter Test für Methode %s: Kein Klassentester gegeben.", methodName);
     }
 
@@ -328,13 +328,13 @@ public class MethodTester {
      * @param array the array to convert
      * @return the string representation of the array
      */
-    public static String safeArrayToString(Object... array) {
+    public static String safeArrayToString(final Object... array) {
         var paramsString = "[]";
         if (array != null) {
             try {
                 paramsString = Arrays.toString(array);
-            } catch (Exception e) {
-                Arrays.stream(
+            } catch (final Exception e) {
+                paramsString = Arrays.stream(
                         array).map(x -> x.getClass().getName() + "@" + Integer.toHexString(x.hashCode()))
                     .collect(Collectors.joining(", ", "[", "]"));
             }
@@ -349,7 +349,7 @@ public class MethodTester {
      * @param clazz   the class to search
      * @return all fields from a class and its super classes
      */
-    private static List<Method> getAllMethods(List<Method> methods, Class<?> clazz) {
+    private static List<Method> getAllMethods(final List<Method> methods, final Class<?> clazz) {
         methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
 
         if (clazz.getSuperclass() != null) {
@@ -365,7 +365,7 @@ public class MethodTester {
      * @param clazz the class to search
      * @return all fields from a class and its super classes
      */
-    public static List<Method> getAllMethods(Class<?> clazz) {
+    public static List<Method> getAllMethods(final Class<?> clazz) {
         return getAllMethods(new ArrayList<>(), clazz);
     }
 
@@ -375,7 +375,7 @@ public class MethodTester {
      * @return the class tester used to invoke the method
      */
     public ClassTester<?> getClassTester() {
-        return classTester;
+        return this.classTester;
     }
 
     /**
@@ -383,7 +383,7 @@ public class MethodTester {
      *
      * @param classTester the new class tester value
      */
-    public void setClassTester(ClassTester<?> classTester) {
+    public void setClassTester(final ClassTester<?> classTester) {
         this.classTester = classTester;
     }
 
@@ -394,7 +394,7 @@ public class MethodTester {
      * @return method identifier containing the name of the method and the similarity to accept alternative identifiers
      */
     public IdentifierMatcher getMethodIdentifier() {
-        return methodIdentifier;
+        return this.methodIdentifier;
     }
 
     /**
@@ -403,7 +403,7 @@ public class MethodTester {
      *
      * @param methodIdentifier the new method identifier
      */
-    public void setMethodIdentifier(IdentifierMatcher methodIdentifier) {
+    public void setMethodIdentifier(final IdentifierMatcher methodIdentifier) {
         this.methodIdentifier = methodIdentifier;
     }
 
@@ -413,7 +413,7 @@ public class MethodTester {
      * @return the expected class type of the test method
      */
     public Class<?> getReturnType() {
-        return returnType;
+        return this.returnType;
     }
 
     /**
@@ -421,7 +421,7 @@ public class MethodTester {
      *
      * @param returnType the new return type
      */
-    public void setReturnType(Class<?> returnType) {
+    public void setReturnType(final Class<?> returnType) {
         this.returnType = returnType;
     }
 
@@ -431,7 +431,7 @@ public class MethodTester {
      * @return {@code true} if subtype are allowed for the return type
      */
     public boolean isLooseReturnTypeChecking() {
-        return looseReturnTypeChecking;
+        return this.looseReturnTypeChecking;
     }
 
     /**
@@ -439,7 +439,7 @@ public class MethodTester {
      *
      * @param looseReturnTypeChecking the indicator whether to allow it or not
      */
-    public void setLooseReturnTypeChecking(boolean looseReturnTypeChecking) {
+    public void setLooseReturnTypeChecking(final boolean looseReturnTypeChecking) {
         this.looseReturnTypeChecking = looseReturnTypeChecking;
     }
 
@@ -447,16 +447,16 @@ public class MethodTester {
      * Tests whether the actual return type matches the expected return type.
      */
     public void assertReturnType() {
-        if (returnType == null) {
+        if (this.returnType == null) {
             throw new RuntimeErrorException(new Error(), "Faulty Test: Cannot assert return type null");
         }
         assertMethodResolved();
-        if (looseReturnTypeChecking) {
-            assertInstanceOf(returnType, theMethod.getReturnType(),
-                getInvalidReturnTypeMessage(methodIdentifier.identifierName));
+        if (this.looseReturnTypeChecking) {
+            assertInstanceOf(this.returnType, this.theMethod.getReturnType(),
+                getInvalidReturnTypeMessage(this.methodIdentifier.identifierName));
         } else {
-            assertSame(returnType, theMethod.getReturnType(),
-                getInvalidReturnTypeMessage(methodIdentifier.identifierName));
+            assertSame(this.returnType, this.theMethod.getReturnType(),
+                getInvalidReturnTypeMessage(this.methodIdentifier.identifierName));
         }
     }
 
@@ -469,7 +469,7 @@ public class MethodTester {
         if (!methodResolved()) {
             resolveMethod();
         }
-        if (accessModifier >= 0) {
+        if (this.accessModifier >= 0) {
             assertAccessModifier();
         }
         assertParametersMatch();
@@ -483,7 +483,7 @@ public class MethodTester {
      * @return the expected parameters
      */
     public List<ParameterMatcher> getParameters() {
-        return parameters;
+        return this.parameters;
     }
 
     /**
@@ -491,7 +491,7 @@ public class MethodTester {
      *
      * @param parameters the new expected parameters
      */
-    public void setParameters(List<ParameterMatcher> parameters) {
+    public void setParameters(final List<ParameterMatcher> parameters) {
         this.parameters = parameters;
     }
 
@@ -501,7 +501,7 @@ public class MethodTester {
      * @return the method that should be tested
      */
     public Method getTheMethod() {
-        return theMethod;
+        return this.theMethod;
     }
 
     /**
@@ -509,7 +509,7 @@ public class MethodTester {
      *
      * @param theMethod the new method to be tested
      */
-    public void setTheMethod(Method theMethod) {
+    public void setTheMethod(final Method theMethod) {
         this.theMethod = theMethod;
     }
 
@@ -518,11 +518,11 @@ public class MethodTester {
      *
      * @param parameterMatchers the parameters' matcher to add
      */
-    public void addParameter(ParameterMatcher... parameterMatchers) {
-        if (parameters == null) {
-            parameters = new ArrayList<>();
+    public void addParameter(final ParameterMatcher... parameterMatchers) {
+        if (this.parameters == null) {
+            this.parameters = new ArrayList<>();
         }
-        parameters.addAll(Arrays.asList(parameterMatchers));
+        this.parameters.addAll(Arrays.asList(parameterMatchers));
     }
 
     /**
@@ -532,7 +532,7 @@ public class MethodTester {
      * @param name       the name of the parameter to match
      * @param similarity the minimum required similarity
      */
-    public void addParameter(Class<?> type, String name, double similarity) {
+    public void addParameter(final Class<?> type, final String name, final double similarity) {
         addParameter(new ParameterMatcher(name, similarity, type));
     }
 
@@ -541,7 +541,7 @@ public class MethodTester {
      *
      * @param type the type of the expected parameter type
      */
-    public void addParameter(Class<?> type) {
+    public void addParameter(final Class<?> type) {
         addParameter(new ParameterMatcher(null, 1, type));
     }
 
@@ -551,7 +551,7 @@ public class MethodTester {
      * @param methodName the name of the method used for the message
      * @return a predefined method not found message
      */
-    public static String getMethodNotFoundMessage(String methodName) {
+    public static String getMethodNotFoundMessage(final String methodName) {
         return String.format("Methode %s existiert nicht.", methodName);
     }
 
@@ -561,7 +561,7 @@ public class MethodTester {
      * @return a predefined method not found message
      */
     public String getMethodNotFoundMessage() {
-        return getMethodNotFoundMessage(methodIdentifier.identifierName);
+        return getMethodNotFoundMessage(this.methodIdentifier.identifierName);
     }
 
     /**
@@ -570,7 +570,7 @@ public class MethodTester {
      * @return {@code true} if test method is not {@code null}
      */
     public boolean methodResolved() {
-        return theMethod != null;
+        return this.theMethod != null;
     }
 
     /**
@@ -584,7 +584,7 @@ public class MethodTester {
      * Tests whether the class tester used to invoke the method is not {@code null}.
      */
     public void assertClassTesterNotNull() {
-        assertNotNull(classTester, getClassTesterNullMessage(methodIdentifier.identifierName));
+        assertNotNull(this.classTester, getClassTesterNullMessage(this.methodIdentifier.identifierName));
     }
 
     /**
@@ -594,7 +594,7 @@ public class MethodTester {
      * @return {@code true} if the class tester used to invoke the method is not {@code null} and can be resolved
      */
     public boolean classResolved() {
-        return classTester != null && classTester.class_resolved();
+        return this.classTester != null && this.classTester.class_resolved();
     }
 
     /**
@@ -602,7 +602,7 @@ public class MethodTester {
      */
     public void assertClassResolved() {
         assertClassTesterNotNull();
-        classTester.assertClassResolved();
+        this.classTester.assertClassResolved();
     }
 
     /**
@@ -612,8 +612,8 @@ public class MethodTester {
      * @return {@code true} if the method can be invoked.
      */
     public boolean invokeable() {
-        return classResolved() && classTester.classInstanceResolved() && methodResolved()
-            && classTester.classInstanceResolved();
+        return classResolved() && this.classTester.classInstanceResolved() && methodResolved()
+            && this.classTester.classInstanceResolved();
     }
 
     /**
@@ -623,7 +623,7 @@ public class MethodTester {
      */
     public void assertInvokeable() {
         assertClassResolved();
-        classTester.assertclassInstanceResolved();
+        this.classTester.assertclassInstanceResolved();
         assertMethodResolved();
     }
 
@@ -633,13 +633,13 @@ public class MethodTester {
      * @param params the parameters of the method that should be invoked
      * @return the return value of the method after its invocation
      */
-    public Object invoke(Object... params) {
+    public Object invoke(final Object... params) {
         assertInvokeable();
-        assertDoesNotThrow(() -> theMethod.setAccessible(true), "Konnte Methode nicht ausführen.");
+        assertDoesNotThrow(() -> this.theMethod.setAccessible(true), "Konnte Methode nicht ausführen.");
         Object returnValue = null;
         try {
-            returnValue = theMethod.invoke(classTester.getClassInstance(), params);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            returnValue = this.theMethod.invoke(this.classTester.getClassInstance(), params);
+        } catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
             fail("Method Could not be invoked.", e);
         }
@@ -653,8 +653,8 @@ public class MethodTester {
      */
     public List<Invocation> getInvocations() {
         assertMethodResolved();
-        classTester.assertSpied();
-        return classTester.getMockingDetails().getInvocations().stream()
+        this.classTester.assertSpied();
+        return this.classTester.getMockingDetails().getInvocations().stream()
             .filter(x -> x.getMethod().getName().equals(getTheMethod().getName())).collect(Collectors.toList());
     }
 
@@ -691,21 +691,21 @@ public class MethodTester {
      *
      * @param disallowedConstructs the not allowed constructs in the constructor
      */
-    public void assertConstructsNotUsed(List<Class<? extends CtCodeElement>> disallowedConstructs) {
+    public void assertConstructsNotUsed(final List<Class<? extends CtCodeElement>> disallowedConstructs) {
         assureMethodResolved();
-        Launcher spoon = Assertions.assertDoesNotThrow(() -> getClassTester().assureSpoonLauncherModelsBuild().getSpoon(),
+        final Launcher spoon = Assertions.assertDoesNotThrow(() -> getClassTester().assureSpoonLauncherModelsBuild().getSpoon(),
             "Could not Create Spoon Launcher");
-        CtType<?> type = assertDoesNotThrow(
+        final CtType<?> type = assertDoesNotThrow(
             () -> spoon.getModel().getAllTypes().stream().filter(CtType::isTopLevel).findFirst().orElseThrow(),
-            "Could not resolve Class Source for Class " + classTester.getClassIdentifier().identifierName + "."
+            "Could not resolve Class Source for Class " + this.classTester.getClassIdentifier().identifierName + "."
                 + "available Class Sources:" + spoon
                 .getModel().getAllTypes().toString());
-        CtMethod<?> method = assertDoesNotThrow(
+        final CtMethod<?> method = assertDoesNotThrow(
             () -> type.getMethodsByName(getMethodIdentifier().identifierName).stream().findFirst()
                 .orElseThrow(),
             "Could not resolve Method Source for Method " + getTheMethod().getName());
 
-        for (var construct : disallowedConstructs) {
+        for (final var construct : disallowedConstructs) {
             assertTrue(method.getElements(new TypeFilter<>(construct)).isEmpty(),
                 String.format("Ein verbotener Sprachkonstrukt wurde in Methode %s verwendet: %s.",
                     getMethodIdentifier().identifierName, construct.getSimpleName()));
@@ -719,7 +719,7 @@ public class MethodTester {
      * @param expected the expected return value
      * @param params   the parameters used for the invocation
      */
-    public void assertReturnValueEquals(Object expected, Object... params) {
+    public void assertReturnValueEquals(final Object expected, final Object... params) {
         assertReturnValueEquals(expected, "", params);
     }
 
@@ -731,7 +731,7 @@ public class MethodTester {
      * @param additionalMessage the additional message if the test fails
      * @param params            the parameters used for the invocation
      */
-    public void assertReturnValueEquals(Object expected, String additionalMessage, Object... params) {
+    public void assertReturnValueEquals(final Object expected, final String additionalMessage, final Object... params) {
         assertEquals(expected, invoke(params), "Falsche Rückgabe bei Methode" + getMethodIdentifier().identifierName
             + (params.length > 0 ? "mit Parameter(n):" + safeArrayToString(params) : "") + additionalMessage);
     }
@@ -742,7 +742,7 @@ public class MethodTester {
      * @return the expected access modifier count
      */
     public int getAccessModifier() {
-        return accessModifier;
+        return this.accessModifier;
     }
 
     /**
@@ -750,7 +750,7 @@ public class MethodTester {
      *
      * @param accessModifier the new  expected access modifier count
      */
-    public void setAccessModifier(int accessModifier) {
+    public void setAccessModifier(final int accessModifier) {
         this.accessModifier = accessModifier;
     }
 
@@ -758,8 +758,8 @@ public class MethodTester {
      * Tests whether the actual access modifier count matches with the expected one.
      */
     public void assertAccessModifier() {
-        if (accessModifier >= 0) {
-            TestUtils.assertModifier(accessModifier, theMethod);
+        if (this.accessModifier >= 0) {
+            TestUtils.assertModifier(this.accessModifier, this.theMethod);
         }
     }
 
@@ -777,20 +777,20 @@ public class MethodTester {
      * @see TestUtils#similarity(String, String)
      * @see #countMatchingParameters(Method, String, List, boolean)
      */
-    public Method resolveMethod(Class<?> theClass, String methodName, double similarity,
-                                List<ParameterMatcher> parameters, boolean allowSuperClass) {
+    public Method resolveMethod(final Class<?> theClass, final String methodName, double similarity,
+                                final List<ParameterMatcher> parameters, final boolean allowSuperClass) {
         similarity = Math.max(0, Math.min(similarity, 1));
         ClassTester.assertClassNotNull(theClass, "zu Methode " + methodName);
-        List<Method> methods = allowSuperClass ? getAllMethods(theClass) : Arrays.asList(theClass.getDeclaredMethods());
+        final List<Method> methods = allowSuperClass ? getAllMethods(theClass) : Arrays.asList(theClass.getDeclaredMethods());
         var bestMatch = methods.stream().min((x, y) -> Double.compare(TestUtils.similarity(methodName, y.getName()),
             TestUtils.similarity(methodName, x.getName()))).orElse(null);
         assertMethodNotNull(bestMatch, methodName);
-        var sim = TestUtils.similarity(bestMatch.getName(), methodName);
+        final var sim = TestUtils.similarity(bestMatch.getName(), methodName);
         assertTrue(sim >= similarity, getMethodNotFoundMessage() + "Ähnlichster Methodenname:" + bestMatch.getName()
             + " with " + sim + " similarity.");
         if (parameters != null) {
             // Account for overloads
-            var matches = methods.stream().filter(x -> TestUtils.similarity(methodName, x.getName()) == sim)
+            final var matches = methods.stream().filter(x -> TestUtils.similarity(methodName, x.getName()) == sim)
                 .collect(Collectors.toCollection(ArrayList::new));
             if (matches.size() > 1) {
                 // Find best match according to parameter options
@@ -800,7 +800,7 @@ public class MethodTester {
             }
         }
 
-        return theMethod = bestMatch;
+        return this.theMethod = bestMatch;
     }
 
     /**
@@ -816,8 +816,8 @@ public class MethodTester {
      * @see TestUtils#similarity(String, String)
      * @see #countMatchingParameters(Method, String, List, boolean)
      */
-    public Method resolveMethod(Class<?> theClass, String methodName, double similarity,
-                                List<ParameterMatcher> parameters) {
+    public Method resolveMethod(final Class<?> theClass, final String methodName, final double similarity,
+                                final List<ParameterMatcher> parameters) {
         return resolveMethod(theClass, methodName, similarity, parameters, false);
     }
 
@@ -831,8 +831,8 @@ public class MethodTester {
      * @see TestUtils#similarity(String, String)
      * @see #countMatchingParameters(Method, String, List, boolean)
      */
-    public Method resolveMethod(double similarity) {
-        return resolveMethod(classTester.theClass, methodIdentifier.identifierName, similarity, parameters);
+    public Method resolveMethod(final double similarity) {
+        return resolveMethod(this.classTester.theClass, this.methodIdentifier.identifierName, similarity, this.parameters);
     }
 
     /**
@@ -847,10 +847,10 @@ public class MethodTester {
     public Method resolveMethod() {
         assertClassTesterNotNull();
         if (!classResolved()) {
-            classTester.resolveClass();
+            this.classTester.resolveClass();
         }
-        return resolveMethod(classTester.theClass, methodIdentifier.identifierName, methodIdentifier.similarity,
-            parameters, allowSuperClass);
+        return resolveMethod(this.classTester.theClass, this.methodIdentifier.identifierName, this.methodIdentifier.similarity,
+            this.parameters, this.allowSuperClass);
     }
 
     /**
@@ -871,13 +871,13 @@ public class MethodTester {
      * @param d the source documentation
      * @return the method documentation
      */
-    public MethodDocumentation getMethodDocumentation(SourceDocumentation d) {
+    public MethodDocumentation getMethodDocumentation(final SourceDocumentation d) {
         try {
-            classTester.assureClassResolved();
-            var resolvedMethod = assureMethodResolved().getTheMethod();
-            return d.forTopLevelType(classTester.getTheClass().getName()).forMethod(
+            this.classTester.assureClassResolved();
+            final var resolvedMethod = assureMethodResolved().getTheMethod();
+            return d.forTopLevelType(this.classTester.getTheClass().getName()).forMethod(
                 resolvedMethod.getName(), resolvedMethod.getParameterTypes());
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             return d.forTopLevelType("").forMethod("");
         }
     }
