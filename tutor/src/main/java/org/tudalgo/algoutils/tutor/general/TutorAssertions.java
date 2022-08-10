@@ -1,12 +1,12 @@
-package org.tudalgo.algoutils.algoutils.tutor.general;
+package org.tudalgo.algoutils.tutor.general;
 
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 import org.opentest4j.AssertionFailedError;
-import org.tudalgo.algoutils.algoutils.tutor.general.call.Call;
-import org.tudalgo.algoutils.algoutils.tutor.general.call.NormalResult;
-import org.tudalgo.algoutils.algoutils.tutor.general.call.ThrowableResult;
+import org.tudalgo.algoutils.tutor.general.call.Call;
+import org.tudalgo.algoutils.tutor.general.call.NormalResult;
+import org.tudalgo.algoutils.tutor.general.call.ThrowableResult;
 import org.tudalgo.algoutils.student.CrashException;
 
 public class TutorAssertions {

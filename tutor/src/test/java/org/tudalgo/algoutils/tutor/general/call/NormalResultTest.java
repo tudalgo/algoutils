@@ -1,4 +1,4 @@
-package org.tudalgo.algoutils.algoutils.tutor.general.call;
+package org.tudalgo.algoutils.tutor.general.call;
 
 import static org.junit.jupiter.api.Assertions.*;
 
