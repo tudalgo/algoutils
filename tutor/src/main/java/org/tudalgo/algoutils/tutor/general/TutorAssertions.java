@@ -1,13 +1,13 @@
 package org.tudalgo.algoutils.tutor.general;
 
-import java.util.concurrent.Callable;
-import java.util.function.Supplier;
-
 import org.opentest4j.AssertionFailedError;
+import org.tudalgo.algoutils.student.CrashException;
 import org.tudalgo.algoutils.tutor.general.call.Call;
 import org.tudalgo.algoutils.tutor.general.call.NormalResult;
 import org.tudalgo.algoutils.tutor.general.call.ThrowableResult;
-import org.tudalgo.algoutils.student.CrashException;
+
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 public class TutorAssertions {
 
@@ -72,8 +72,11 @@ public class TutorAssertions {
      * @param <E>             see {@link Call#assertThrows(Class, Supplier)}
      * @return see {@link Call#assertThrows(Class, Supplier)}
      */
-    public static <E extends Throwable> E assertThrows(final Callable<?> callable, final Class<E> type,
-                                                       final Supplier<String> messageSupplier) {
+    public static <E extends Throwable> E assertThrows(
+        final Callable<?> callable,
+        final Class<E> type,
+        final Supplier<String> messageSupplier
+    ) {
         return call(callable).assertThrows(type, messageSupplier);
     }
 
