@@ -4,6 +4,18 @@ package org.tudalgo.algoutils.student;
  * A utility class that contains some useful methods for student implementations.
  */
 public final class Student {
+
+    private static boolean crashEnabled = true;
+
+    /**
+     * Sets if a call of {@link #crash(String...)} should crash the program.
+     *
+     * @param enabled if a call of {@link #crash(String...)} should crash the program
+     */
+    public static void setCrashEnabled(boolean enabled) {
+        Student.crashEnabled = enabled;
+    }
+
     /**
      * A utility method that throws a {@code CrashException} with the specified message.
      *
@@ -14,6 +26,8 @@ public final class Student {
      * @see CrashException
      */
     public static <V> V crash(final String... messages) {
-        throw new CrashException(String.join("\n", messages));
+        if (crashEnabled)
+            throw new CrashException(String.join("\n", messages));
+        return null;
     }
 }
