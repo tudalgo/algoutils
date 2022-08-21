@@ -6,5 +6,13 @@ import java.util.function.Supplier;
 
 public interface TestOfObjectCall<T> extends Test {
 
-    ResultOfObjectCall<T> test(ObjectCallable<T> callable, Context context, Supplier<String> commentSupplier);
+    default T assertSuccessful(ObjectCallable<T> callable, Context context, Supplier<String> commentSupplier) {
+        return test(callable).assertSuccessful(context, commentSupplier);
+    }
+
+    default T assertSuccessful(ObjectCallable<T> callable, Context context, String comment) {
+        return test(callable).assertSuccessful(context, comment);
+    }
+
+    ResultOfObjectCall<T> test(ObjectCallable<T> callable);
 }

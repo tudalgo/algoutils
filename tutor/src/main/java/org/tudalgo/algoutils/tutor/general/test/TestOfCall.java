@@ -6,5 +6,13 @@ import java.util.function.Supplier;
 
 public interface TestOfCall extends Test {
 
-    ResultOfCall test(Callable callable, Context context, Supplier<String> commentSupplier);
+    default void assertSuccessful(Callable callable, Context context, Supplier<String> commentSupplier) {
+        test(callable).assertSuccessful(context, commentSupplier);
+    }
+
+    default void assertSuccessful(Callable callable, Context context, String comment) {
+        test(callable).assertSuccessful(context, comment);
+    }
+
+    ResultOfCall test(Callable callable);
 }
