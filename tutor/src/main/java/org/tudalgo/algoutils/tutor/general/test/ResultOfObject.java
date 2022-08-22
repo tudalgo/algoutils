@@ -2,7 +2,7 @@ package org.tudalgo.algoutils.tutor.general.test;
 
 import java.util.function.Supplier;
 
-public interface ResultOfObject<T> extends ResultWithObject<T> {
+public interface ResultOfObject<T> extends ResultWithObject<ResultOfObject<T>, T> {
 
     T assertSuccessful(Context context, Supplier<String> commentSupplier);
 

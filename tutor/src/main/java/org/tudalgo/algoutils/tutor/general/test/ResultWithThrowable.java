@@ -1,6 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
-public interface ResultWithThrowable<T extends Throwable> extends Result {
+public interface ResultWithThrowable<RT extends Result<RT>, T extends Throwable> extends Result<RT> {
 
     T actualThrowable();
 }
