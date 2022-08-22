@@ -18,6 +18,8 @@ public interface TestOfCall extends Test {
 
         Builder evaluator(BooleanSupplier evaluator);
 
+        Builder expectation(Object expectation);
+
         interface Factory {
 
             TestOfCall builder();

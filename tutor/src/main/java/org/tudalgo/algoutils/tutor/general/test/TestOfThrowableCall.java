@@ -16,7 +16,9 @@ public interface TestOfThrowableCall<T extends Throwable> extends Test {
 
         TestOfCall build();
 
-        TestOfCall.Builder evaluator(Class<T> throwable, Predicate<T> evaluator);
+        Builder<T> evaluator(Class<T> throwable, Predicate<T> evaluator);
+
+        Builder<T> expectation(Object expectation);
     }
 
     interface Factory {

@@ -12,9 +12,11 @@ public interface TestOfObject<T> extends Test {
 
     interface Builder<T> {
 
-        TestOfCall build();
+        TestOfObject<T> build();
 
-        TestOfCall.Builder evaluator(Predicate<T> evaluator);
+        Builder<T> evaluator(Predicate<T> evaluator);
+
+        Builder<T> expectation(Object expectation);
 
         interface Factory {
 
