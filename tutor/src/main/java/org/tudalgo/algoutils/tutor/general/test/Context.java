@@ -6,7 +6,5 @@ public interface Context {
 
     Collection<Property> properties();
 
-    Object property(String key);
-
     Object subject();
 }
