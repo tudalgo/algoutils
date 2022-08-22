@@ -1,7 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
 @FunctionalInterface
-public interface PreCommentSupplier<T extends Result<T>> {
+public interface PreCommentSupplier<TT extends Test, TR extends Result<TT, TR>> {
 
-    String getPreComment(T test);
+    String getPreComment(TR result);
 }
