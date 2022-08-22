@@ -1,8 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
-public interface Result<T extends Result<T>> {
-
-    void assertSuccessful(Context context, PreCommentSupplier<T> preCommentSupplier);
+public interface Result<TT extends Test, TR extends Result<TT, TR>> {
 
     Object behaviorActual();
 
@@ -12,5 +10,5 @@ public interface Result<T extends Result<T>> {
 
     boolean successful();
 
-    Test test();
+    TT test();
 }

@@ -1,14 +1,8 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
-import java.util.function.Supplier;
+public interface ResultOfThrowableCall<T extends Throwable> extends ResultWithThrowable<TestOfThrowableCall<T>, ResultOfThrowableCall<T>, T> {
 
-public interface ResultOfThrowableCall<T extends Throwable> extends ResultWithThrowable<ResultOfThrowableCall<T>, T> {
-
-    T assertSuccessful(Context context, Supplier<String> commentSupplier);
-
-    default T assertSuccessful(Context context, String comment) {
-        return assertSuccessful(context, () -> comment);
-    }
+    void assertSuccessful(Context context, PreCommentSupplier<? extends TestOfThrowableCall<T>, ? extends ResultOfThrowableCall<T>> preCommentSupplier);
 
     @Override
     TestOfThrowableCall<T> test();

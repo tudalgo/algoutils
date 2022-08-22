@@ -1,14 +1,8 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
-import java.util.function.Supplier;
+public interface ResultOfObject<T> extends ResultWithObject<TestOfObject<T>, ResultOfObject<T>, T> {
 
-public interface ResultOfObject<T> extends ResultWithObject<ResultOfObject<T>, T> {
-
-    T assertSuccessful(Context context, Supplier<String> commentSupplier);
-
-    default T assertSuccessful(Context context, String comment) {
-        return assertSuccessful(context, () -> comment);
-    }
+    T assertSuccessful(Context context, PreCommentSupplier<? extends TestOfObject<T>, ? extends ResultOfObject<T>> preCommentSupplier);
 
     @Override
     TestOfObject<T> test();

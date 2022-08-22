@@ -1,6 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
-public interface ResultWithObject<RT extends Result<RT>, T> extends Result<RT> {
+public interface ResultWithObject<TT extends Test, RT extends Result<TT, RT>, T> extends Result<TT, RT> {
 
     T actualObject();
 }
