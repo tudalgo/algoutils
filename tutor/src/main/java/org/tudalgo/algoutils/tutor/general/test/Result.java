@@ -1,6 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
-public interface Result<TT extends Test, TR extends Result<TT, TR>> {
+public interface Result<TT extends Test> {
 
     Object behaviorActual();
 
