@@ -1,6 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
-public interface Result {
+public interface Result<T extends Test> {
 
     Object behaviorActual();
 
@@ -10,5 +10,5 @@ public interface Result {
 
     boolean successful();
 
-    Test test();
+    T test();
 }
