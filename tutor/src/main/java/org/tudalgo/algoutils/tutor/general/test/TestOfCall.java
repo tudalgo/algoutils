@@ -4,7 +4,7 @@ import org.tudalgo.algoutils.tutor.general.callable.Callable;
 
 public interface TestOfCall extends Test {
 
-    default void assertSuccessful(Callable callable, Context context, PreCommentSupplier<ResultOfCall> preCommentSupplier) {
+    default void assertSuccessful(Callable callable, Context context, PreCommentSupplier<? super ResultOfCall> preCommentSupplier) {
         test(callable).assertSuccessful(context, preCommentSupplier);
     }
 

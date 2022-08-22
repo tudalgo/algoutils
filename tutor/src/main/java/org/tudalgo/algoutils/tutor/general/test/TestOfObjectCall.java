@@ -4,7 +4,7 @@ import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 
 public interface TestOfObjectCall<T> extends Test {
 
-    default T assertSuccessful(ObjectCallable<T> callable, Context context, PreCommentSupplier<ResultOfObjectCall<T>> preCommentSupplier) {
+    default T assertSuccessful(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObjectCall<T>> preCommentSupplier) {
         return test(callable).assertSuccessful(context, preCommentSupplier);
     }
 
