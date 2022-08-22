@@ -1,6 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
-public interface CommentBuilder<TT extends Test, RT extends Result<? extends TT>> {
+public interface CommentBuilder<T extends Result> {
 
-    String build(RT result, Context context, PreCommentSupplier<TT, RT> preCommentSupplier);
+    <TS extends T> String build(TS result, Context context, PreCommentSupplier<TS> preCommentSupplier);
 }
