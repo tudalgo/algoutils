@@ -14,15 +14,15 @@ public interface TestOfThrowableCall<T extends Throwable> extends Test {
 
     interface Builder<T extends Throwable> {
 
-        TestOfCall build();
+        TestOfThrowableCall<T> build();
 
         Builder<T> evaluator(Class<T> throwable, Predicate<T> evaluator);
 
         Builder<T> expectation(Object expectation);
-    }
 
-    interface Factory {
+        interface Factory {
 
-        <T extends Throwable> TestOfThrowableCall<T> builder();
+            <T extends Throwable> TestOfThrowableCall.Builder<T> builder();
+        }
     }
 }

@@ -14,7 +14,7 @@ public interface TestOfObjectCall<T> extends Test {
 
     interface Builder<T> {
 
-        TestOfCall build();
+        TestOfObjectCall<T> build();
 
         Builder<T> evaluator(Predicate<T> evaluator);
 
@@ -22,7 +22,7 @@ public interface TestOfObjectCall<T> extends Test {
 
         interface Factory {
 
-            <T> TestOfObjectCall<T> builder();
+            <T> TestOfObjectCall.Builder<T> builder();
         }
     }
 }

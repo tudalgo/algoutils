@@ -20,7 +20,7 @@ public interface TestOfObject<T> extends Test {
 
         interface Factory {
 
-            <T> TestOfObject<T> builder();
+            <T> TestOfObject.Builder<T> builder();
         }
     }
 }

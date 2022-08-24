@@ -22,7 +22,7 @@ public interface TestOfCall extends Test {
 
         interface Factory {
 
-            TestOfCall builder();
+            TestOfCall.Builder builder();
         }
     }
 }
