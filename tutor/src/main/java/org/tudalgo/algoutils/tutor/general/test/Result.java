@@ -5,7 +5,7 @@ public interface Result<T extends Test> {
     Object behaviorActual();
 
     default Object behaviorExpected() {
-        return test().expected();
+        return test().expectation();
     }
 
     boolean successful();

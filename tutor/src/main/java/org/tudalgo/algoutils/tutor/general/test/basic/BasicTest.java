@@ -10,7 +10,7 @@ public abstract class BasicTest implements Test {
         this.expectation = expectation;
     }
 
-    public Object expected() {
+    public Object expectation() {
         return expectation;
     }
 }
