@@ -1,5 +1,11 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
+/**
+ * A type representing the result of a {@link TestOfThrowableCall}.
+ *
+ * @param <T> the exception type of the callable under test
+ * @author Dustin Glaser
+ */
 public interface ResultOfThrowableCall<T extends Throwable> extends ResultWithThrowable<TestOfThrowableCall<T>, T> {
 
     /**
