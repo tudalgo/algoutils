@@ -15,7 +15,7 @@ public class BasicTestOfCall extends BasicTest implements TestOfCall {
 
     public BasicTestOfCall(Environment environment, Object expectation, BooleanSupplier evaluator) {
         super(expectation);
-        this.environment = null;
+        this.environment = environment;
         this.evaluator = evaluator;
     }
 
