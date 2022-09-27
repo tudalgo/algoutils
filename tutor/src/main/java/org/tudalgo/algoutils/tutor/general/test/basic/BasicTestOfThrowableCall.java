@@ -30,9 +30,9 @@ public class BasicTestOfThrowableCall<T extends Throwable> extends BasicTest imp
             return new BasicResultOfThrowableCall<>(environment, this, false, null, null);
         } catch (Throwable throwable) {
             //noinspection unchecked
-            if (throwableClass.isAssignableFrom(throwable.getClass()) && !evaluator.test((T) throwable)) {
+            if (throwableClass.isAssignableFrom(throwable.getClass()) && evaluator.test((T) throwable)) {
                 //noinspection unchecked
-                return new BasicResultOfThrowableCall<>(environment, this, false, (T) throwable, null);
+                return new BasicResultOfThrowableCall<>(environment, this, true, (T) throwable, throwable);
             }
             return new BasicResultOfThrowableCall<>(environment, this, false, null, throwable);
         }
