@@ -17,4 +17,11 @@ public interface ResultOfObject<T> extends ResultWithObject<TestOfObject<T>, T> 
      * @throws Error if the object is not as expected
      */
     T assertSuccessful(Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier);
+
+    interface Builder<T> extends Result.Builder<Builder<T>, TestOfObject<T>, ResultOfObject<T>> {
+
+        interface Factory<T> extends Result.Builder.Factory<Builder<T>, TestOfObject<T>, ResultOfObject<T>> {
+
+        }
+    }
 }

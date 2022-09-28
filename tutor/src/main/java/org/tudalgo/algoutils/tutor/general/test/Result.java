@@ -36,4 +36,20 @@ public interface Result<T extends Test> {
      * @return the test that was run
      */
     T test();
+
+    interface Builder<T extends Builder<T, TT, RT>, TT extends Test, RT extends Result<TT>> {
+
+        T behaviorActual(Object behaviorActual);
+
+        RT build();
+
+        T successful(boolean successful);
+
+        T test(TT test);
+
+        interface Factory<T extends Builder<T, TT, RT>, TT extends Test, RT extends Result<TT>> {
+
+            T builder();
+        }
+    }
 }

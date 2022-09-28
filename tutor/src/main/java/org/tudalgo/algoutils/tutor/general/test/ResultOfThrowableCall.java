@@ -18,6 +18,10 @@ public interface ResultOfThrowableCall<T extends Throwable> extends ResultWithTh
      */
     T assertSuccessful(Context context, PreCommentSupplier<? super ResultOfThrowableCall<T>> preCommentSupplier);
 
-    @Override
-    TestOfThrowableCall<T> test();
+    interface Builder<T extends Throwable> extends Result.Builder<Builder<T>, TestOfThrowableCall<T>, ResultOfThrowableCall<T>> {
+
+        interface Factory<T extends Throwable> extends Result.Builder.Factory<Builder<T>, TestOfThrowableCall<T>, ResultOfThrowableCall<T>> {
+
+        }
+    }
 }

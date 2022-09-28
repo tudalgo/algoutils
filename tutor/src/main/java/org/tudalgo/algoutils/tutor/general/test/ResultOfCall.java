@@ -15,4 +15,11 @@ public interface ResultOfCall extends ResultWithThrowable<TestOfCall, Throwable>
      * @throws Error if the object is not as expected
      */
     void assertSuccessful(Context context, PreCommentSupplier<? super ResultOfCall> preCommentSupplier) throws Error;
+
+    interface Builder extends Result.Builder<Builder, TestOfCall, ResultOfCall> {
+
+        interface Factory extends Result.Builder.Factory<Builder, TestOfCall, ResultOfCall> {
+
+        }
+    }
 }

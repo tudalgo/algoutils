@@ -22,4 +22,11 @@ public interface ResultOfObjectCall<T> extends ResultWithObject<TestOfObjectCall
     default Object behaviorActual() {
         return actualThrowable() != null ? actualThrowable() : actualObject();
     }
+
+    interface Builder<T> extends Result.Builder<Builder<T>, TestOfObjectCall<T>, ResultOfObjectCall<T>> {
+
+        interface Factory<T> extends Result.Builder.Factory<Builder<T>, TestOfObjectCall<T>, ResultOfObjectCall<T>> {
+
+        }
+    }
 }
