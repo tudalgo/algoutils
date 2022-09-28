@@ -9,13 +9,10 @@ import java.util.function.Predicate;
 
 public class BasicTestOfObject<T> extends BasicTest implements TestOfObject<T> {
 
-    private final Environment environment;
-
     private final Predicate<T> evaluator;
 
     public BasicTestOfObject(Environment environment, Object expectation, Predicate<T> evaluator) {
-        super(expectation);
-        this.environment = environment;
+        super(environment, expectation);
         this.evaluator = Objects.requireNonNull(evaluator, "evaluator must not be null");
     }
 
@@ -24,16 +21,14 @@ public class BasicTestOfObject<T> extends BasicTest implements TestOfObject<T> {
         return new BasicResultOfObject<>(environment, this, evaluator.test(object), object);
     }
 
-    public static final class Builder<T> implements TestOfObject.Builder<T> {
-
-        private final Environment environment;
+    public static final class Builder<T> extends BasicTest.Builder<Builder<T>> implements TestOfObject.Builder<T> {
 
         private Object expectation;
 
         private Predicate<T> evaluator;
 
         private Builder(Environment environment) {
-            this.environment = environment;
+            super(environment);
         }
 
         @Override
@@ -47,22 +42,14 @@ public class BasicTestOfObject<T> extends BasicTest implements TestOfObject<T> {
             return this;
         }
 
-        @Override
-        public TestOfObject.Builder<T> expectation(Object expectation) {
-            this.expectation = expectation;
-            return this;
-        }
-
-        public static final class Factory implements TestOfObject.Builder.Factory {
-
-            private final Environment environment;
+        public static final class Factory<T> extends BasicTest.Builder.Factory implements TestOfObject.Builder.Factory<T> {
 
             public Factory(Environment environment) {
-                this.environment = environment;
+                super(environment);
             }
 
             @Override
-            public <T> Builder<T> builder() {
+            public Builder<T> builder() {
                 return new Builder<>(environment);
             }
         }

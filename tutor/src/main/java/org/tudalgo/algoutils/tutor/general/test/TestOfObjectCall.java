@@ -33,7 +33,7 @@ public interface TestOfObjectCall<T> extends Test {
      */
     ResultOfObjectCall<T> test(ObjectCallable<T> callable);
 
-    interface Builder<T> {
+    interface Builder<T> extends Test.Builder {
 
         TestOfObjectCall<T> build();
 
@@ -41,9 +41,9 @@ public interface TestOfObjectCall<T> extends Test {
 
         Builder<T> expectation(Object expectation);
 
-        interface Factory {
+        interface Factory<T> extends Test.Builder.Factory {
 
-            <T> TestOfObjectCall.Builder<T> builder();
+            TestOfObjectCall.Builder<T> builder();
         }
     }
 }

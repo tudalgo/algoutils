@@ -9,15 +9,12 @@ import java.util.function.Predicate;
 
 public class BasicTestOfThrowableCall<T extends Throwable> extends BasicTest implements TestOfThrowableCall<T> {
 
-    private final Environment environment;
-
     private final Class<T> throwableClass;
 
     private final Predicate<T> evaluator;
 
     public BasicTestOfThrowableCall(Environment environment, Object expectation, Class<T> throwableClass, Predicate<T> evaluator) {
-        super(expectation);
-        this.environment = environment;
+        super(environment, expectation);
         this.throwableClass = Objects.requireNonNull(throwableClass, "throwableClass must not be null");
         this.evaluator = Objects.requireNonNull(evaluator, "evaluator must not be null");
     }
@@ -38,15 +35,13 @@ public class BasicTestOfThrowableCall<T extends Throwable> extends BasicTest imp
         }
     }
 
-    public static final class Builder<T extends Throwable> implements TestOfThrowableCall.Builder<T> {
+    public static final class Builder<T extends Throwable> extends BasicTest.Builder<Builder<T>> implements TestOfThrowableCall.Builder<T> {
 
-        private final Environment environment;
-        private Object expectation;
         private Class<T> throwableClass;
         private Predicate<T> evaluator;
 
         private Builder(Environment environment) {
-            this.environment = environment;
+            super(environment);
         }
 
         @Override
@@ -61,22 +56,14 @@ public class BasicTestOfThrowableCall<T extends Throwable> extends BasicTest imp
             return this;
         }
 
-        @Override
-        public TestOfThrowableCall.Builder<T> expectation(Object expectation) {
-            this.expectation = expectation;
-            return this;
-        }
-
-        public static final class Factory implements TestOfThrowableCall.Builder.Factory {
-
-            private final Environment environment;
+        public static final class Factory<T extends Throwable> extends BasicTest.Builder.Factory implements TestOfThrowableCall.Builder.Factory<T> {
 
             public Factory(Environment environment) {
-                this.environment = environment;
+                super(environment);
             }
 
             @Override
-            public <T extends Throwable> Builder<T> builder() {
+            public Builder<T> builder() {
                 return new Builder<>(environment);
             }
         }

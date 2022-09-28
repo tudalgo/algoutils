@@ -31,7 +31,7 @@ public interface TestOfThrowableCall<T extends Throwable> extends Test {
      */
     ResultOfThrowableCall<T> test(Callable callable);
 
-    interface Builder<T extends Throwable> {
+    interface Builder<T extends Throwable> extends Test.Builder {
 
         TestOfThrowableCall<T> build();
 
@@ -39,9 +39,9 @@ public interface TestOfThrowableCall<T extends Throwable> extends Test {
 
         Builder<T> expectation(Object expectation);
 
-        interface Factory {
+        interface Factory<T extends Throwable> extends Test.Builder.Factory {
 
-            <T extends Throwable> TestOfThrowableCall.Builder<T> builder();
+            TestOfThrowableCall.Builder<T> builder();
         }
     }
 }

@@ -31,16 +31,19 @@ public interface TestOfCall extends Test {
      */
     ResultOfCall test(Callable callable);
 
-    interface Builder {
+    interface Builder extends Test.Builder {
 
+        @Override
         TestOfCall build();
 
         Builder evaluator(BooleanSupplier evaluator);
 
+        @Override
         Builder expectation(Object expectation);
 
-        interface Factory {
+        interface Factory extends Test.Builder.Factory {
 
+            @Override
             TestOfCall.Builder builder();
         }
     }

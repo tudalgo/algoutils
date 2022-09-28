@@ -14,4 +14,16 @@ public interface Test {
      * @return the object describing the expected behavior or <code>null</code>
      */
     Object expectation();
+
+    interface Builder {
+
+        Test build();
+
+        Test.Builder expectation(Object expectation);
+
+        interface Factory {
+
+            Test.Builder builder();
+        }
+    }
 }

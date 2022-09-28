@@ -9,13 +9,10 @@ import java.util.function.BooleanSupplier;
 
 public class BasicTestOfCall extends BasicTest implements TestOfCall {
 
-    private final Environment environment;
-
     private final BooleanSupplier evaluator;
 
     public BasicTestOfCall(Environment environment, Object expectation, BooleanSupplier evaluator) {
-        super(expectation);
-        this.environment = environment;
+        super(environment, expectation);
         this.evaluator = evaluator;
     }
 
@@ -30,15 +27,13 @@ public class BasicTestOfCall extends BasicTest implements TestOfCall {
         return new BasicResultOfCall(environment, this, evaluator.getAsBoolean());
     }
 
-    public static final class Builder implements TestOfCall.Builder {
-
-        private final Environment environment;
+    public static final class Builder extends BasicTest.Builder<Builder> implements TestOfCall.Builder {
 
         private Object expectation;
         private BooleanSupplier evaluator;
 
         private Builder(Environment environment) {
-            this.environment = environment;
+            super(environment);
         }
 
         @Override
@@ -52,18 +47,10 @@ public class BasicTestOfCall extends BasicTest implements TestOfCall {
             return this;
         }
 
-        @Override
-        public Builder expectation(Object expectation) {
-            this.expectation = expectation;
-            return this;
-        }
-
-        public static final class Factory implements TestOfCall.Builder.Factory {
-
-            private final Environment environment;
+        public static final class Factory extends BasicTest.Builder.Factory implements TestOfCall.Builder.Factory {
 
             public Factory(Environment environment) {
-                this.environment = environment;
+                super(environment);
             }
 
             @Override
