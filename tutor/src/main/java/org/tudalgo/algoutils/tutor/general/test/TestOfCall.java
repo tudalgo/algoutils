@@ -9,7 +9,7 @@ import java.util.function.BooleanSupplier;
  *
  * @author Dustin Glaser
  */
-public interface TestOfCall extends Test {
+public interface TestOfCall<TT extends TestOfCall<TT, RT>, RT extends ResultOfCall<RT, TT>> extends Test<TT, RT> {
 
     /**
      * Tests the behavior of the given callable and throws an error if the behavior is not as expected.
@@ -19,8 +19,8 @@ public interface TestOfCall extends Test {
      * @param preCommentSupplier a supplier for a pre-comment to be added to the comment
      * @throws Error if the object is not as expected
      */
-    default void assertSuccessful(Callable callable, Context context, PreCommentSupplier<? super ResultOfCall> preCommentSupplier) {
-        test(callable).assertSuccessful(context, preCommentSupplier);
+    default void assertSuccessful(Callable callable, Context context, PreCommentSupplier<? super ResultOfCall<RT, TT>> preCommentSupplier) {
+        run(callable).check(context, preCommentSupplier);
     }
 
     /**
@@ -29,22 +29,15 @@ public interface TestOfCall extends Test {
      * @param callable the callable to test
      * @return the result of the test
      */
-    ResultOfCall test(Callable callable);
+    RT run(Callable callable);
 
-    interface Builder extends Test.Builder {
+    interface Builder<TT extends TestOfCall<TT, RT>, RT extends ResultOfCall<RT, TT>, BT extends Builder<TT, RT, BT>> extends Test.Builder<TT, RT, BT> {
 
-        @Override
-        TestOfCall build();
+        BT evaluator(BooleanSupplier evaluator);
 
-        Builder evaluator(BooleanSupplier evaluator);
+        interface Factory<TT extends TestOfCall<TT, RT>, RT extends ResultOfCall<RT, TT>, BT extends Builder<TT, RT, BT>> extends Test.Builder.Factory<TT, RT, BT> {
 
-        @Override
-        Builder expectation(Object expectation);
-
-        interface Factory extends Test.Builder.Factory {
-
-            @Override
-            TestOfCall.Builder builder();
+            Builder<TT, RT, BT> builder();
         }
     }
 }

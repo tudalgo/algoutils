@@ -10,18 +10,7 @@ import java.util.function.Predicate;
  * @param <T> the type of the exception to test
  * @author Dustin Glaser
  */
-public interface TestOfThrowableCall<T extends Throwable> extends Test {
-
-    /**
-     * Tests if the callable throws an exception and if the exception is as expected.
-     *
-     * @param callable           the callable under test
-     * @param context            the context of the callable under test
-     * @param preCommentSupplier a supplier for a pre-comment to be added to the comment
-     */
-    default T assertSuccessful(Callable callable, Context context, PreCommentSupplier<? super ResultOfThrowableCall<T>> preCommentSupplier) {
-        return test(callable).assertSuccessful(context, preCommentSupplier);
-    }
+public interface TestOfThrowableCall<T extends Throwable, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>> extends Test<TT, RT> {
 
     /**
      * Tests if the callable throws an exception and if the exception is as expected.
@@ -29,19 +18,14 @@ public interface TestOfThrowableCall<T extends Throwable> extends Test {
      * @param callable the callable under test
      * @return the result of the test
      */
-    ResultOfThrowableCall<T> test(Callable callable);
+    RT run(Callable callable);
 
-    interface Builder<T extends Throwable> extends Test.Builder {
+    interface Builder<T extends Throwable, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder<TT, RT, BT> {
 
-        TestOfThrowableCall<T> build();
+        BT evaluator(Class<T> throwable, Predicate<T> evaluator);
 
-        Builder<T> evaluator(Class<T> throwable, Predicate<T> evaluator);
+        interface Factory<T extends Throwable, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder.Factory<TT, RT, BT> {
 
-        Builder<T> expectation(Object expectation);
-
-        interface Factory<T extends Throwable> extends Test.Builder.Factory {
-
-            TestOfThrowableCall.Builder<T> builder();
         }
     }
 }

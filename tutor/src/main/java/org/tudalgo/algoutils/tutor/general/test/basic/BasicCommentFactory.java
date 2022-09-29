@@ -10,7 +10,9 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public final class BasicCommentFactory implements CommentFactory<Result<?>> {
+import static org.tudalgo.algoutils.tutor.general.Utils.none;
+
+public final class BasicCommentFactory implements CommentFactory<Result<?, ?>> {
 
     private final Environment environment;
 
@@ -19,16 +21,16 @@ public final class BasicCommentFactory implements CommentFactory<Result<?>> {
     }
 
     @Override
-    public <TS extends Result<?>> String comment(TS result, Context context, PreCommentSupplier<? super TS> preCommentSupplier) {
+    public <TS extends Result<?, ?>> String comment(TS result, Context context, PreCommentSupplier<? super TS> preCommentSupplier) {
         var preComment = preCommentSupplier != null ? preCommentSupplier.getPreComment(result) : null;
-        var subjectString = context != null ? environment.getStringifier().stringify(context.subject()) : null;
+        var subjectString = context != null && context.subject() != null ? environment.getStringifier().stringify(context.subject()) : null;
         var properties = context != null ? context.properties().stream().map(p -> {
             var string = environment.getStringifier().stringify(p.value());
             return string != null ? String.format("%s = %s", p.key(), string) : null;
         }).filter(Objects::nonNull).collect(Collectors.toList()) : Collections.<String>emptyList();
         var propertyString = properties.isEmpty() ? null : String.join(", ", properties);
-        var expectationString = environment.getStringifier().stringify(result.behaviorExpected());
-        var actualString = environment.getStringifier().stringify(result.behaviorActual());
+        var expectationString = result.expected() != none() ? environment.getStringifier().stringify(result.expected()) : null;
+        var actualString = result.expected() != none() ? environment.getStringifier().stringify(result.actual()) : null;
         var sb = new StringBuilder();
         if (preComment != null) {
             sb.append(preComment);

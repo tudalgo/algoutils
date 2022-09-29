@@ -7,7 +7,7 @@ import org.tudalgo.algoutils.tutor.general.test.TestOfThrowableCall;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class BasicTestOfThrowableCall<T extends Throwable> extends BasicTest implements TestOfThrowableCall<T> {
+public class BasicTestOfThrowableCall<T extends Throwable> extends BasicTest<BasicTestOfThrowableCall<T>, BasicResultOfThrowableCall<T>> implements TestOfThrowableCall<T, BasicTestOfThrowableCall<T>, BasicResultOfThrowableCall<T>> {
 
     private final Class<T> throwableClass;
 
@@ -20,7 +20,7 @@ public class BasicTestOfThrowableCall<T extends Throwable> extends BasicTest imp
     }
 
     @Override
-    public BasicResultOfThrowableCall<T> test(Callable callable) {
+    public BasicResultOfThrowableCall<T> run(Callable callable) {
         Objects.requireNonNull(callable, "callable must not be null");
         try {
             callable.call();
@@ -35,7 +35,9 @@ public class BasicTestOfThrowableCall<T extends Throwable> extends BasicTest imp
         }
     }
 
-    public static final class Builder<T extends Throwable> extends BasicTest.Builder<Builder<T>> implements TestOfThrowableCall.Builder<T> {
+    public static final class Builder<T extends Throwable>
+        extends BasicTest.Builder<BasicTestOfThrowableCall<T>, BasicResultOfThrowableCall<T>, Builder<T>>
+        implements TestOfThrowableCall.Builder<T, BasicTestOfThrowableCall<T>, BasicResultOfThrowableCall<T>, Builder<T>> {
 
         private Class<T> throwableClass;
         private Predicate<T> evaluator;
@@ -45,18 +47,20 @@ public class BasicTestOfThrowableCall<T extends Throwable> extends BasicTest imp
         }
 
         @Override
-        public TestOfThrowableCall<T> build() {
+        public BasicTestOfThrowableCall<T> build() {
             return new BasicTestOfThrowableCall<>(environment, expectation, throwableClass, evaluator);
         }
 
         @Override
-        public TestOfThrowableCall.Builder<T> evaluator(Class<T> throwableClass, Predicate<T> evaluator) {
+        public Builder<T> evaluator(Class<T> throwableClass, Predicate<T> evaluator) {
             this.throwableClass = throwableClass;
             this.evaluator = evaluator;
             return this;
         }
 
-        public static final class Factory<T extends Throwable> extends BasicTest.Builder.Factory implements TestOfThrowableCall.Builder.Factory<T> {
+        public static final class Factory<T extends Throwable>
+            extends BasicTest.Builder.Factory<BasicTestOfThrowableCall<T>, BasicResultOfThrowableCall<T>, Builder<T>>
+            implements TestOfThrowableCall.Builder.Factory<T, BasicTestOfThrowableCall<T>, BasicResultOfThrowableCall<T>, Builder<T>> {
 
             public Factory(Environment environment) {
                 super(environment);

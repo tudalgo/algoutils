@@ -5,21 +5,17 @@ package org.tudalgo.algoutils.tutor.general.test;
  *
  * @author Dustin Glaser
  */
-public interface ResultOfCall extends ResultWithThrowable<TestOfCall, Throwable> {
+public interface ResultOfCall<RT extends ResultOfCall<RT, TT>, TT extends TestOfCall<TT, RT>> extends Result<RT, TT> {
 
-    /**
-     * Asserts that the test was successful and throws an error if it was not.
-     *
-     * @param context            the context of the callable under test
-     * @param preCommentSupplier a supplier for a pre-comment to be added to the comment
-     * @throws Error if the object is not as expected
-     */
-    void assertSuccessful(Context context, PreCommentSupplier<? super ResultOfCall> preCommentSupplier) throws Error;
+    Throwable throwable();
 
-    interface Builder extends Result.Builder<Builder, TestOfCall, ResultOfCall> {
+    interface Builder<RT extends ResultOfCall<RT, TT>, TT extends TestOfCall<TT, RT>, BT extends Builder<RT, TT, BT>> extends Result.Builder<RT, TT, BT> {
 
-        interface Factory extends Result.Builder.Factory<Builder, TestOfCall, ResultOfCall> {
+        BT throwable(Throwable actualThrowable);
 
+        interface Factory<RT extends ResultOfCall<RT, TT>, TT extends TestOfCall<TT, RT>, BT extends Builder<RT, TT, BT>> extends Result.Builder.Factory<RT, TT, BT> {
+
+            Builder<RT, TT, BT> builder();
         }
     }
 }

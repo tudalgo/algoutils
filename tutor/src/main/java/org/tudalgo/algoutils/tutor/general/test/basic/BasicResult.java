@@ -6,7 +6,7 @@ import org.tudalgo.algoutils.tutor.general.test.PreCommentSupplier;
 import org.tudalgo.algoutils.tutor.general.test.Result;
 import org.tudalgo.algoutils.tutor.general.test.Test;
 
-public abstract class BasicResult<TT extends Test> implements Result<TT> {
+public abstract class BasicResult<RT extends BasicResult<RT, TT>, TT extends BasicTest<TT, RT>> implements Result<RT, TT> {
 
     protected final Environment environment;
     protected final boolean successful;
@@ -18,9 +18,13 @@ public abstract class BasicResult<TT extends Test> implements Result<TT> {
         this.test = test;
     }
 
-    protected <T extends Result<?>> void check(T result, Context context, PreCommentSupplier<? super T> preCommentSupplier) {
+    @Override
+    public RT check(Context context, PreCommentSupplier<? super RT> preCommentSupplier) {
         if (!successful())
-            throw new AssertionError(environment.getCommentFactory().comment(result, context, preCommentSupplier));
+            //noinspection unchecked
+            throw new AssertionError(environment.getCommentFactory().comment((RT) this, context, preCommentSupplier));
+        //noinspection unchecked
+        return (RT) this;
     }
 
     @Override
@@ -31,5 +35,39 @@ public abstract class BasicResult<TT extends Test> implements Result<TT> {
     @Override
     public TT test() {
         return test;
+    }
+
+    public static abstract class Builder<RT extends Result<RT, TT>, TT extends Test<TT, RT>, BT extends Builder<RT, TT, BT>> implements Result.Builder<RT, TT, BT> {
+
+        protected final Environment environment;
+        protected boolean successful;
+        protected TT test;
+
+        protected Builder(Environment environment) {
+            this.environment = environment;
+        }
+
+        @Override
+        public BT successful(boolean successful) {
+            this.successful = successful;
+            //noinspection unchecked
+            return (BT) this;
+        }
+
+        @Override
+        public BT test(TT test) {
+            this.test = test;
+            //noinspection unchecked
+            return (BT) this;
+        }
+
+        public static abstract class Factory<RT extends Result<RT, TT>, TT extends Test<TT, RT>, BT extends Builder<RT, TT, BT>> implements Result.Builder.Factory<RT, TT, BT> {
+
+            protected final Environment environment;
+
+            public Factory(Environment environment) {
+                this.environment = environment;
+            }
+        }
     }
 }

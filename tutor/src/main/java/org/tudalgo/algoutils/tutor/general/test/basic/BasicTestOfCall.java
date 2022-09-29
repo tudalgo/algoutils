@@ -7,7 +7,7 @@ import org.tudalgo.algoutils.tutor.general.test.TestOfCall;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
-public class BasicTestOfCall extends BasicTest implements TestOfCall {
+public class BasicTestOfCall extends BasicTest<BasicTestOfCall, BasicResultOfCall> implements TestOfCall<BasicTestOfCall, BasicResultOfCall> {
 
     private final BooleanSupplier evaluator;
 
@@ -17,7 +17,7 @@ public class BasicTestOfCall extends BasicTest implements TestOfCall {
     }
 
     @Override
-    public BasicResultOfCall test(Callable callable) {
+    public BasicResultOfCall run(Callable callable) {
         Objects.requireNonNull(callable, "callable must not be null");
         try {
             callable.call();
@@ -27,9 +27,8 @@ public class BasicTestOfCall extends BasicTest implements TestOfCall {
         return new BasicResultOfCall(environment, this, evaluator.getAsBoolean());
     }
 
-    public static final class Builder extends BasicTest.Builder<Builder> implements TestOfCall.Builder {
+    public static final class Builder extends BasicTest.Builder<BasicTestOfCall, BasicResultOfCall, Builder> implements TestOfCall.Builder<BasicTestOfCall, BasicResultOfCall, Builder> {
 
-        private Object expectation;
         private BooleanSupplier evaluator;
 
         private Builder(Environment environment) {
@@ -37,7 +36,7 @@ public class BasicTestOfCall extends BasicTest implements TestOfCall {
         }
 
         @Override
-        public TestOfCall build() {
+        public BasicTestOfCall build() {
             return new BasicTestOfCall(environment, expectation, evaluator);
         }
 
@@ -47,7 +46,7 @@ public class BasicTestOfCall extends BasicTest implements TestOfCall {
             return this;
         }
 
-        public static final class Factory extends BasicTest.Builder.Factory implements TestOfCall.Builder.Factory {
+        public static final class Factory extends BasicTest.Builder.Factory<BasicTestOfCall, BasicResultOfCall, Builder> implements TestOfCall.Builder.Factory<BasicTestOfCall, BasicResultOfCall, Builder> {
 
             public Factory(Environment environment) {
                 super(environment);

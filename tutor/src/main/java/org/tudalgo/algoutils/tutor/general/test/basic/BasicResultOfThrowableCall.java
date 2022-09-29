@@ -1,36 +1,58 @@
 package org.tudalgo.algoutils.tutor.general.test.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
-import org.tudalgo.algoutils.tutor.general.test.Context;
-import org.tudalgo.algoutils.tutor.general.test.PreCommentSupplier;
 import org.tudalgo.algoutils.tutor.general.test.ResultOfThrowableCall;
-import org.tudalgo.algoutils.tutor.general.test.TestOfThrowableCall;
 
-public class BasicResultOfThrowableCall<T extends Throwable> extends BasicResult<TestOfThrowableCall<T>> implements ResultOfThrowableCall<T> {
+import static org.tudalgo.algoutils.tutor.general.Utils.none;
 
-    private final T actualThrowable;
-    private final Object actualBehavior;
+public class BasicResultOfThrowableCall<T extends Throwable> extends BasicResult<BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>> implements ResultOfThrowableCall<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>> {
 
-    public BasicResultOfThrowableCall(Environment environment, TestOfThrowableCall<T> test, boolean successful, T actualThrowable, Object actualBehavior) {
+    private final T throwable;
+    private final Object behavior;
+
+    public BasicResultOfThrowableCall(Environment environment, BasicTestOfThrowableCall<T> test, boolean successful, T throwable, Object actual) {
         super(environment, test, successful);
-        this.actualThrowable = actualThrowable;
-        this.actualBehavior = actualBehavior;
+        this.throwable = throwable;
+        this.behavior = actual;
     }
 
     @Override
-    public T actualThrowable() {
-        return actualThrowable;
+    public Object actual() {
+        return behavior;
     }
 
     @Override
-    public T assertSuccessful(Context context, PreCommentSupplier<? super ResultOfThrowableCall<T>> preCommentSupplier) {
-        check(this, context, preCommentSupplier);
-        return actualThrowable();
+    public T throwable() {
+        return throwable;
     }
 
+    public static final class Builder<T extends Throwable> extends BasicResult.Builder<BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> implements ResultOfThrowableCall.Builder<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> {
 
-    @Override
-    public Object behaviorActual() {
-        return actualBehavior;
+        private T throwable = none();
+
+        private Object actual = none();
+
+        public Builder(Environment environment) {
+            super(environment);
+        }
+
+        @Override
+        public Builder<T> actual(Object actual) {
+            this.throwable = none();
+            this.actual = actual;
+            return this;
+        }
+
+        @Override
+        public BasicResultOfThrowableCall<T> build() {
+            return new BasicResultOfThrowableCall<>(environment, test, successful, throwable, actual);
+        }
+
+        @Override
+        public Builder<T> throwable(T throwable) {
+            this.throwable = throwable;
+            this.actual = throwable;
+            return this;
+        }
     }
 }

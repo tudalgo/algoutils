@@ -5,7 +5,7 @@ package org.tudalgo.algoutils.tutor.general.test;
  *
  * @author Dustin Glaser
  */
-public interface Test {
+public interface Test<TT extends Test<TT, RT>, RT extends Result<RT, TT>> {
 
     /**
      * <p>Returns an object <b>describing</b> the expected behavior of the unit under test or <code>null</code> if there is not such an object.</p>
@@ -15,15 +15,15 @@ public interface Test {
      */
     Object expectation();
 
-    interface Builder {
+    interface Builder<TT extends Test<TT, RT>, RT extends Result<RT, TT>, BT extends Test.Builder<TT, RT, BT>> {
 
-        Test build();
+        TT build();
 
-        Test.Builder expectation(Object expectation);
+        BT expectation(Object expectation);
 
-        interface Factory {
+        interface Factory<TT extends Test<TT, RT>, RT extends Result<RT, TT>, BT extends Builder<TT, RT, BT>> {
 
-            Test.Builder builder();
+            Builder<TT, RT, BT> builder();
         }
     }
 }

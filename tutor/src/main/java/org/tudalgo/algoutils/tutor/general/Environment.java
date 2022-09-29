@@ -7,7 +7,7 @@ import org.tudalgo.algoutils.tutor.general.test.Test;
 
 public interface Environment {
 
-    CommentFactory<Result<?>> getCommentFactory();
+    CommentFactory<Result<?, ?>> getCommentFactory();
 
     void setStringifier(Stringifier stringifier);
 

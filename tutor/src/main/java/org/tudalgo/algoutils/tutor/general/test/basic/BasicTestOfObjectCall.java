@@ -2,13 +2,12 @@ package org.tudalgo.algoutils.tutor.general.test.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
-import org.tudalgo.algoutils.tutor.general.test.ResultOfObjectCall;
 import org.tudalgo.algoutils.tutor.general.test.TestOfObjectCall;
 
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class BasicTestOfObjectCall<T> extends BasicTest implements TestOfObjectCall<T> {
+public class BasicTestOfObjectCall<T> extends BasicTest<BasicTestOfObjectCall<T>, BasicResultOfObjectCall<T>> implements TestOfObjectCall<T, BasicTestOfObjectCall<T>, BasicResultOfObjectCall<T>> {
 
     private final Predicate<T> evaluator;
 
@@ -19,7 +18,7 @@ public class BasicTestOfObjectCall<T> extends BasicTest implements TestOfObjectC
 
 
     @Override
-    public ResultOfObjectCall<T> test(ObjectCallable<T> callable) {
+    public BasicResultOfObjectCall<T> run(ObjectCallable<T> callable) {
         Objects.requireNonNull(callable, "callable must not be null");
         T value;
         try {
@@ -30,7 +29,7 @@ public class BasicTestOfObjectCall<T> extends BasicTest implements TestOfObjectC
         return new BasicResultOfObjectCall<>(environment, this, evaluator.test(value), value, null);
     }
 
-    public static final class Builder<T> extends BasicTest.Builder<Builder<T>> implements TestOfObjectCall.Builder<T> {
+    public static final class Builder<T> extends BasicTest.Builder<BasicTestOfObjectCall<T>, BasicResultOfObjectCall<T>, Builder<T>> implements TestOfObjectCall.Builder<T, BasicTestOfObjectCall<T>, BasicResultOfObjectCall<T>, Builder<T>> {
 
         private Predicate<T> evaluator;
 
@@ -39,17 +38,17 @@ public class BasicTestOfObjectCall<T> extends BasicTest implements TestOfObjectC
         }
 
         @Override
-        public TestOfObjectCall<T> build() {
+        public BasicTestOfObjectCall<T> build() {
             return new BasicTestOfObjectCall<>(environment, expectation, evaluator);
         }
 
         @Override
-        public TestOfObjectCall.Builder<T> evaluator(Predicate<T> evaluator) {
+        public Builder<T> evaluator(Predicate<T> evaluator) {
             this.evaluator = evaluator;
             return this;
         }
 
-        public static final class Factory<T> extends BasicTest.Builder.Factory implements TestOfObjectCall.Builder.Factory<T> {
+        public static final class Factory<T> extends BasicTest.Builder.Factory<BasicTestOfObjectCall<T>, BasicResultOfObjectCall<T>, Builder<T>> implements TestOfObjectCall.Builder.Factory<T, BasicTestOfObjectCall<T>, BasicResultOfObjectCall<T>, Builder<T>> {
 
             public Factory(Environment environment) {
                 super(environment);

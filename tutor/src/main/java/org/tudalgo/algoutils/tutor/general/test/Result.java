@@ -5,21 +5,23 @@ package org.tudalgo.algoutils.tutor.general.test;
  *
  * @author Dustin Glaser
  */
-public interface Result<T extends Test> {
+public interface Result<RT extends Result<RT, TT>, TT extends Test<TT, RT>> {
 
     /**
      * Returns an object describing the actual behavior of the unit under test or <code>null</code> if there is not such an object.
      *
      * @return the object describing the actual behavior or <code>null</code>
      */
-    Object behaviorActual();
+    Object actual();
+
+    RT check(Context context, PreCommentSupplier<? super RT> preCommentSupplier);
 
     /**
      * Returns an object describing the expected behavior of the unit under test or <code>null</code> if there is not such an object.
      *
      * @return the object describing the expected behavior or <code>null</code>
      */
-    default Object behaviorExpected() {
+    default Object expected() {
         return test().expectation();
     }
 
@@ -35,21 +37,19 @@ public interface Result<T extends Test> {
      *
      * @return the test that was run
      */
-    T test();
+    TT test();
 
-    interface Builder<T extends Builder<T, TT, RT>, TT extends Test, RT extends Result<TT>> {
-
-        T behaviorActual(Object behaviorActual);
+    interface Builder<RT extends Result<RT, TT>, TT extends Test<TT, RT>, BT extends Builder<RT, TT, BT>> {
 
         RT build();
 
-        T successful(boolean successful);
+        BT successful(boolean successful);
 
-        T test(TT test);
+        BT test(TT test);
 
-        interface Factory<T extends Builder<T, TT, RT>, TT extends Test, RT extends Result<TT>> {
+        interface Factory<RT extends Result<RT, TT>, TT extends Test<TT, RT>, BT extends Builder<RT, TT, BT>> {
 
-            T builder();
+            Builder<RT, TT, BT> builder();
         }
     }
 }

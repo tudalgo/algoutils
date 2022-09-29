@@ -8,18 +8,7 @@ import java.util.function.Predicate;
  * @param <T> the type of the object under test
  * @author Dustin Glaser
  */
-public interface TestOfObject<T> extends Test {
-
-    /**
-     * Tests the given object and throws an error if the object is not as expected.
-     *
-     * @param object the object under test
-     * @return the object under test (if the object is as expected)
-     * @throws Error if the object is not as expected
-     */
-    default T assertSuccessful(T object, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
-        return test(object).assertSuccessful(context, preCommentSupplier);
-    }
+public interface TestOfObject<T, TT extends TestOfObject<T, TT, RT>, RT extends ResultOfObject<T, RT, TT>> extends Test<TT, RT> {
 
     /**
      * Tests if the given object is as expected.
@@ -27,21 +16,15 @@ public interface TestOfObject<T> extends Test {
      * @param object the object under test
      * @return the result of the test
      */
-    ResultOfObject<T> test(T object);
+    RT run(T object);
 
-    interface Builder<T> extends Test.Builder {
+    interface Builder<T, TT extends TestOfObject<T, TT, RT>, RT extends ResultOfObject<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder<TT, RT, BT> {
 
-        @Override
-        TestOfObject<T> build();
+        BT evaluator(Predicate<T> evaluator);
 
-        Builder<T> evaluator(Predicate<T> evaluator);
+        interface Factory<T, TT extends TestOfObject<T, TT, RT>, RT extends ResultOfObject<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder.Factory<TT, RT, BT> {
 
-        @Override
-        Builder<T> expectation(Object expectation);
-
-        interface Factory<T> extends Test.Builder.Factory {
-
-            TestOfObject.Builder<T> builder();
+            Builder<T, TT, RT, BT> builder();
         }
     }
 }

@@ -6,22 +6,17 @@ package org.tudalgo.algoutils.tutor.general.test;
  * @param <T> the type of the object under test
  * @author Dustin Glaser
  */
-public interface ResultOfObject<T> extends ResultWithObject<TestOfObject<T>, T> {
+public interface ResultOfObject<T, RT extends ResultOfObject<T, RT, TT>, TT extends TestOfObject<T, TT, RT>> extends Result<RT, TT> {
 
-    /**
-     * Asserts that the test was successful and throws an error if it was not.
-     *
-     * @param context            the context of the callable under test
-     * @param preCommentSupplier a supplier for a pre-comment to be added to the comment
-     * @return the object under test
-     * @throws Error if the object is not as expected
-     */
-    T assertSuccessful(Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier);
+    T object();
 
-    interface Builder<T> extends Result.Builder<Builder<T>, TestOfObject<T>, ResultOfObject<T>> {
+    interface Builder<T, RT extends ResultOfObject<T, RT, TT>, TT extends TestOfObject<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> {
 
-        interface Factory<T> extends Result.Builder.Factory<Builder<T>, TestOfObject<T>, ResultOfObject<T>> {
+        BT object(T actualObject);
 
+        interface Factory<T, RT extends ResultOfObject<T, RT, TT>, TT extends TestOfObject<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> {
+
+            Builder<T, RT, TT, BT> builder();
         }
     }
 }

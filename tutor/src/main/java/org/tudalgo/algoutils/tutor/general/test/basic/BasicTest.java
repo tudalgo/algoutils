@@ -3,7 +3,7 @@ package org.tudalgo.algoutils.tutor.general.test.basic;
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.test.Test;
 
-public abstract class BasicTest implements Test {
+public abstract class BasicTest<TT extends BasicTest<TT, RT>, RT extends BasicResult<RT, TT>> implements Test<TT, RT> {
 
     protected final Environment environment;
 
@@ -18,7 +18,7 @@ public abstract class BasicTest implements Test {
         return expectation;
     }
 
-    public static abstract class Builder<T extends Builder<T>> implements Test.Builder {
+    public static abstract class Builder<TT extends BasicTest<TT, RT>, RT extends BasicResult<RT, TT>, BT extends Builder<TT, RT, BT>> implements Test.Builder<TT, RT, BT> {
 
         protected final Environment environment;
 
@@ -29,13 +29,13 @@ public abstract class BasicTest implements Test {
         }
 
         @Override
-        public T expectation(Object expectation) {
+        public BT expectation(Object expectation) {
             this.expectation = expectation;
             //noinspection unchecked
-            return (T) this;
+            return (BT) this;
         }
 
-        public static abstract class Factory implements Test.Builder.Factory {
+        public static abstract class Factory<TT extends BasicTest<TT, RT>, RT extends BasicResult<RT, TT>, BT extends Builder<TT, RT, BT>> implements Test.Builder.Factory<TT, RT, BT> {
 
             protected final Environment environment;
 

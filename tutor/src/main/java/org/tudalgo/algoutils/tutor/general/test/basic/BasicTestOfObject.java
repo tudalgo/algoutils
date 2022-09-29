@@ -1,13 +1,12 @@
 package org.tudalgo.algoutils.tutor.general.test.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
-import org.tudalgo.algoutils.tutor.general.test.ResultOfObject;
 import org.tudalgo.algoutils.tutor.general.test.TestOfObject;
 
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class BasicTestOfObject<T> extends BasicTest implements TestOfObject<T> {
+public class BasicTestOfObject<T> extends BasicTest<BasicTestOfObject<T>, BasicResultOfObject<T>> implements TestOfObject<T, BasicTestOfObject<T>, BasicResultOfObject<T>> {
 
     private final Predicate<T> evaluator;
 
@@ -17,11 +16,11 @@ public class BasicTestOfObject<T> extends BasicTest implements TestOfObject<T> {
     }
 
     @Override
-    public ResultOfObject<T> test(T object) {
+    public BasicResultOfObject<T> run(T object) {
         return new BasicResultOfObject<>(environment, this, evaluator.test(object), object);
     }
 
-    public static final class Builder<T> extends BasicTest.Builder<Builder<T>> implements TestOfObject.Builder<T> {
+    public static final class Builder<T> extends BasicTest.Builder<BasicTestOfObject<T>, BasicResultOfObject<T>, Builder<T>> implements TestOfObject.Builder<T, BasicTestOfObject<T>, BasicResultOfObject<T>, Builder<T>> {
 
         private Object expectation;
 
@@ -32,17 +31,17 @@ public class BasicTestOfObject<T> extends BasicTest implements TestOfObject<T> {
         }
 
         @Override
-        public TestOfObject<T> build() {
+        public BasicTestOfObject<T> build() {
             return new BasicTestOfObject<>(environment, expectation, evaluator);
         }
 
         @Override
-        public TestOfObject.Builder<T> evaluator(Predicate<T> evaluator) {
+        public Builder<T> evaluator(Predicate<T> evaluator) {
             this.evaluator = evaluator;
             return this;
         }
 
-        public static final class Factory<T> extends BasicTest.Builder.Factory implements TestOfObject.Builder.Factory<T> {
+        public static final class Factory<T> extends BasicTest.Builder.Factory<BasicTestOfObject<T>, BasicResultOfObject<T>, Builder<T>> implements TestOfObject.Builder.Factory<T, BasicTestOfObject<T>, BasicResultOfObject<T>, Builder<T>> {
 
             public Factory(Environment environment) {
                 super(environment);

@@ -6,7 +6,7 @@ package org.tudalgo.algoutils.tutor.general.test;
  * @param <T> the type of supported tests
  * @author Dustin Glaser
  */
-public interface CommentFactory<T extends Result<?>> {
+public interface CommentFactory<T extends Result<?, ?>> {
 
     /**
      * Returns a comment for the given test result, context and pre-comment supplier.

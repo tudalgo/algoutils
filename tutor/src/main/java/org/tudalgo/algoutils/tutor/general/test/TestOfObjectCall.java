@@ -11,7 +11,7 @@ import java.util.function.Predicate;
  * @param <T> the type of the callable object
  * @author Dustin Glaser
  */
-public interface TestOfObjectCall<T> extends Test {
+public interface TestOfObjectCall<T, TT extends TestOfObjectCall<T, TT, RT>, RT extends ResultOfObjectCall<T, RT, TT>> extends Test<TT, RT> {
 
     /**
      * Tests if the callable behavior and the object returned by the callable are as expected.
@@ -21,8 +21,8 @@ public interface TestOfObjectCall<T> extends Test {
      * @param preCommentSupplier a supplier for a pre-comment to be added to the comment
      * @throws Error if the object is not as expected
      */
-    default T assertSuccessful(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObjectCall<T>> preCommentSupplier) {
-        return test(callable).assertSuccessful(context, preCommentSupplier);
+    default T assertSuccessful(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObjectCall<T, RT, TT>> preCommentSupplier) {
+        return run(callable).check(context, preCommentSupplier).object();
     }
 
     /**
@@ -31,19 +31,15 @@ public interface TestOfObjectCall<T> extends Test {
      * @param callable the callable under test
      * @return the result of the test
      */
-    ResultOfObjectCall<T> test(ObjectCallable<T> callable);
+    RT run(ObjectCallable<T> callable);
 
-    interface Builder<T> extends Test.Builder {
 
-        TestOfObjectCall<T> build();
+    interface Builder<T, TT extends TestOfObjectCall<T, TT, RT>, RT extends ResultOfObjectCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder<TT, RT, BT> {
 
-        Builder<T> evaluator(Predicate<T> evaluator);
+        BT evaluator(Predicate<T> evaluator);
 
-        Builder<T> expectation(Object expectation);
+        interface Factory<T, TT extends TestOfObjectCall<T, TT, RT>, RT extends ResultOfObjectCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder.Factory<TT, RT, BT> {
 
-        interface Factory<T> extends Test.Builder.Factory {
-
-            TestOfObjectCall.Builder<T> builder();
         }
     }
 }
