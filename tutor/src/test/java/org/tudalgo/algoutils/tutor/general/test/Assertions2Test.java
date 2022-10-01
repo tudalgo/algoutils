@@ -126,4 +126,10 @@ class Assertions2Test {
         e = assertThrows(AssertionFailedError.class, () -> Assertions2.assertCallTrue(() -> false, Assertions2.emptyContext(), r -> "x"));
         assertEquals("x:\n\texpected: <true>\n\tactual: <false>", e.getMessage());
     }
+
+    @Test
+    void testFail() {
+        var e = assertThrows(AssertionFailedError.class, () -> Assertions2.fail(Assertions2.emptyContext(), r -> "hello world"));
+        assertEquals("hello world", e.getMessage());
+    }
 }

@@ -5,6 +5,7 @@ import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 import org.tudalgo.algoutils.tutor.general.test.basic.BasicContext;
+import org.tudalgo.algoutils.tutor.general.test.basic.BasicFail;
 import org.tudalgo.algoutils.tutor.general.test.basic.BasicTestOfObject;
 import org.tudalgo.algoutils.tutor.general.test.basic.BasicTestOfThrowableCall;
 import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedExceptions;
@@ -16,6 +17,8 @@ public final class Assertions2 {
     private static final Environment environment = new BasicEnvironment();
     private static final TestOfObject.Builder.Factory<?, ?, ?, ?> TEST_OF_OBJECT_BUILDER_FACTORY = new BasicTestOfObject.Builder.Factory<>(environment);
     private static final TestOfThrowableCall.Builder.Factory<?, ?, ?, ?> TEST_OF_THROWABLE_CALL_BUILDER_FACTORY = new BasicTestOfThrowableCall.Builder.Factory<>(environment);
+
+    private static final Fail.Builder.Factory<?, ?, ?> FAIL_BUILDER_FACTORY = new BasicFail.Builder.Factory(environment);
     private static final Context.Builder.Factory CONTEXT_BUILDER_FACTORY = new BasicContext.Builder.Factory();
     private static final Context CONTEXT_EMPTY = contextBuilder().build();
 
@@ -95,6 +98,19 @@ public final class Assertions2 {
 
     public static Context emptyContext() {
         return CONTEXT_EMPTY;
+    }
+
+    public static <T> T fail(Context context, PreCommentSupplier<? super ResultOfFail<?, ?>> preCommentSupplier) {
+        return fail(null, context, preCommentSupplier);
+    }
+
+    public static <T> T fail(Exception exception, Context context, PreCommentSupplier<? super ResultOfFail<?, ?>> preCommentSupplier) {
+        failBuilder().build().run(exception).check(context, preCommentSupplier);
+        return null;
+    }
+
+    public static Fail.Builder<?, ?, ?> failBuilder() {
+        return (Fail.Builder<?, ?, ?>) FAIL_BUILDER_FACTORY.builder();
     }
 
     public static <T> TestOfObject.Builder<T, ?, ?, ?> testOfObjectBuilder() {
