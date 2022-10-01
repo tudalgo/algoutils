@@ -1,7 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.assertions.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
-import org.tudalgo.algoutils.tutor.general.assertions.TestOfThrowableCall;
+import org.tudalgo.algoutils.tutor.general.assertions.TestOfExceptionalCall;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualException;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedException;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
@@ -14,7 +14,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.actual.ActualExcept
  *
  * @param <T> the type of the expected exception
  */
-public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<BasicTestOfExceptionalCall<T>, ExpectedException<T>, BasicResultOfExceptionalCall<T>, ActualException<T>> implements TestOfThrowableCall<T, BasicTestOfExceptionalCall<T>, BasicResultOfExceptionalCall<T>> {
+public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<BasicTestOfExceptionalCall<T>, ExpectedException<T>, BasicResultOfExceptionalCall<T>, ActualException<T>> implements TestOfExceptionalCall<T, BasicTestOfExceptionalCall<T>, BasicResultOfExceptionalCall<T>> {
 
     /**
      * <p>Constructs a new test of a throwable call with the given environment and expected exception.</p>
@@ -47,7 +47,7 @@ public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<B
 
     public static final class Builder<T extends Exception>
         extends BasicTest.Builder<BasicTestOfExceptionalCall<T>, ExpectedException<T>, BasicResultOfExceptionalCall<T>, ActualException<T>, Builder<T>>
-        implements TestOfThrowableCall.Builder<T, BasicTestOfExceptionalCall<T>, BasicResultOfExceptionalCall<T>, Builder<T>> {
+        implements TestOfExceptionalCall.Builder<T, BasicTestOfExceptionalCall<T>, BasicResultOfExceptionalCall<T>, Builder<T>> {
 
         private Builder(Environment environment) {
             super(environment);
@@ -61,7 +61,7 @@ public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<B
 
         public static final class Factory<T extends Exception>
             extends BasicTest.Builder.Factory<BasicTestOfExceptionalCall<T>, ExpectedException<T>, BasicResultOfExceptionalCall<T>, ActualException<T>, Builder<T>>
-            implements TestOfThrowableCall.Builder.Factory<T, BasicTestOfExceptionalCall<T>, BasicResultOfExceptionalCall<T>, Builder<T>> {
+            implements TestOfExceptionalCall.Builder.Factory<T, BasicTestOfExceptionalCall<T>, BasicResultOfExceptionalCall<T>, Builder<T>> {
 
             public Factory(Environment environment) {
                 super(environment);

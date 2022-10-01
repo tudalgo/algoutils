@@ -12,7 +12,7 @@ import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedException
  * @param <RT> the type of the result
  * @author Dustin Glaser
  */
-public interface TestOfThrowableCall<T extends Exception, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>> extends Test<TT, ExpectedException<T>, RT, ActualException<T>> {
+public interface TestOfExceptionalCall<T extends Exception, TT extends TestOfExceptionalCall<T, TT, RT>, RT extends ResultOfExceptionalCall<T, RT, TT>> extends Test<TT, ExpectedException<T>, RT, ActualException<T>> {
 
     /**
      * Tests if the callable throws an exception and if the exception is as expected.
@@ -23,14 +23,14 @@ public interface TestOfThrowableCall<T extends Exception, TT extends TestOfThrow
     RT run(Callable callable);
 
     /**
-     * <p>A builder for {@linkplain TestOfThrowableCall tests of throwable calls}.</p>
+     * <p>A builder for {@linkplain TestOfExceptionalCall tests of throwable calls}.</p>
      *
      * @param <T>  the type of the expected exception
      * @param <TT> the type of the test
      * @param <RT> the type of the result
      * @param <BT> the type of the builder
      */
-    interface Builder<T extends Exception, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
+    interface Builder<T extends Exception, TT extends TestOfExceptionalCall<T, TT, RT>, RT extends ResultOfExceptionalCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
 
         /**
          * <p>A factory for {@link Builder test of throwable call builders}.</p>
@@ -40,7 +40,7 @@ public interface TestOfThrowableCall<T extends Exception, TT extends TestOfThrow
          * @param <RT> the type of the result
          * @param <BT> the type of the builder
          */
-        interface Factory<T extends Exception, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder.Factory<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
+        interface Factory<T extends Exception, TT extends TestOfExceptionalCall<T, TT, RT>, RT extends ResultOfExceptionalCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder.Factory<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
 
         }
     }

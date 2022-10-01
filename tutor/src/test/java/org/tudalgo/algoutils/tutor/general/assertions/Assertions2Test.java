@@ -104,16 +104,9 @@ class Assertions2Test {
                 \texpected: exception of type <java.lang.RuntimeException>
                 \tactual: unexpected exception was thrown
 
-                \torg.tudalgo.algoutils.tutor.general.test.Assertions0Test.lambda$testAssertThrows$0(Assertions0Test.java:0)
-                \torg.tudalgo.algoutils.tutor.general.test.basic.BasicTestOfThrowableCall.run(BasicTestOfThrowableCall.java:0)
-                \torg.tudalgo.algoutils.tutor.general.test.basic.BasicTestOfThrowableCall.run(BasicTestOfThrowableCall.java:0)
-                \torg.tudalgo.algoutils.tutor.general.test.Assertions0.assertThrows(Assertions0.java:0)
-                \torg.tudalgo.algoutils.tutor.general.test.Assertions0Test.lambda$testAssertThrows$0(Assertions0Test.java:0)
-                \torg.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:0)
-                \torg.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:0)
-                \torg.junit.jupiter.api.Assertions.assertThrows(Assertions.java:0)
-                \torg.tudalgo.algoutils.tutor.general.test.Assertions0Test.testAssertThrows(Assertions0Test.java:0)
-                \tjava.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)""",
+                \torg.tudalgo.algoutils.tutor.general.assertions.Assertions0Test.lambda$testAssertThrows$0(Assertions0Test.java:0)
+                \torg.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfExceptionalCall.run(BasicTestOfExceptionalCall.java:0)
+                \torg.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfExceptionalCall.run(BasicTestOfExceptionalCall.java:0)""",
             message);
     }
 
