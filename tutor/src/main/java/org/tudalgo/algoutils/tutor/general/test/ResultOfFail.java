@@ -1,13 +1,14 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
-//public interface ResultOfFail extends Result<Fail> {
-//
-//    <T> T fail(Context context, PreCommentSupplier<? super ResultOfFail> preCommentSupplier);
-//
-//    interface Builder extends Result.Builder<Builder, Fail, ResultOfFail> {
-//
-//        interface Factory extends Result.Builder.Factory<Builder, Fail, ResultOfFail> {
-//
-//        }
-//    }
-//}
+import org.tudalgo.algoutils.tutor.general.test.actual.NoActual;
+import org.tudalgo.algoutils.tutor.general.test.expected.Nothing;
+
+public interface ResultOfFail<RT extends ResultOfFail<RT, TT>, TT extends Fail<TT, RT>> extends Result<RT, NoActual, TT, Nothing> {
+
+    interface Builder<RT extends ResultOfFail<RT, TT>, TT extends Fail<TT, RT>, BT extends Builder<RT, TT, BT>> extends Result.Builder<RT, NoActual, TT, Nothing, BT> {
+
+        interface Factory<RT extends ResultOfFail<RT, TT>, TT extends Fail<TT, RT>, BT extends Builder<RT, TT, BT>> extends Result.Builder.Factory<RT, NoActual, TT, Nothing, BT> {
+
+        }
+    }
+}

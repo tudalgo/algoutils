@@ -1,23 +1,15 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
 
-//public interface Fail extends Test {
-//
-//    default ResultOfFail fail() {
-//        return fail(null);
-//    }
-//
-//    ResultOfFail fail(Object actualBehavior);
-//
-//    interface Builder {
-//
-//        Fail build();
-//
-//        Fail.Builder expectation(Object expectation);
-//
-//        interface Factory {
-//
-//            BasicFail.Builder builder();
-//        }
-//    }
-//}
+import org.tudalgo.algoutils.tutor.general.test.actual.NoActual;
+import org.tudalgo.algoutils.tutor.general.test.expected.Nothing;
+
+public interface Fail<TT extends Fail<TT, RT>, RT extends ResultOfFail<RT, TT>> extends Test<TT, Nothing, RT, NoActual> {
+
+    interface Builder<TT extends Fail<TT, RT>, RT extends ResultOfFail<RT, TT>, BT extends Builder<TT, RT, BT>> extends Test.Builder<TT, Nothing, RT, NoActual, BT> {
+
+        interface Factory<TT extends Fail<TT, RT>, RT extends ResultOfFail<RT, TT>, BT extends Builder<TT, RT, BT>> extends Test.Builder.Factory<TT, Nothing, RT, NoActual, BT> {
+
+        }
+    }
+}
