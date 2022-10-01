@@ -5,8 +5,25 @@ import org.tudalgo.algoutils.tutor.general.stringify.Stringifier;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * <p>A type representing the expected object in a test.</p>
+ *
+ * @param <T> the type of the expected object
+ * @author Dustin Glaser
+ */
 public interface ExpectedObject<T> extends Expected {
 
+    /**
+     * <p>Returns an expected behavior where the expected object is described with the given object.</p>
+     *
+     * <p>If a given object is as expected is only tested by the given test.</p>
+     *
+     * @param object    the object describing the expected behavior
+     * @param test      the test to determine if the given object is as expected
+     * @param formatter the formatter
+     * @param <T>       the type of the expected object
+     * @return the expected behavior
+     */
     static <T> ExpectedObject<T> of(
         T object,
         Predicate<T> test,
@@ -16,7 +33,7 @@ public interface ExpectedObject<T> extends Expected {
         return new ExpectedObject<>() {
 
             @Override
-            public T object() {
+            public Object behavior() {
                 return object;
             }
 
@@ -26,12 +43,22 @@ public interface ExpectedObject<T> extends Expected {
             }
 
             @Override
-            public boolean test(T t) {
-                return test.test(t);
+            public boolean test(T object) {
+                return test.test(object);
             }
         };
     }
 
+    /**
+     * <p>Returns an expected behavior where the expected object is described with the given object.</p>
+     *
+     * <p>If a given object is as expected is only tested by the given test.</p>
+     *
+     * @param object the object describing the expected behavior
+     * @param test   the test to determine if the given object is as expected
+     * @param <T>    the type of the expected object
+     * @return the expected behavior
+     */
     static <T> ExpectedObject<T> of(
         T object,
         Predicate<T> test
@@ -39,8 +66,11 @@ public interface ExpectedObject<T> extends Expected {
         return of(object, test, Function.identity());
     }
 
-    @Override
-    T object();
-
-    boolean test(T t);
+    /**
+     * <p>Returns true if the given object is as expected.</p>
+     *
+     * @param object the object
+     * @return true if the given object is as expected
+     */
+    boolean test(T object);
 }

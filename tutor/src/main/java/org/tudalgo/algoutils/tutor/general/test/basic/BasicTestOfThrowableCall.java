@@ -25,7 +25,7 @@ public class BasicTestOfThrowableCall<T extends Exception> extends BasicTest<Bas
             //noinspection unchecked
             if (expected().test((Class<T>) throwable.getClass())) {
                 //noinspection unchecked
-                builder.actual((T) throwable, true);
+                builder.actual((T) throwable).successful(true);
             } else {
                 builder.actual(unexpectedException());
                 builder.exception(throwable);

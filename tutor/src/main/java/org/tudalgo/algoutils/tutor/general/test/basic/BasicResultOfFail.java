@@ -8,7 +8,7 @@ import org.tudalgo.algoutils.tutor.general.test.expected.Nothing;
 public class BasicResultOfFail extends BasicResult<BasicResultOfFail, NoActual, BasicFail, Nothing> implements ResultOfFail<BasicResultOfFail, BasicFail> {
 
     public BasicResultOfFail(Environment environment, BasicFail test, Exception exception) {
-        super(environment, test, null, exception);
+        super(environment, test, null, exception, false);
     }
 
     public static class Builder extends BasicResult.Builder<BasicResultOfFail, NoActual, BasicFail, Nothing, Builder> implements ResultOfFail.Builder<BasicResultOfFail, BasicFail, Builder> {

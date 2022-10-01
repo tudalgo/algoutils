@@ -16,12 +16,14 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
     protected final TT test;
     protected final AT actual;
     protected final Exception exception;
+    protected final boolean successful;
 
-    public BasicResult(Environment environment, TT test, AT actual, Exception exception) {
+    public BasicResult(Environment environment, TT test, AT actual, Exception exception, boolean successful) {
         this.environment = environment;
         this.test = test;
         this.actual = actual;
         this.exception = exception;
+        this.successful = successful;
     }
 
     @Override
@@ -45,7 +47,7 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
 
     @Override
     public boolean successful() {
-        return actual != null && actual.successful();
+        return successful;
     }
 
     @Override
@@ -59,6 +61,7 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
         protected TT test;
         protected AT actual;
         protected Exception exception;
+        protected boolean successful;
 
         protected Builder(Environment environment) {
             this.environment = environment;
@@ -81,6 +84,12 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
         @Override
         public BT test(TT test) {
             this.test = test;
+            //noinspection unchecked
+            return (BT) this;
+        }
+
+        public BT successful(boolean successful) {
+            this.successful = successful;
             //noinspection unchecked
             return (BT) this;
         }

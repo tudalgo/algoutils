@@ -7,8 +7,8 @@ import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedException;
 
 public class BasicResultOfThrowableCall<T extends Exception> extends BasicResult<BasicResultOfThrowableCall<T>, ActualException<T>, BasicTestOfThrowableCall<T>, ExpectedException<T>> implements ResultOfThrowableCall<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>> {
 
-    public BasicResultOfThrowableCall(Environment environment, BasicTestOfThrowableCall<T> test, ActualException<T> actual, Exception exception) {
-        super(environment, test, actual, exception);
+    public BasicResultOfThrowableCall(Environment environment, BasicTestOfThrowableCall<T> test, ActualException<T> actual, Exception exception, boolean successful) {
+        super(environment, test, actual, exception, successful);
     }
 
     public static final class Builder<T extends Exception> extends BasicResult.Builder<BasicResultOfThrowableCall<T>, ActualException<T>, BasicTestOfThrowableCall<T>, ExpectedException<T>, Builder<T>> implements ResultOfThrowableCall.Builder<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> {
@@ -19,7 +19,7 @@ public class BasicResultOfThrowableCall<T extends Exception> extends BasicResult
 
         @Override
         public BasicResultOfThrowableCall<T> build() {
-            return new BasicResultOfThrowableCall<>(environment, test, actual, exception);
+            return new BasicResultOfThrowableCall<>(environment, test, actual, exception, successful);
         }
 
         public static final class Factory<T extends Exception> extends BasicResult.Builder.Factory<BasicResultOfThrowableCall<T>, ActualException<T>, BasicTestOfThrowableCall<T>, ExpectedException<T>, Builder<T>> implements ResultOfThrowableCall.Builder.Factory<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> {

@@ -7,16 +7,8 @@ import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedObject;
 
 public class BasicResultOfObject<T> extends BasicResult<BasicResultOfObject<T>, ActualObject<T>, BasicTestOfObject<T>, ExpectedObject<T>> implements ResultOfObject<T, BasicResultOfObject<T>, BasicTestOfObject<T>> {
 
-    private final ActualObject<T> actual;
-
-    public BasicResultOfObject(Environment environment, BasicTestOfObject<T> test, ActualObject<T> actual, Exception exception) {
-        super(environment, test, actual, exception);
-        this.actual = actual;
-    }
-
-    @Override
-    public ActualObject<T> actual() {
-        return actual;
+    public BasicResultOfObject(Environment environment, BasicTestOfObject<T> test, ActualObject<T> actual, Exception exception, boolean successful) {
+        super(environment, test, actual, exception, successful);
     }
 
     public static final class Builder<T> extends BasicResult.Builder<BasicResultOfObject<T>, ActualObject<T>, BasicTestOfObject<T>, ExpectedObject<T>, Builder<T>> implements ResultOfObject.Builder<T, BasicResultOfObject<T>, BasicTestOfObject<T>, Builder<T>> {
@@ -27,7 +19,7 @@ public class BasicResultOfObject<T> extends BasicResult<BasicResultOfObject<T>, 
 
         @Override
         public BasicResultOfObject<T> build() {
-            return new BasicResultOfObject<>(environment, test, actual, exception);
+            return new BasicResultOfObject<>(environment, test, actual, exception, successful);
         }
 
         public static final class Factory<T> extends BasicResult.Builder.Factory<BasicResultOfObject<T>, ActualObject<T>, BasicTestOfObject<T>, ExpectedObject<T>, Builder<T>> implements ResultOfObject.Builder.Factory<T, BasicResultOfObject<T>, BasicTestOfObject<T>, Builder<T>> {

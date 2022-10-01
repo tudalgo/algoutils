@@ -19,7 +19,7 @@ public interface ResultOfObject<T, RT extends ResultOfObject<T, RT, TT>, TT exte
      * @return the actual object
      */
     default T object() {
-        return actual().object();
+        return actual().behavior();
     }
 
     /**
@@ -35,12 +35,11 @@ public interface ResultOfObject<T, RT extends ResultOfObject<T, RT, TT>, TT exte
         /**
          * <p>Sets the actual object and if the actual object fulfils the expected object.</p>
          *
-         * @param actual     the actual object
-         * @param successful if the actual object fulfils the expected object
+         * @param actual the actual object
          * @return this builder
          */
-        default BT object(T actual, boolean successful) {
-            return actual(of(actual, successful));
+        default BT object(T actual) {
+            return actual(of(actual));
         }
 
         /**

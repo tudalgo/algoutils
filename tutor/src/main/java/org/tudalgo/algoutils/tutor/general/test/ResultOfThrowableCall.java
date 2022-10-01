@@ -23,7 +23,7 @@ public interface ResultOfThrowableCall<T extends Exception, RT extends ResultOfT
         if (actual() == null) {
             return null;
         }
-        return actual().object();
+        return actual().behavior();
     }
 
     /**
@@ -42,8 +42,8 @@ public interface ResultOfThrowableCall<T extends Exception, RT extends ResultOfT
          * @param exception the actual exception
          * @return this builder
          */
-        default BT actual(T exception, boolean successful) {
-            return actual(of(exception, successful));
+        default BT actual(T exception) {
+            return actual(of(exception));
         }
 
         /**

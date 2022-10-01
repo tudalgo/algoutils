@@ -17,7 +17,7 @@ public class BasicTestOfObject<T> extends BasicTest<BasicTestOfObject<T>, Expect
         var builder = new BasicResultOfObject.Builder<T>(environment()).test(this);
         try {
             var object = callable.call();
-            builder.object(object, expected().test(object));
+            builder.object(object).successful(expected().test(object));
         } catch (Exception e) {
             builder.exception(e);
         }

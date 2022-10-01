@@ -8,7 +8,7 @@ import org.tudalgo.algoutils.tutor.general.test.basic.BasicContext;
 import org.tudalgo.algoutils.tutor.general.test.basic.BasicFail;
 import org.tudalgo.algoutils.tutor.general.test.basic.BasicTestOfObject;
 import org.tudalgo.algoutils.tutor.general.test.basic.BasicTestOfThrowableCall;
-import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedExceptions;
+import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedExceptional;
 
 import static org.tudalgo.algoutils.tutor.general.test.expected.ExpectedObjects.*;
 
@@ -85,7 +85,7 @@ public final class Assertions2 {
     }
 
     public static <T extends Exception> T assertThrows(Class<T> expected, Callable callable, Context context, PreCommentSupplier<? super ResultOfThrowableCall<T, ?, ?>> preCommentSupplier) {
-        return Assertions2.<T>testOfThrowableCallBuilder().expected(ExpectedExceptions.instanceOf(expected)).build().run(callable).check(context, preCommentSupplier).actual().object();
+        return Assertions2.<T>testOfThrowableCallBuilder().expected(ExpectedExceptional.instanceOf(expected)).build().run(callable).check(context, preCommentSupplier).actual().behavior();
     }
 
     public static boolean assertTrue(boolean actual, Context context, PreCommentSupplier<? super ResultOfObject<Boolean, ?, ?>> preCommentSupplier) {
