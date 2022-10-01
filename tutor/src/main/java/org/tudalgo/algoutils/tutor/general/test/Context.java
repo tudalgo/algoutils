@@ -4,7 +4,7 @@ import java.util.Collection;
 
 /**
  * <p>A type representing the context of a test.</p>
- * <p>A context consists of its subject (for example, class, an attribute or an method)</p> and a collection of properties.</p>
+ * <p>A context consists of its subject (for example, class, an attribute or an method) and a collection of properties.</p>
  *
  * @author Dustin Glaser
  */

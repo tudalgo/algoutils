@@ -77,7 +77,7 @@ public interface Stringifier {
     String stringifyOrElseNull(Object object);
 
     /**
-     * Creates a string representation of the given object or use {@link #toString()}, if no string representation can be created.
+     * Creates a string representation of the given object or use {@link String#toString()}, if no string representation can be created.
      *
      * @param object the object to create a string representation for
      * @return the string representation of the given object
