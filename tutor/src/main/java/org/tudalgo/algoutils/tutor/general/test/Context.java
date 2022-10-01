@@ -24,17 +24,17 @@ public interface Context {
      */
     Object subject();
 
-    interface Builder {
+    interface Builder<CT extends Context, BT extends Builder<CT, BT>> {
 
-        Context build();
+        CT build();
 
-        Builder property(String key, Object value);
+        Builder<CT, BT> property(String key, Object value);
 
-        Builder subject(Object subject);
+        Builder<CT, BT> subject(Object subject);
 
-        interface Factory {
+        interface Factory<CT extends Context, BT extends Builder<CT, BT>> {
 
-            Builder builder();
+            Builder<CT, BT> builder();
         }
     }
 }
