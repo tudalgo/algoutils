@@ -6,13 +6,12 @@ import org.tudalgo.algoutils.tutor.general.test.Context;
 import org.tudalgo.algoutils.tutor.general.test.PreCommentSupplier;
 import org.tudalgo.algoutils.tutor.general.test.Result;
 
-import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.tudalgo.algoutils.tutor.general.Utils.none;
+import static java.util.Arrays.stream;
 
-public final class BasicCommentFactory implements CommentFactory<Result<?, ?>> {
+public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?, ?>> {
 
     private final Environment environment;
 
@@ -21,38 +20,60 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?>> {
     }
 
     @Override
-    public <TS extends Result<?, ?>> String comment(TS result, Context context, PreCommentSupplier<? super TS> preCommentSupplier) {
-        var preComment = preCommentSupplier != null ? preCommentSupplier.getPreComment(result) : null;
-        var subjectString = context != null && context.subject() != null ? environment.getStringifier().stringify(context.subject()) : null;
+    public <TS extends Result<?, ?, ?, ?>> String comment(TS result, Context context, PreCommentSupplier<? super TS> commentSupplier) {
+        var expected = result.expected();
+        var actual = result.actual();
+        var exception = result.exception();
+
+        var stringifier = environment.getStringifier();
+        // comment
+        var comment = commentSupplier != null ? commentSupplier.getPreComment(result) : null;
+        // subject
+        var subject = context != null && context.subject() != null ? stringifier.stringify(context.subject()) : null;
+        // properties
         var properties = context != null ? context.properties().stream().map(p -> {
-            var string = environment.getStringifier().stringify(p.value());
-            return string != null ? String.format("%s = %s", p.key(), string) : null;
-        }).filter(Objects::nonNull).collect(Collectors.toList()) : Collections.<String>emptyList();
-        var propertyString = properties.isEmpty() ? null : String.join(", ", properties);
-        var expectationString = result.expected() != none() ? environment.getStringifier().stringify(result.expected()) : null;
-        var actualString = result.expected() != none() ? environment.getStringifier().stringify(result.actual()) : null;
-        var sb = new StringBuilder();
-        if (preComment != null) {
-            sb.append(preComment);
+            var key = stringifier.stringify(p.key());
+            var value = stringifier.stringify(p.value());
+            return String.format("%s = %s", key, value);
+        }).filter(Objects::nonNull).collect(Collectors.joining(",")) : "";
+        // trace
+        var trace = (String) null;
+        if (exception != null) {
+            trace = stream(exception.getStackTrace()).limit(10).map(e -> "\t" + e).collect(Collectors.joining("\n"));
         }
-        if (subjectString != null) {
+
+        var sb = new StringBuilder();
+        if (comment != null) {
+            sb.append(comment);
+        }
+        if (subject != null) {
             sb.append(" @ ");
-            sb.append(subjectString);
+            sb.append(subject);
         }
         if (!properties.isEmpty()) {
             sb.append(" ");
-            sb.append(String.format("{ %s }", propertyString));
+            sb.append(String.format("{ %s }", properties));
         }
-        if ((preComment != null || subjectString != null || !properties.isEmpty()) && (expectationString != null || actualString != null)) {
-            sb.append(":");
+        if ((comment != null || subject != null || !properties.isEmpty()) && (expected != null || actual != null)) {
+            sb.append(":\n");
         }
-        if (expectationString != null) {
-            sb.append(" ");
-            sb.append(String.format("expected: <%s>", expectationString));
+        if (expected != null) {
+            sb.append("\t");
+            sb.append("expected: ");
+            var object = expected.string(stringifier);
+            sb.append(String.format("%s", object));
+            sb.append("\n");
         }
-        if (actualString != null) {
-            sb.append(" ");
-            sb.append(String.format("actual: <%s>", actualString));
+        System.out.println("actual: " + actual);
+        if (actual != null) {
+
+            sb.append("\t");
+            sb.append(String.format("actual: %s", actual.string(stringifier)));
+            sb.append("\n");
+        }
+        if (trace != null) {
+            sb.append("\n");
+            sb.append(trace);
         }
         return sb.toString().trim();
     }

@@ -2,31 +2,24 @@ package org.tudalgo.algoutils.tutor.general.test.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.test.ResultOfObject;
+import org.tudalgo.algoutils.tutor.general.test.actual.ActualObject;
+import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedObject;
 
-import static org.tudalgo.algoutils.tutor.general.Utils.none;
+public class BasicResultOfObject<T> extends BasicResult<BasicResultOfObject<T>, ActualObject<T>, BasicTestOfObject<T>, ExpectedObject<T>> implements ResultOfObject<T, BasicResultOfObject<T>, BasicTestOfObject<T>> {
 
-public final class BasicResultOfObject<T> extends BasicResult<BasicResultOfObject<T>, BasicTestOfObject<T>> implements ResultOfObject<T, BasicResultOfObject<T>, BasicTestOfObject<T>> {
+    private final ActualObject<T> actual;
 
-    private final T actualObject;
-
-    public BasicResultOfObject(Environment environment, BasicTestOfObject<T> test, boolean successful, T actualObject) {
-        super(environment, test, successful);
-        this.actualObject = actualObject;
+    public BasicResultOfObject(Environment environment, BasicTestOfObject<T> test, ActualObject<T> actual, Exception exception) {
+        super(environment, test, actual, exception);
+        this.actual = actual;
     }
 
     @Override
-    public T actual() {
-        return actualObject;
+    public ActualObject<T> actual() {
+        return actual;
     }
 
-    @Override
-    public T object() {
-        return actualObject;
-    }
-
-    public static final class Builder<T> extends BasicResult.Builder<BasicResultOfObject<T>, BasicTestOfObject<T>, Builder<T>> implements ResultOfObject.Builder<T, BasicResultOfObject<T>, BasicTestOfObject<T>, Builder<T>> {
-
-        private T actualObject = none();
+    public static final class Builder<T> extends BasicResult.Builder<BasicResultOfObject<T>, ActualObject<T>, BasicTestOfObject<T>, ExpectedObject<T>, Builder<T>> implements ResultOfObject.Builder<T, BasicResultOfObject<T>, BasicTestOfObject<T>, Builder<T>> {
 
         public Builder(Environment environment) {
             super(environment);
@@ -34,16 +27,10 @@ public final class BasicResultOfObject<T> extends BasicResult<BasicResultOfObjec
 
         @Override
         public BasicResultOfObject<T> build() {
-            return new BasicResultOfObject<>(environment, test, successful, actualObject);
+            return new BasicResultOfObject<>(environment, test, actual, exception);
         }
 
-        @Override
-        public Builder<T> object(T actualObject) {
-            this.actualObject = actualObject;
-            return this;
-        }
-
-        public static final class Factory<T> extends BasicResult.Builder.Factory<BasicResultOfObject<T>, BasicTestOfObject<T>, Builder<T>> implements ResultOfObject.Builder.Factory<T, BasicResultOfObject<T>, BasicTestOfObject<T>, Builder<T>> {
+        public static final class Factory<T> extends BasicResult.Builder.Factory<BasicResultOfObject<T>, ActualObject<T>, BasicTestOfObject<T>, ExpectedObject<T>, Builder<T>> implements ResultOfObject.Builder.Factory<T, BasicResultOfObject<T>, BasicTestOfObject<T>, Builder<T>> {
 
             public Factory(Environment environment) {
                 super(environment);

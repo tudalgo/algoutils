@@ -11,12 +11,12 @@ import java.util.Objects;
 
 public class BasicEnvironment implements Environment {
 
-    private final CommentFactory<Result<?, ?>> commentFactory = new BasicCommentFactory(this);
+    private final CommentFactory<Result<?, ?, ?, ?>> commentFactory = new BasicCommentFactory(this);
 
     private Stringifier stringifier = ReflectionStringifier.getInstance().orElse(Objects::toString);
 
     @Override
-    public CommentFactory<Result<?, ?>> getCommentFactory() {
+    public CommentFactory<Result<?, ?, ?, ?>> getCommentFactory() {
         return commentFactory;
     }
 

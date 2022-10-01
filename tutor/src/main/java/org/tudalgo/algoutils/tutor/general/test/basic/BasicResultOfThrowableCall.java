@@ -2,57 +2,36 @@ package org.tudalgo.algoutils.tutor.general.test.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.test.ResultOfThrowableCall;
+import org.tudalgo.algoutils.tutor.general.test.actual.ActualException;
+import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedException;
 
-import static org.tudalgo.algoutils.tutor.general.Utils.none;
+public class BasicResultOfThrowableCall<T extends Exception> extends BasicResult<BasicResultOfThrowableCall<T>, ActualException<T>, BasicTestOfThrowableCall<T>, ExpectedException<T>> implements ResultOfThrowableCall<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>> {
 
-public class BasicResultOfThrowableCall<T extends Throwable> extends BasicResult<BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>> implements ResultOfThrowableCall<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>> {
-
-    private final T throwable;
-    private final Object behavior;
-
-    public BasicResultOfThrowableCall(Environment environment, BasicTestOfThrowableCall<T> test, boolean successful, T throwable, Object actual) {
-        super(environment, test, successful);
-        this.throwable = throwable;
-        this.behavior = actual;
+    public BasicResultOfThrowableCall(Environment environment, BasicTestOfThrowableCall<T> test, ActualException<T> actual, Exception exception) {
+        super(environment, test, actual, exception);
     }
 
-    @Override
-    public Object actual() {
-        return behavior;
-    }
-
-    @Override
-    public T throwable() {
-        return throwable;
-    }
-
-    public static final class Builder<T extends Throwable> extends BasicResult.Builder<BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> implements ResultOfThrowableCall.Builder<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> {
-
-        private T throwable = none();
-
-        private Object actual = none();
+    public static final class Builder<T extends Exception> extends BasicResult.Builder<BasicResultOfThrowableCall<T>, ActualException<T>, BasicTestOfThrowableCall<T>, ExpectedException<T>, Builder<T>> implements ResultOfThrowableCall.Builder<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> {
 
         public Builder(Environment environment) {
             super(environment);
         }
 
         @Override
-        public Builder<T> actual(Object actual) {
-            this.throwable = none();
-            this.actual = actual;
-            return this;
-        }
-
-        @Override
         public BasicResultOfThrowableCall<T> build() {
-            return new BasicResultOfThrowableCall<>(environment, test, successful, throwable, actual);
+            return new BasicResultOfThrowableCall<>(environment, test, actual, exception);
         }
 
-        @Override
-        public Builder<T> throwable(T throwable) {
-            this.throwable = throwable;
-            this.actual = throwable;
-            return this;
+        public static final class Factory<T extends Exception> extends BasicResult.Builder.Factory<BasicResultOfThrowableCall<T>, ActualException<T>, BasicTestOfThrowableCall<T>, ExpectedException<T>, Builder<T>> implements ResultOfThrowableCall.Builder.Factory<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> {
+
+            public Factory(Environment environment) {
+                super(environment);
+            }
+
+            @Override
+            public ResultOfThrowableCall.Builder<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> builder() {
+                return new Builder<>(environment);
+            }
         }
     }
 }

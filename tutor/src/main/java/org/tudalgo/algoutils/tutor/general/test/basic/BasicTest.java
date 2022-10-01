@@ -2,40 +2,46 @@ package org.tudalgo.algoutils.tutor.general.test.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.test.Test;
+import org.tudalgo.algoutils.tutor.general.test.actual.Actual;
+import org.tudalgo.algoutils.tutor.general.test.expected.Expected;
 
-public abstract class BasicTest<TT extends BasicTest<TT, RT>, RT extends BasicResult<RT, TT>> implements Test<TT, RT> {
+public abstract class BasicTest<TT extends BasicTest<TT, ET, RT, AT>, ET extends Expected, RT extends BasicResult<RT, AT, TT, ET>, AT extends Actual> implements Test<TT, ET, RT, AT> {
 
-    protected final Environment environment;
+    private final Environment environment;
+    private final ET expected;
 
-    private final Object expectation;
-
-    public BasicTest(Environment environment, Object expectation) {
+    public BasicTest(Environment environment, ET expected) {
         this.environment = environment;
-        this.expectation = expectation;
+        this.expected = expected;
     }
 
-    public Object expectation() {
-        return expectation;
+    public final Environment environment() {
+        return environment;
     }
 
-    public static abstract class Builder<TT extends BasicTest<TT, RT>, RT extends BasicResult<RT, TT>, BT extends Builder<TT, RT, BT>> implements Test.Builder<TT, RT, BT> {
+    @Override
+    public ET expected() {
+        return expected;
+    }
+
+    public static abstract class Builder<TT extends BasicTest<TT, ET, RT, AT>, ET extends Expected, RT extends BasicResult<RT, AT, TT, ET>, AT extends Actual, BT extends Builder<TT, ET, RT, AT, BT>> implements Test.Builder<TT, ET, RT, AT, BT> {
 
         protected final Environment environment;
 
-        protected Object expectation;
+        protected ET expected;
 
         protected Builder(Environment environment) {
             this.environment = environment;
         }
 
         @Override
-        public BT expectation(Object expectation) {
-            this.expectation = expectation;
+        public BT expected(ET expected) {
+            this.expected = expected;
             //noinspection unchecked
             return (BT) this;
         }
 
-        public static abstract class Factory<TT extends BasicTest<TT, RT>, RT extends BasicResult<RT, TT>, BT extends Builder<TT, RT, BT>> implements Test.Builder.Factory<TT, RT, BT> {
+        public static abstract class Factory<TT extends BasicTest<TT, ET, RT, AT>, ET extends Expected, RT extends BasicResult<RT, AT, TT, ET>, AT extends Actual, BT extends Builder<TT, ET, RT, AT, BT>> implements Test.Builder.Factory<TT, ET, RT, AT, BT> {
 
             protected final Environment environment;
 

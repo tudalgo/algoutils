@@ -1,23 +1,25 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
+import org.tudalgo.algoutils.tutor.general.test.actual.ActualException;
+import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedException;
+
 /**
  * A type representing the result of a {@link TestOfThrowableCall}.
  *
  * @param <T> the exception type of the callable under test
  * @author Dustin Glaser
  */
-public interface ResultOfThrowableCall<T extends Throwable, RT extends ResultOfThrowableCall<T, RT, TT>, TT extends TestOfThrowableCall<T, TT, RT>> extends Result<RT, TT> {
+public interface ResultOfThrowableCall<T extends Exception, RT extends ResultOfThrowableCall<T, RT, TT>, TT extends TestOfThrowableCall<T, TT, RT>> extends Result<RT, ActualException<T>, TT, ExpectedException<T>> {
 
-    T throwable();
+    interface Builder<T extends Exception, RT extends ResultOfThrowableCall<T, RT, TT>, TT extends TestOfThrowableCall<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> extends Result.Builder<RT, ActualException<T>, TT, ExpectedException<T>, BT> {
 
-    interface Builder<T extends Throwable, RT extends ResultOfThrowableCall<T, RT, TT>, TT extends TestOfThrowableCall<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> extends Result.Builder<RT, TT, BT> {
+        default BT actual(T exception, boolean successful) {
+            actual(ActualException.of(exception, successful));
+            //noinspection unchecked
+            return (BT) this;
+        }
 
-        BT actual(Object actual);
-
-        BT throwable(T actualThrowable);
-
-
-        interface Factory<T extends Throwable, RT extends ResultOfThrowableCall<T, RT, TT>, TT extends TestOfThrowableCall<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> extends Result.Builder.Factory<RT, TT, BT> {
+        interface Factory<T extends Exception, RT extends ResultOfThrowableCall<T, RT, TT>, TT extends TestOfThrowableCall<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> extends Result.Builder.Factory<RT, ActualException<T>, TT, ExpectedException<T>, BT> {
 
             Builder<T, RT, TT, BT> builder();
         }

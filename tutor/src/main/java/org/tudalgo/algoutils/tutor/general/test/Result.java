@@ -1,28 +1,34 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
+import org.tudalgo.algoutils.tutor.general.test.actual.Actual;
+import org.tudalgo.algoutils.tutor.general.test.expected.Expected;
+
 /**
  * A type representing the result of a {@link Test}.
  *
  * @author Dustin Glaser
  */
-public interface Result<RT extends Result<RT, TT>, TT extends Test<TT, RT>> {
+public interface Result<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT extends Test<TT, ET, RT, AT>, ET extends Expected> {
 
     /**
-     * Returns an object describing the actual behavior of the unit under test or <code>null</code> if there is not such an object.
+     * Returns the actual result of the test.
+     * If the test has failed due to an exception, the actual result is {@code null} and the exception can be retrieved using {@link #exception()}.
      *
-     * @return the object describing the actual behavior or <code>null</code>
+     * @return TODO
      */
-    Object actual();
+    AT actual();
 
     RT check(Context context, PreCommentSupplier<? super RT> preCommentSupplier);
 
     /**
-     * Returns an object describing the expected behavior of the unit under test or <code>null</code> if there is not such an object.
+     * <p>If this result is not successful due to an exception, this method returns the exception.</p>
      *
-     * @return the object describing the expected behavior or <code>null</code>
+     * @return the exception
      */
-    default Object expected() {
-        return test().expectation();
+    Exception exception();
+
+    default ET expected() {
+        return test().expected();
     }
 
     /**
@@ -39,17 +45,19 @@ public interface Result<RT extends Result<RT, TT>, TT extends Test<TT, RT>> {
      */
     TT test();
 
-    interface Builder<RT extends Result<RT, TT>, TT extends Test<TT, RT>, BT extends Builder<RT, TT, BT>> {
+    interface Builder<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT extends Test<TT, ET, RT, AT>, ET extends Expected, BT extends Builder<RT, AT, TT, ET, BT>> {
+
+        BT actual(AT actual);
 
         RT build();
 
-        BT successful(boolean successful);
+        BT exception(Exception exception);
 
         BT test(TT test);
 
-        interface Factory<RT extends Result<RT, TT>, TT extends Test<TT, RT>, BT extends Builder<RT, TT, BT>> {
+        interface Factory<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT extends Test<TT, ET, RT, AT>, ET extends Expected, BT extends Builder<RT, AT, TT, ET, BT>> {
 
-            Builder<RT, TT, BT> builder();
+            Builder<RT, AT, TT, ET, BT> builder();
         }
     }
 }

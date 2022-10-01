@@ -7,7 +7,7 @@ package org.tudalgo.algoutils.tutor.general.test;
  * @author Dustin Glaser
  */
 @FunctionalInterface
-public interface PreCommentSupplier<TR extends Result<?, ?>> {
+public interface PreCommentSupplier<TR extends Result<?, ?, ?, ?>> {
 
     /**
      * Returns the pre-comment for the given test result.

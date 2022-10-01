@@ -1,8 +1,8 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
-
-import java.util.function.Predicate;
+import org.tudalgo.algoutils.tutor.general.test.actual.ActualException;
+import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedException;
 
 /**
  * A test type testing the behavior of a callable that is expected to throw an exception.
@@ -10,7 +10,7 @@ import java.util.function.Predicate;
  * @param <T> the type of the exception to test
  * @author Dustin Glaser
  */
-public interface TestOfThrowableCall<T extends Throwable, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>> extends Test<TT, RT> {
+public interface TestOfThrowableCall<T extends Exception, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>> extends Test<TT, ExpectedException<T>, RT, ActualException<T>> {
 
     /**
      * Tests if the callable throws an exception and if the exception is as expected.
@@ -20,12 +20,13 @@ public interface TestOfThrowableCall<T extends Throwable, TT extends TestOfThrow
      */
     RT run(Callable callable);
 
-    interface Builder<T extends Throwable, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder<TT, RT, BT> {
+    interface Builder<T extends Exception, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
 
-        BT evaluator(Class<T> throwable, Predicate<T> evaluator);
+        BT expected(ExpectedException<T> expected);
 
-        interface Factory<T extends Throwable, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder.Factory<TT, RT, BT> {
+        interface Factory<T extends Exception, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder.Factory<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
 
+            Builder<T, TT, RT, BT> builder();
         }
     }
 }
