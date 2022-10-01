@@ -16,5 +16,5 @@ public interface Actual {
         return BRACKET_FORMATTER.apply(stringifier.stringify(object()));
     }
 
-    boolean successful();
+    boolean successful(); // TODO remove
 }

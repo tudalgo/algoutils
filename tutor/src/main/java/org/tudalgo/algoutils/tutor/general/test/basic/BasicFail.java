@@ -12,8 +12,8 @@ public class BasicFail extends BasicTest<BasicFail, Nothing, BasicResultOfFail, 
     }
 
     @Override
-    public BasicResultOfFail run(Exception exception) {
-        return new BasicResultOfFail.Builder(environment()).test(this).exception(exception).build();
+    public BasicResultOfFail run(Exception cause) {
+        return new BasicResultOfFail.Builder(environment()).test(this).exception(cause).build();
     }
 
     public static class Builder extends BasicTest.Builder<BasicFail, Nothing, BasicResultOfFail, NoActual, Builder> implements Fail.Builder<BasicFail, BasicResultOfFail, Builder> {

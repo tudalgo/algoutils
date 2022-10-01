@@ -23,7 +23,7 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
     public <TS extends Result<?, ?, ?, ?>> String comment(TS result, Context context, PreCommentSupplier<? super TS> commentSupplier) {
         var expected = result.expected();
         var actual = result.actual();
-        var exception = result.exception();
+        var cause = result.cause();
 
         var stringifier = environment.getStringifier();
         // comment
@@ -38,8 +38,8 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
         }).filter(Objects::nonNull).collect(Collectors.joining(",")) : "";
         // trace
         var trace = (String) null;
-        if (exception != null) {
-            trace = stream(exception.getStackTrace()).limit(10).map(e -> "\t" + e).collect(Collectors.joining("\n"));
+        if (cause != null) {
+            trace = stream(cause.getStackTrace()).limit(10).map(e -> "\t" + e).collect(Collectors.joining("\n"));
         }
 
         var sb = new StringBuilder();

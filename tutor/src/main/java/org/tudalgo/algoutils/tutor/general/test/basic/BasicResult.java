@@ -30,17 +30,17 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
     }
 
     @Override
+    public Exception cause() {
+        return exception;
+    }
+
+    @Override
     public RT check(Context context, PreCommentSupplier<? super RT> preCommentSupplier) {
         if (!successful())
             //noinspection unchecked
             throw new AssertionFailedError(environment.getCommentFactory().comment((RT) this, context, preCommentSupplier));
         //noinspection unchecked
         return (RT) this;
-    }
-
-    @Override
-    public Exception exception() {
-        return exception;
     }
 
     @Override

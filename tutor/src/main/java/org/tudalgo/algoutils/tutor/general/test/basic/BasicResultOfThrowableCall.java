@@ -29,7 +29,7 @@ public class BasicResultOfThrowableCall<T extends Exception> extends BasicResult
             }
 
             @Override
-            public ResultOfThrowableCall.Builder<T, BasicResultOfThrowableCall<T>, BasicTestOfThrowableCall<T>, Builder<T>> builder() {
+            public Builder<T> builder() {
                 return new Builder<>(environment);
             }
         }

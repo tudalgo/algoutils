@@ -19,7 +19,7 @@ public final class Assertions2 {
     private static final TestOfThrowableCall.Builder.Factory<?, ?, ?, ?> TEST_OF_THROWABLE_CALL_BUILDER_FACTORY = new BasicTestOfThrowableCall.Builder.Factory<>(environment);
 
     private static final Fail.Builder.Factory<?, ?, ?> FAIL_BUILDER_FACTORY = new BasicFail.Builder.Factory(environment);
-    private static final Context.Builder.Factory CONTEXT_BUILDER_FACTORY = new BasicContext.Builder.Factory();
+    private static final Context.Builder.Factory<?, ?> CONTEXT_BUILDER_FACTORY = new BasicContext.Builder.Factory();
     private static final Context CONTEXT_EMPTY = contextBuilder().build();
 
     public static <T> T assertCallEquals(T expected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
@@ -92,7 +92,7 @@ public final class Assertions2 {
         return Assertions2.<Boolean>testOfObjectBuilder().expected(equalsTrue()).build().run(actual).check(context, preCommentSupplier).object();
     }
 
-    public static Context.Builder contextBuilder() {
+    public static Context.Builder<?, ?> contextBuilder() {
         return CONTEXT_BUILDER_FACTORY.builder();
     }
 
@@ -110,7 +110,7 @@ public final class Assertions2 {
     }
 
     public static Fail.Builder<?, ?, ?> failBuilder() {
-        return (Fail.Builder<?, ?, ?>) FAIL_BUILDER_FACTORY.builder();
+        return FAIL_BUILDER_FACTORY.builder();
     }
 
     public static <T> TestOfObject.Builder<T, ?, ?, ?> testOfObjectBuilder() {

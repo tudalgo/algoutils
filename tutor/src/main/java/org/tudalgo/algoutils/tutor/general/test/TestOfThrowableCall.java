@@ -5,9 +5,11 @@ import org.tudalgo.algoutils.tutor.general.test.actual.ActualException;
 import org.tudalgo.algoutils.tutor.general.test.expected.ExpectedException;
 
 /**
- * A test type testing the behavior of a callable that is expected to throw an exception.
+ * <p>A type for testing the throwing behavior of callables.</p>
  *
- * @param <T> the type of the exception to test
+ * @param <T>  the type of the expected exception
+ * @param <TT> the type of the test
+ * @param <RT> the type of the result
  * @author Dustin Glaser
  */
 public interface TestOfThrowableCall<T extends Exception, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>> extends Test<TT, ExpectedException<T>, RT, ActualException<T>> {
@@ -20,13 +22,26 @@ public interface TestOfThrowableCall<T extends Exception, TT extends TestOfThrow
      */
     RT run(Callable callable);
 
+    /**
+     * <p>A builder for {@linkplain TestOfThrowableCall tests of throwable calls}.</p>
+     *
+     * @param <T>  the type of the expected exception
+     * @param <TT> the type of the test
+     * @param <RT> the type of the result
+     * @param <BT> the type of the builder
+     */
     interface Builder<T extends Exception, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
 
-        BT expected(ExpectedException<T> expected);
-
+        /**
+         * <p>A factory for {@link Builder test of throwable call builders}.</p>
+         *
+         * @param <T>  the type of the expected exception
+         * @param <TT> the type of the test
+         * @param <RT> the type of the result
+         * @param <BT> the type of the builder
+         */
         interface Factory<T extends Exception, TT extends TestOfThrowableCall<T, TT, RT>, RT extends ResultOfThrowableCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder.Factory<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
 
-            Builder<T, TT, RT, BT> builder();
         }
     }
 }

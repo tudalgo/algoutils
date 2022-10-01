@@ -1,7 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.test.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
-import org.tudalgo.algoutils.tutor.general.test.Result;
 import org.tudalgo.algoutils.tutor.general.test.ResultOfFail;
 import org.tudalgo.algoutils.tutor.general.test.actual.NoActual;
 import org.tudalgo.algoutils.tutor.general.test.expected.Nothing;
@@ -30,7 +29,7 @@ public class BasicResultOfFail extends BasicResult<BasicResultOfFail, NoActual, 
             }
 
             @Override
-            public Result.Builder<BasicResultOfFail, NoActual, BasicFail, Nothing, Builder> builder() {
+            public Builder builder() {
                 return new Builder(environment);
             }
         }

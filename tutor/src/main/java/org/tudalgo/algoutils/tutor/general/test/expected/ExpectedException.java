@@ -7,6 +7,10 @@ import java.util.function.Predicate;
 
 public interface ExpectedException<T extends Throwable> extends ExpectedObject<Class<T>> {
 
+    default Class<T> type() {
+        return object();
+    }
+
     static <T extends Exception> ExpectedException<T> of(
         Class<T> clazz,
         Predicate<Class<T>> classTest,

@@ -1,21 +1,22 @@
 package org.tudalgo.algoutils.tutor.general.test;
 
 /**
- * A factory type creating comments for test results using a given context and pre-comment supplier.
+ * <p>A type representing a factory for creating result comments.</p>
  *
- * @param <T> the type of supported tests
+ * @param <RT> the type of supported results
  * @author Dustin Glaser
  */
-public interface CommentFactory<T extends Result<?, ?, ?, ?>> {
+@FunctionalInterface
+public interface CommentFactory<RT extends Result<?, ?, ?, ?>> {
 
     /**
-     * Returns a comment for the given test result, context and pre-comment supplier.
+     * Returns the comment for the given test result, context and pre-comment supplier.
      *
      * @param result             the test result
      * @param context            the context of the test
-     * @param preCommentSupplier a supplier for a pre-comment
-     * @param <TS>               the type of the test result
+     * @param preCommentSupplier the supplier for the pre-comment
+     * @param <RTS>              the type of the test result
      * @return the comment
      */
-    <TS extends T> String comment(TS result, Context context, PreCommentSupplier<? super TS> preCommentSupplier);
+    <RTS extends RT> String comment(RTS result, Context context, PreCommentSupplier<? super RTS> preCommentSupplier);
 }

@@ -24,16 +24,51 @@ public interface Context {
      */
     Object subject();
 
+    /**
+     * <p>A builder for {@linkplain Context contexts}.</p>
+     *
+     * @param <CT> the type of the context to build
+     * @param <BT> the type of the builder
+     */
     interface Builder<CT extends Context, BT extends Builder<CT, BT>> {
 
+        /**
+         * Returns a {@link Context} with the given properties.
+         *
+         * @return the context
+         */
         CT build();
 
-        Builder<CT, BT> property(String key, Object value);
+        /**
+         * Sets the value for the given key.
+         *
+         * @param key   the key
+         * @param value the value
+         * @return this builder
+         */
+        BT property(String key, Object value);
 
-        Builder<CT, BT> subject(Object subject);
+        /**
+         * Sets the subject of this context.
+         *
+         * @param subject the subject
+         * @return this builder
+         */
+        BT subject(Object subject);
 
+        /**
+         * <p>A factory for {@linkplain Builder builders}.</p>
+         *
+         * @param <CT> the type of the context to build
+         * @param <BT> the type of the builder
+         */
         interface Factory<CT extends Context, BT extends Builder<CT, BT>> {
 
+            /**
+             * Returns a new builder.
+             *
+             * @return a new builder
+             */
             Builder<CT, BT> builder();
         }
     }

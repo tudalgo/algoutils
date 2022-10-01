@@ -4,11 +4,13 @@ import org.tudalgo.algoutils.tutor.general.stringify.Stringifier;
 
 import java.util.function.Function;
 
-import static java.lang.String.format;
-
 public interface ActualException<T extends Throwable> extends ActualObject<T> {
 
     Function<String, String> DEFAULT_FORMATTER = s -> "exception of type";
+
+    default T exception() {
+        return object();
+    }
 
     static <T extends Throwable> ActualException<T> of(T exception, boolean successful, Function<String, String> formatter) {
         //noinspection DuplicatedCode
