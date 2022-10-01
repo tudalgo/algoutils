@@ -11,6 +11,11 @@ public class BasicFail extends BasicTest<BasicFail, Nothing, BasicResultOfFail, 
         super(environment, null);
     }
 
+    @Override
+    public BasicResultOfFail run(Exception exception) {
+        return new BasicResultOfFail.Builder(environment()).test(this).exception(exception).build();
+    }
+
     public static class Builder extends BasicTest.Builder<BasicFail, Nothing, BasicResultOfFail, NoActual, Builder> implements Fail.Builder<BasicFail, BasicResultOfFail, Builder> {
 
         public Builder(Environment environment) {
