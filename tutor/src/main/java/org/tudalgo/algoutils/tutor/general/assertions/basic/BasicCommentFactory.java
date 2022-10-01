@@ -11,10 +11,21 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 
+/**
+ * <p>A basic implementation of a comment factory.</p>
+ *
+ * @author Dustin Glaser
+ */
+@SuppressWarnings("ClassCanBeRecord")
 public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?, ?>> {
 
     private final Environment environment;
 
+    /**
+     * <p>Constructs a new comment factory with the given environment.</p>
+     *
+     * @param environment the environment
+     */
     public BasicCommentFactory(Environment environment) {
         this.environment = environment;
     }

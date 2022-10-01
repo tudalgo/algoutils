@@ -1,13 +1,24 @@
 package org.tudalgo.algoutils.tutor.general.assertions.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
-import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 import org.tudalgo.algoutils.tutor.general.assertions.TestOfObject;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualObject;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject;
+import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 
+/**
+ * <p>A basic implementation of a test of an object.</p>
+ *
+ * @param <T> the type of object under test
+ */
 public class BasicTestOfObject<T> extends BasicTest<BasicTestOfObject<T>, ExpectedObject<T>, BasicResultOfObject<T>, ActualObject<T>> implements TestOfObject<T, BasicTestOfObject<T>, BasicResultOfObject<T>> {
 
+    /**
+     * <p>Constructs a new test of an object with the given environment and expected object.</p>
+     *
+     * @param environment the environment
+     * @param expected    the expected object
+     */
     public BasicTestOfObject(Environment environment, ExpectedObject<T> expected) {
         super(environment, expected);
     }

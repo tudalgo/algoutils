@@ -5,8 +5,18 @@ import org.tudalgo.algoutils.tutor.general.assertions.ResultOfFail;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.NoActual;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 
+/**
+ * <p>A basic implementation of a result of an always failing test.</p>
+ *
+ * @author Dustin Glaser
+ */
 public class BasicResultOfFail extends BasicResult<BasicResultOfFail, NoActual, BasicFail, Nothing> implements ResultOfFail<BasicResultOfFail, BasicFail> {
 
+    /**
+     * <p>Constructs a new result with the given environment, test and exception.</p>
+     *
+     * @param test the test
+     */
     public BasicResultOfFail(Environment environment, BasicFail test, Exception exception) {
         super(environment, test, null, exception, false);
     }

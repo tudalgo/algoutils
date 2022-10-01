@@ -9,6 +9,15 @@ import org.tudalgo.algoutils.tutor.general.assertions.Test;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.Actual;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
 
+/**
+ * <p>An abstract basic implementation of a test.</p>
+ *
+ * @param <TT> the type of the test
+ * @param <ET> the type of the expected behavior
+ * @param <RT> the type of the result
+ * @param <AT> the type of the actual behavior
+ * @author Dustin Glaser
+ */
 public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT extends Actual, TT extends BasicTest<TT, ET, RT, AT>, ET extends Expected> implements Result<RT, AT, TT, ET> {
 
     protected final Environment environment;
@@ -18,7 +27,16 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
     protected final Exception exception;
     protected final boolean successful;
 
-    public BasicResult(Environment environment, TT test, AT actual, Exception exception, boolean successful) {
+    /**
+     * Constructs a new result with the given environment, test, actual behavior, exception and state if the test was successful.
+     *
+     * @param environment the environment
+     * @param test        the test
+     * @param actual      the actual behavior
+     * @param exception   the exception
+     * @param successful  the state if the test was successful
+     */
+    protected BasicResult(Environment environment, TT test, AT actual, Exception exception, boolean successful) {
         this.environment = environment;
         this.test = test;
         this.actual = actual;
@@ -81,15 +99,15 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
             return (BT) this;
         }
 
-        @Override
-        public BT test(TT test) {
-            this.test = test;
+        public BT successful(boolean successful) {
+            this.successful = successful;
             //noinspection unchecked
             return (BT) this;
         }
 
-        public BT successful(boolean successful) {
-            this.successful = successful;
+        @Override
+        public BT test(TT test) {
+            this.test = test;
             //noinspection unchecked
             return (BT) this;
         }
@@ -98,7 +116,7 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
 
             protected final Environment environment;
 
-            public Factory(Environment environment) {
+            protected Factory(Environment environment) {
                 this.environment = environment;
             }
         }

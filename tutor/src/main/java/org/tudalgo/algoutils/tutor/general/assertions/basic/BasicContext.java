@@ -8,12 +8,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * <p>A basic implementation of a context.</p>
+ */
 public class BasicContext implements Context {
 
     private final Object subject;
-
     private final List<Property> properties;
 
+    /**
+     * <p>Constructs a new context with the given subject and collection of properties.</p>
+     *
+     * @param subject    the subject
+     * @param properties the properties
+     */
     private BasicContext(Object subject, Collection<Property> properties) {
         this.subject = subject;
         this.properties = properties.stream().collect(Collectors.toUnmodifiableList());
