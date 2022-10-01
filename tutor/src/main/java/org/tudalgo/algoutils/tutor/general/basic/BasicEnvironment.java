@@ -3,9 +3,9 @@ package org.tudalgo.algoutils.tutor.general.basic;
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.stringify.Stringifier;
 import org.tudalgo.algoutils.tutor.general.stringify.basic.ReflectionStringifier;
-import org.tudalgo.algoutils.tutor.general.test.CommentFactory;
-import org.tudalgo.algoutils.tutor.general.test.Result;
-import org.tudalgo.algoutils.tutor.general.test.basic.BasicCommentFactory;
+import org.tudalgo.algoutils.tutor.general.assertions.CommentFactory;
+import org.tudalgo.algoutils.tutor.general.assertions.Result;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicCommentFactory;
 
 import java.util.Objects;
 
