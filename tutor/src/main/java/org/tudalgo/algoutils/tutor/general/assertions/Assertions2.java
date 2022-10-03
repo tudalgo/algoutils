@@ -1,14 +1,16 @@
 package org.tudalgo.algoutils.tutor.general.assertions;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicFail;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfExceptionalCall;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfObject;
+import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedExceptional;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicFail;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfObject;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfExceptionalCall;
-import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedExceptional;
+
+import java.lang.reflect.InvocationTargetException;
 
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.*;
 
@@ -321,5 +323,21 @@ public final class Assertions2 {
     public static <T extends Exception> TestOfExceptionalCall.Builder<T, ?, ?, ?> testOfThrowableCallBuilder() {
         //noinspection unchecked
         return (TestOfExceptionalCall.Builder<T, ?, ?, ?>) TEST_OF_THROWABLE_CALL_BUILDER_FACTORY.builder();
+    }
+
+    public static Context context(Object record) {
+        if (record.getClass().isRecord()) {
+            try {
+                var c = record.getClass().getRecordComponents();
+                var cb = contextBuilder();
+                for (var component : c) {
+                    cb = cb.property(component.getName(), component.getAccessor().invoke(record));
+                }
+                return cb.build();
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
     }
 }
