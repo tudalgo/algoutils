@@ -8,7 +8,7 @@ public final class BasicStringMatchers {
     private BasicStringMatchers() {
     }
 
-    public static Matcher<Stringifiable> equals(String string) {
+    public static Matcher<Stringifiable> identical(String string) {
         return Matcher.of(stringifiable -> stringifiable.string().equals(string));
     }
 }
