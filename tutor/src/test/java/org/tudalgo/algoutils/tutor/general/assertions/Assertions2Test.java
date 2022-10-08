@@ -106,7 +106,7 @@ class Assertions2Test {
 
                 \torg.tudalgo.algoutils.tutor.general.assertions.Assertions0Test.lambda$testAssertThrows$0(Assertions0Test.java:0)
                 \torg.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfExceptionalCall.run(BasicTestOfExceptionalCall.java:0)
-                \torg.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfExceptionalCall.run(BasicTestOfExceptionalCall.java:0)""",
+                \torg.tudalgo.algoutils.tutor.general.assertions.Assertions0.assertThrows(Assertions0.java:0)""",
             message);
     }
 

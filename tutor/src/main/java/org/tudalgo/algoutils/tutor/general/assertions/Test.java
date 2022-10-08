@@ -48,12 +48,6 @@ public interface Test<TT extends Test<TT, ET, RT, AT>, ET extends Expected, RT e
 
         /**
          * <p>A factory for {@link Builder test builders}.</p>
-         *
-         * @param <TT> the type of the test
-         * @param <ET> the type of the expected behavior
-         * @param <RT> the type of the result
-         * @param <AT> the type of the actual behavior
-         * @param <BT> the type of the builder
          */
         interface Factory<TT extends Test<TT, ET, RT, AT>, ET extends Expected, RT extends Result<RT, AT, TT, ET>, AT extends Actual, BT extends Builder<TT, ET, RT, AT, BT>> {
 

@@ -22,9 +22,9 @@ import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedOb
 public final class Assertions2 {
 
     private static final Environment environment = new BasicEnvironment();
-    private static final TestOfObject.Builder.Factory<?, ?, ?, ?> TEST_OF_OBJECT_BUILDER_FACTORY = new BasicTestOfObject.Builder.Factory<>(environment);
-    private static final TestOfExceptionalCall.Builder.Factory<?, ?, ?, ?> TEST_OF_THROWABLE_CALL_BUILDER_FACTORY = new BasicTestOfExceptionalCall.Builder.Factory<>(environment);
-    private static final Fail.Builder.Factory<?, ?, ?> FAIL_BUILDER_FACTORY = new BasicFail.Builder.Factory(environment);
+    private static final TestOfObject.Builder.Factory<?> TEST_OF_OBJECT_BUILDER_FACTORY = new BasicTestOfObject.Builder.Factory<>(environment);
+    private static final TestOfExceptionalCall.Builder.Factory<?> TEST_OF_THROWABLE_CALL_BUILDER_FACTORY = new BasicTestOfExceptionalCall.Builder.Factory<>(environment);
+    private static final Fail.Builder.Factory FAIL_BUILDER_FACTORY = new BasicFail.Builder.Factory(environment);
     private static final Context.Builder.Factory<?, ?> CONTEXT_BUILDER_FACTORY = new BasicContext.Builder.Factory();
     private static final Context CONTEXT_EMPTY = contextBuilder().build();
 
@@ -42,7 +42,7 @@ public final class Assertions2 {
      * @param <T>                the type of the object
      * @return the result of the test
      */
-    public static <T> T assertCallEquals(T expected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertCallEquals(T expected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(equalTo(expected)).build().run(callable).check(context, preCommentSupplier).object();
     }
 
@@ -54,7 +54,7 @@ public final class Assertions2 {
      * @param preCommentSupplier the supplier of the pre-comment
      * @return the result of the test
      */
-    public static boolean assertCallFalse(ObjectCallable<Boolean> callable, Context context, PreCommentSupplier<? super ResultOfObject<Boolean, ?, ?>> preCommentSupplier) {
+    public static boolean assertCallFalse(ObjectCallable<Boolean> callable, Context context, PreCommentSupplier<? super ResultOfObject<Boolean>> preCommentSupplier) {
         return Assertions2.<Boolean>testOfObjectBuilder().expected(equalsFalse()).build().run(callable).check(context, preCommentSupplier).object();
     }
 
@@ -68,7 +68,7 @@ public final class Assertions2 {
      * @param <T>                the type of the object
      * @return the result of the test
      */
-    public static <T> T assertCallNotEquals(T unexpected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertCallNotEquals(T unexpected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(notEqualsTo(unexpected)).build().run(callable).check(context, preCommentSupplier).object();
     }
 
@@ -81,7 +81,7 @@ public final class Assertions2 {
      * @param <T>                the type of the object
      * @return the result of the test
      */
-    public static <T> T assertCallNotNull(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertCallNotNull(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(notEqualsNull()).build().run(callable).check(context, preCommentSupplier).object();
     }
 
@@ -95,7 +95,7 @@ public final class Assertions2 {
      * @param <T>                the type of the object
      * @return the result of the test
      */
-    public static <T> T assertCallNotSame(T unexpected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertCallNotSame(T unexpected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(notSameAs(unexpected)).build().run(callable).check(context, preCommentSupplier).object();
     }
 
@@ -107,7 +107,7 @@ public final class Assertions2 {
      * @param preCommentSupplier the supplier of the pre-comment
      * @return the result of the test
      */
-    public static <T> T assertCallNull(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertCallNull(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(equalsNull()).build().run(callable).check(context, preCommentSupplier).object();
     }
 
@@ -121,7 +121,7 @@ public final class Assertions2 {
      * @param <T>                the type of the object
      * @return the result of the test
      */
-    public static <T> T assertCallSame(T expected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertCallSame(T expected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(sameAs(expected)).build().run(callable).check(context, preCommentSupplier).object();
     }
 
@@ -133,7 +133,7 @@ public final class Assertions2 {
      * @param preCommentSupplier the supplier of the pre-comment
      * @return the result of the test
      */
-    public static boolean assertCallTrue(ObjectCallable<Boolean> callable, Context context, PreCommentSupplier<? super ResultOfObject<Boolean, ?, ?>> preCommentSupplier) {
+    public static boolean assertCallTrue(ObjectCallable<Boolean> callable, Context context, PreCommentSupplier<? super ResultOfObject<Boolean>> preCommentSupplier) {
         return Assertions2.<Boolean>testOfObjectBuilder().expected(equalsTrue()).build().run(callable).check(context, preCommentSupplier).object();
     }
 
@@ -146,7 +146,7 @@ public final class Assertions2 {
      * @param <T>      the type of the object
      * @return the result of the test
      */
-    public static <T> T assertEquals(T expected, T actual, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertEquals(T expected, T actual, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(equalTo(expected)).build().run(actual).check(context, preCommentSupplier).object();
     }
 
@@ -158,7 +158,7 @@ public final class Assertions2 {
      * @param preCommentSupplier the supplier of the pre-comment
      * @return the result of the test
      */
-    public static boolean assertFalse(boolean actual, Context context, PreCommentSupplier<? super ResultOfObject<Boolean, ?, ?>> preCommentSupplier) {
+    public static boolean assertFalse(boolean actual, Context context, PreCommentSupplier<? super ResultOfObject<Boolean>> preCommentSupplier) {
         return Assertions2.<Boolean>testOfObjectBuilder().expected(equalsFalse()).build().run(actual).check(context, preCommentSupplier).object();
     }
 
@@ -171,7 +171,7 @@ public final class Assertions2 {
      * @param <T>        the type of the object
      * @return the result of the test
      */
-    public static <T> T assertNotEquals(T unexpected, T actual, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertNotEquals(T unexpected, T actual, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(notEqualsTo(unexpected)).build().run(actual).check(context, preCommentSupplier).object();
     }
 
@@ -184,7 +184,7 @@ public final class Assertions2 {
      * @param <T>                the type of the object
      * @return the result of the test
      */
-    public static <T> T assertNotNull(T actual, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertNotNull(T actual, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(notEqualsNull()).build().run(actual).check(context, preCommentSupplier).object();
     }
 
@@ -197,7 +197,7 @@ public final class Assertions2 {
      * @param <T>        the type of the object
      * @return the result of the test
      */
-    public static <T> T assertNotSame(T unexpected, T actual, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertNotSame(T unexpected, T actual, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(notSameAs(unexpected)).build().run(actual).check(context, preCommentSupplier).object();
     }
 
@@ -210,7 +210,7 @@ public final class Assertions2 {
      * @param <T>                the type of the object
      * @return the result of the test
      */
-    public static <T> T assertNull(T actual, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertNull(T actual, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         Assertions2.<T>testOfObjectBuilder().expected(equalsNull()).build().run(actual).check(context, preCommentSupplier);
         return null;
     }
@@ -224,7 +224,7 @@ public final class Assertions2 {
      * @param <T>      the type of the object
      * @return the result of the test
      */
-    public static <T> T assertSame(T expected, T actual, Context context, PreCommentSupplier<? super ResultOfObject<T, ?, ?>> preCommentSupplier) {
+    public static <T> T assertSame(T expected, T actual, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(sameAs(expected)).build().run(actual).check(context, preCommentSupplier).object();
     }
 
@@ -236,7 +236,7 @@ public final class Assertions2 {
      * @param preCommentSupplier the supplier of the pre-comment
      * @return the result of the test
      */
-    public static <T extends Exception> T assertThrows(Class<T> expected, Callable callable, Context context, PreCommentSupplier<? super ResultOfExceptionalCall<T, ?, ?>> preCommentSupplier) {
+    public static <T extends Exception> T assertThrows(Class<T> expected, Callable callable, Context context, PreCommentSupplier<? super ResultOfExceptionalCall<T>> preCommentSupplier) {
         return Assertions2.<T>testOfThrowableCallBuilder().expected(ExpectedExceptional.instanceOf(expected)).build().run(callable).check(context, preCommentSupplier).actual().behavior();
     }
 
@@ -248,7 +248,7 @@ public final class Assertions2 {
      * @param preCommentSupplier the supplier of the pre-comment
      * @return the result of the test
      */
-    public static boolean assertTrue(boolean actual, Context context, PreCommentSupplier<? super ResultOfObject<Boolean, ?, ?>> preCommentSupplier) {
+    public static boolean assertTrue(boolean actual, Context context, PreCommentSupplier<? super ResultOfObject<Boolean>> preCommentSupplier) {
         return Assertions2.<Boolean>testOfObjectBuilder().expected(equalsTrue()).build().run(actual).check(context, preCommentSupplier).object();
     }
 
@@ -278,7 +278,7 @@ public final class Assertions2 {
      * @param <T>                the return type (for convenience reasons)
      * @return nothing
      */
-    public static <T> T fail(Context context, PreCommentSupplier<? super ResultOfFail<?, ?>> preCommentSupplier) {
+    public static <T> T fail(Context context, PreCommentSupplier<? super ResultOfFail> preCommentSupplier) {
         return fail(null, context, preCommentSupplier);
     }
 
@@ -291,7 +291,7 @@ public final class Assertions2 {
      * @param <T>                the return type (for convenience reasons)
      * @return nothing
      */
-    public static <T> T fail(Exception cause, Context context, PreCommentSupplier<? super ResultOfFail<?, ?>> preCommentSupplier) {
+    public static <T> T fail(Exception cause, Context context, PreCommentSupplier<? super ResultOfFail> preCommentSupplier) {
         failBuilder().build().run(cause).check(context, preCommentSupplier);
         return null;
     }
@@ -301,7 +301,7 @@ public final class Assertions2 {
      *
      * @return the fail builder
      */
-    public static Fail.Builder<?, ?, ?> failBuilder() {
+    public static Fail.Builder failBuilder() {
         return FAIL_BUILDER_FACTORY.builder();
     }
 
@@ -310,9 +310,9 @@ public final class Assertions2 {
      *
      * @return the object test builder
      */
-    public static <T> TestOfObject.Builder<T, ?, ?, ?> testOfObjectBuilder() {
+    public static <T> TestOfObject.Builder<T> testOfObjectBuilder() {
         //noinspection unchecked
-        return (TestOfObject.Builder<T, ?, ?, ?>) TEST_OF_OBJECT_BUILDER_FACTORY.builder();
+        return (TestOfObject.Builder<T>) TEST_OF_OBJECT_BUILDER_FACTORY.builder();
     }
 
     /**
@@ -320,9 +320,9 @@ public final class Assertions2 {
      *
      * @return the throwable call test builder
      */
-    public static <T extends Exception> TestOfExceptionalCall.Builder<T, ?, ?, ?> testOfThrowableCallBuilder() {
+    public static <T extends Exception> TestOfExceptionalCall.Builder<T> testOfThrowableCallBuilder() {
         //noinspection unchecked
-        return (TestOfExceptionalCall.Builder<T, ?, ?, ?>) TEST_OF_THROWABLE_CALL_BUILDER_FACTORY.builder();
+        return (TestOfExceptionalCall.Builder<T>) TEST_OF_THROWABLE_CALL_BUILDER_FACTORY.builder();
     }
 
     public static Context context(Object record) {

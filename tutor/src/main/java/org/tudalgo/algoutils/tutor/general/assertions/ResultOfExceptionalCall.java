@@ -11,7 +11,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.actual.ActualExcept
  * @param <T> the type of the expected exception
  * @author Dustin Glaser
  */
-public interface ResultOfExceptionalCall<T extends Exception, RT extends ResultOfExceptionalCall<T, RT, TT>, TT extends TestOfExceptionalCall<T, TT, RT>> extends Result<RT, ActualException<T>, TT, ExpectedException<T>> {
+public interface ResultOfExceptionalCall<T extends Exception> extends Result<ResultOfExceptionalCall<T>, ActualException<T>, TestOfExceptionalCall<T>, ExpectedException<T>> {
 
     /**
      * <p>If the test resulted in the {@linkplain TestOfExceptionalCall#expected()} expected exception},
@@ -30,32 +30,28 @@ public interface ResultOfExceptionalCall<T extends Exception, RT extends ResultO
      * <p>A builder for {@linkplain ResultOfExceptionalCall results of throwable calls}.</p>
      *
      * @param <T>  the type of the expected exception
-     * @param <RT> the type of the result of throwable call
-     * @param <TT> the type of throwable call
-     * @param <BT> the type of the builder
      */
-    interface Builder<T extends Exception, RT extends ResultOfExceptionalCall<T, RT, TT>, TT extends TestOfExceptionalCall<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> extends Result.Builder<RT, ActualException<T>, TT, ExpectedException<T>, BT> {
+    interface Builder<T extends Exception> extends Result.Builder<ResultOfExceptionalCall<T>, ActualException<T>, TestOfExceptionalCall<T>, ExpectedException<T>, Builder<T>> {
 
         /**
          * <p>Set the {@linkplain ActualException actual exception} of the correct type and if this exception fulfils the expected throwable.</p>
          *
          * @param exception the actual exception
-         * @return this builder
+         * @return this bbuilder
          */
-        default BT actual(T exception) {
-            return actual(of(exception));
+        default Builder<T> actual(T exception, boolean successful) {
+            return actual(ActualException.of(exception, successful));
         }
 
         /**
          * <p>A factory for {@link Builder result of throwable call builders}.</p>
          *
          * @param <T>  the type of the expected exception
-         * @param <RT> the type of the result of throwable call
-         * @param <TT> the type of throwable call
-         * @param <BT> the type of the builder
          */
-        interface Factory<T extends Exception, RT extends ResultOfExceptionalCall<T, RT, TT>, TT extends TestOfExceptionalCall<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> extends Result.Builder.Factory<RT, ActualException<T>, TT, ExpectedException<T>, BT> {
+        interface Factory<T extends Exception> extends Result.Builder.Factory<ResultOfExceptionalCall<T>, ActualException<T>, TestOfExceptionalCall<T>, ExpectedException<T>, Builder<T>> {
 
+            @Override
+            Builder<T> builder();
         }
     }
 }
