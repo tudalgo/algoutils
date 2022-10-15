@@ -29,7 +29,6 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
 import java.net.URI
@@ -57,16 +56,16 @@ class AlgoUtilsPublishPlugin : Plugin<Project> {
                 }
             }
             publications {
-                create<MavenPublication>("maven") {
+                val mainPublication = create<MavenPublication>("maven") {
                     from(components["java"])
                     pom {
-                        name.set("algo-utils")
+                        name.set("algoutils")
                         description.set("Common utilities for the Fachgebiet Algorithmik of TU Darmstadt")
                         url.set("https://www.tudalgo.org")
                         scm {
-                            url.set("https://github.com/tudalgo/algo-utils")
-                            connection.set("scm:git:https://github.com/tudalgo/algo-utils.git")
-                            developerConnection.set("scm:git:https://github.com/tudalgo/algo-utils.git")
+                            url.set("https://github.com/tudalgo/algoutils")
+                            connection.set("scm:git:https://github.com/tudalgo/algoutils.git")
+                            developerConnection.set("scm:git:https://github.com/tudalgo/algoutils.git")
                         }
                         licenses {
                             license {
@@ -76,27 +75,19 @@ class AlgoUtilsPublishPlugin : Plugin<Project> {
                             }
                         }
                         developers {
-                            developer {
-                                id.set("alexstaeding")
-                                name.set("Alexander Staeding")
-                            }
-                            developer {
-                                id.set("dst97")
-                                name.set("Dustin Glaser")
-                                email.set("dustin.glaser@postoe.de")
-                            }
-                            developer {
-                                id.set("Rdeisenroth")
-                                name.set("Ruben Deisenroth")
-                                email.set("ruben@ruben-deisenroth.de")
+                            developers {
+                                rootProject.file("authors").readLines()
+                                    .asSequence()
+                                    .map { it.split(",") }
+                                    .forEach { (_id, _name) -> developer { id.set(_id); name.set(_name) } }
                             }
                         }
                     }
                 }
+                extensions.configure<SigningExtension> {
+                    sign(mainPublication)
+                }
             }
-        }
-        extensions.configure<SigningExtension> {
-            sign(extensions.getByType<PublishingExtension>().publications)
         }
     }
 }

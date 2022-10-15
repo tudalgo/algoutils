@@ -1,4 +1,5 @@
 [libraries]
 spoon = "fr.inria.gforge.spoon:spoon-core:10.1.1"
-docwatcher = "org.sourcegrade:docwatcher-api:0.1"
-mockito = "org.mockito:mockito-core:4.7.0"
+jagr = "org.sourcegrade:jagr-launcher:0.6.0-SNAPSHOT"
+mockito = "org.mockito:mockito-core:4.8.0"
+junit = "org.junit.jupiter:junit-jupiter:5.9.1"

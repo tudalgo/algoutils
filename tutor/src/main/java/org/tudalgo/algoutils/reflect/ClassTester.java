@@ -4,8 +4,6 @@ import net.bytebuddy.ByteBuddy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mockito.MockingDetails;
-import org.sourcegrade.docwatcher.api.MethodDocumentation;
-import org.sourcegrade.docwatcher.api.SourceDocumentation;
 import org.sourcegrade.jagr.api.testing.SourceFile;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
 import spoon.Launcher;
@@ -1197,24 +1195,6 @@ public class ClassTester<T> {
                                        final ParameterMatcher... parameters) {
         assertConstructorValid(constructor, accessModifier, new ArrayList<>(Arrays.asList(parameters)));
     }
-
-    /**
-     * Returns the method documentation for the JavaDoc.
-     *
-     * @param d the source documentation
-     * @return the method documentation for the JavaDoc
-     */
-    public MethodDocumentation getConstructorDocumentation(final SourceDocumentation d, final ParameterMatcher... parameters) {
-        try {
-            assureClassResolved();
-            final var constructor = resolveConstructor(parameters);
-            return d.forTopLevelType(getTheClass().getName()).forConstructor(
-                constructor.getParameterTypes());
-        } catch (final Throwable e) {
-            return d.forTopLevelType("").forConstructor();
-        }
-    }
-
 
     /**
      * Returns the specified enum value.
