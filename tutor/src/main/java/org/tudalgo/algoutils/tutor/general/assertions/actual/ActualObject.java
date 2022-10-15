@@ -21,7 +21,7 @@ public interface ActualObject<T> extends Actual {
      * @param <T>    the type of the object
      * @return the object behavior
      */
-    static <T> ActualObject<T> of(T object, Function<String, String> formatter) {
+    static <T> ActualObject<T> of(T object, boolean successful, Function<String, String> formatter) {
 
         //noinspection DuplicatedCode
         return new ActualObject<>() {
@@ -31,14 +31,19 @@ public interface ActualObject<T> extends Actual {
             }
 
             @Override
+            public boolean successful() {
+                return successful;
+            }
+
+            @Override
             public String string(Stringifier stringifier) {
                 return formatter.apply(BRACKET_FORMATTER.apply(stringifier.stringify(this.behavior())));
             }
         };
     }
 
-    static <T> ActualObject<T> of(T object) {
-        return of(object, identity());
+    static <T> ActualObject<T> of(T object, boolean successful) {
+        return of(object, successful, identity());
     }
 
     /**

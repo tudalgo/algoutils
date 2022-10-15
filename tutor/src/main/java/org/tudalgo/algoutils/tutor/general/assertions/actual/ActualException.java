@@ -28,9 +28,14 @@ public interface ActualException<T extends Throwable> extends ActualObject<T> {
      * @param <T>       the type of the exception
      * @return the exceptional behavior
      */
-    static <T extends Throwable> ActualException<T> of(T exception, Function<String, String> formatter) {
+    static <T extends Throwable> ActualException<T> of(T exception, boolean successful, Function<String, String> formatter) {
         //noinspection DuplicatedCode
         return new ActualException<>() {
+
+            @Override
+            public boolean successful() {
+                return successful;
+            }
 
             @Override
             public T behavior() {
@@ -52,8 +57,8 @@ public interface ActualException<T extends Throwable> extends ActualObject<T> {
      * @param <T>       the type of the exception
      * @return the exceptional behavior
      */
-    static <T extends Throwable> ActualException<T> of(T exception) {
-        return of(exception, DEFAULT_FORMATTER);
+    static <T extends Throwable> ActualException<T> of(T exception, boolean successful) {
+        return of(exception, successful, DEFAULT_FORMATTER);
     }
 
     /**

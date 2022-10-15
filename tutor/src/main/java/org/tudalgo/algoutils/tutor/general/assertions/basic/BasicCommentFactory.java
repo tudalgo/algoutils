@@ -37,9 +37,6 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
     public <TS extends Result<?, ?, ?, ?>> String comment(TS result, Context context, PreCommentSupplier<? super TS> commentSupplier) {
         var stringifier = environment.getStringifier();
         var builder = new StringBuilder();
-
-        var expected = result.expected() != null ? result.expected().string(stringifier) : null;
-        var actual = result.actual() != null ? result.actual().string(stringifier) : null;
         var trace = result.cause() != null ? stream(result.cause().getStackTrace()).limit(TRACE_LINES).map(e -> "\t" + e).collect(Collectors.joining("\n")) : null;
 
         // comment
@@ -64,19 +61,19 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
             builder.append(" ");
             builder.append(format("{ %s }", properties));
         }
-        if ((comment != null || subject != null || !properties.isEmpty()) && (expected != null || actual != null)) {
+        if ((comment != null || subject != null || !properties.isEmpty()) && (result.expected().display() || result.actual().display())) {
             builder.append(":\n");
         }
         // expected
-        if (expected != null) {
+        if (result.expected().display()) {
             builder.append("\t");
-            builder.append(format("expected: %s", expected));
+            builder.append(format("expected: %s", result.expected().string(stringifier)));
             builder.append("\n");
         }
         // actual
-        if (actual != null) {
+        if (result.actual().display()) {
             builder.append("\t");
-            builder.append(format("actual: %s", actual));
+            builder.append(format("actual: %s", result.actual().string(stringifier)));
             builder.append("\n");
         }
         // trace

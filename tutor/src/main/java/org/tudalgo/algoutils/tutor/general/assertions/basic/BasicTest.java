@@ -1,6 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.assertions.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
+import org.tudalgo.algoutils.tutor.general.assertions.Result;
 import org.tudalgo.algoutils.tutor.general.assertions.Test;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.Actual;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
@@ -14,7 +15,7 @@ import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
  * @param <AT> the type of the actual behavior
  * @author Dustin Glaser
  */
-public abstract class BasicTest<TT extends BasicTest<TT, ET, RT, AT>, ET extends Expected, RT extends BasicResult<RT, AT, TT, ET>, AT extends Actual> implements Test<TT, ET, RT, AT> {
+public abstract class BasicTest<TT extends Test<TT, ET, RT, AT>, ET extends Expected, RT extends Result<RT, AT, TT, ET>, AT extends Actual> implements Test<TT, ET, RT, AT> {
 
     private final Environment environment;
     private final ET expected;
@@ -44,7 +45,7 @@ public abstract class BasicTest<TT extends BasicTest<TT, ET, RT, AT>, ET extends
         return expected;
     }
 
-    protected static abstract class Builder<TT extends BasicTest<TT, ET, RT, AT>, ET extends Expected, RT extends BasicResult<RT, AT, TT, ET>, AT extends Actual, BT extends Builder<TT, ET, RT, AT, BT>> implements Test.Builder<TT, ET, RT, AT, BT> {
+    protected static abstract class Builder<TT extends Test<TT, ET, RT, AT>, ET extends Expected, RT extends Result<RT, AT, TT, ET>, AT extends Actual, BT extends Test.Builder<TT, ET, RT, AT, BT>> implements Test.Builder<TT, ET, RT, AT, BT> {
 
         protected final Environment environment;
 
@@ -61,7 +62,7 @@ public abstract class BasicTest<TT extends BasicTest<TT, ET, RT, AT>, ET extends
             return (BT) this;
         }
 
-        protected static abstract class Factory<TT extends BasicTest<TT, ET, RT, AT>, ET extends Expected, RT extends BasicResult<RT, AT, TT, ET>, AT extends Actual, BT extends Builder<TT, ET, RT, AT, BT>> implements Test.Builder.Factory<TT, ET, RT, AT, BT> {
+        protected static abstract class Factory<TT extends Test<TT, ET, RT, AT>, ET extends Expected, RT extends Result<RT, AT, TT, ET>, AT extends Actual, BT extends Test.Builder<TT, ET, RT, AT, BT>> implements Test.Builder.Factory<TT, ET, RT, AT, BT> {
 
             protected final Environment environment;
 

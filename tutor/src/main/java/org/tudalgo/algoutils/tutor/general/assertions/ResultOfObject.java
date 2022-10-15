@@ -11,7 +11,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.actual.ActualObject
  * @param <T> the type of the object under test
  * @author Dustin Glaser
  */
-public interface ResultOfObject<T, RT extends ResultOfObject<T, RT, TT>, TT extends TestOfObject<T, TT, RT>> extends Result<RT, ActualObject<T>, TT, ExpectedObject<T>> {
+public interface ResultOfObject<T> extends Result<ResultOfObject<T>, ActualObject<T>, TestOfObject<T>, ExpectedObject<T>> {
 
     /**
      * <p>Returns the actual object of this result.</p>
@@ -23,14 +23,12 @@ public interface ResultOfObject<T, RT extends ResultOfObject<T, RT, TT>, TT exte
     }
 
     /**
+     * return null;
      * <p>A builder for {@linkplain Context results of objects}.</p>
      *
-     * @param <T>  the type of the object under test
-     * @param <RT> the type of the result of object
-     * @param <TT> the type of object
-     * @param <BT> the type of the builder
+     * @param <T> the type of the object under test
      */
-    interface Builder<T, RT extends ResultOfObject<T, RT, TT>, TT extends TestOfObject<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> extends Result.Builder<RT, ActualObject<T>, TT, ExpectedObject<T>, BT> {
+    interface Builder<T> extends Result.Builder<ResultOfObject<T>, ActualObject<T>, TestOfObject<T>, ExpectedObject<T>, Builder<T>> {
 
         /**
          * <p>Sets the actual object and if the actual object fulfils the expected object.</p>
@@ -38,26 +36,17 @@ public interface ResultOfObject<T, RT extends ResultOfObject<T, RT, TT>, TT exte
          * @param actual the actual object
          * @return this builder
          */
-        default BT object(T actual) {
-            return actual(of(actual));
+        default Builder<T> object(T actual, boolean successful) {
+            return actual(of(actual, successful));
         }
 
         /**
          * <p>A factory for {@linkplain Builder builders}.</p>
          *
-         * @param <T>  the type of the expected and actual object
-         * @param <RT> the type of the result
-         * @param <TT> the type of the test
-         * @param <BT> the type of the builder
+         * @param <T> the type of the expected and actual object
          */
-        interface Factory<T, RT extends ResultOfObject<T, RT, TT>, TT extends TestOfObject<T, TT, RT>, BT extends Builder<T, RT, TT, BT>> {
+        interface Factory<T> extends Result.Builder.Factory<ResultOfObject<T>, ActualObject<T>, TestOfObject<T>, ExpectedObject<T>, Builder<T>> {
 
-            /**
-             * <p>Returns a new builder.</p>
-             *
-             * @return a new builder
-             */
-            Builder<T, RT, TT, BT> builder();
         }
     }
 }

@@ -18,14 +18,13 @@ import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
  * @param <AT> the type of the actual behavior
  * @author Dustin Glaser
  */
-public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT extends Actual, TT extends BasicTest<TT, ET, RT, AT>, ET extends Expected> implements Result<RT, AT, TT, ET> {
+public abstract class BasicResult<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT extends Test<TT, ET, RT, AT>, ET extends Expected> implements Result<RT, AT, TT, ET> {
 
     protected final Environment environment;
 
     protected final TT test;
     protected final AT actual;
     protected final Exception exception;
-    protected final boolean successful;
 
     /**
      * Constructs a new result with the given environment, test, actual behavior, exception and state if the test was successful.
@@ -34,14 +33,12 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
      * @param test        the test
      * @param actual      the actual behavior
      * @param exception   the exception
-     * @param successful  the state if the test was successful
      */
-    protected BasicResult(Environment environment, TT test, AT actual, Exception exception, boolean successful) {
+    protected BasicResult(Environment environment, TT test, AT actual, Exception exception) {
         this.environment = environment;
         this.test = test;
         this.actual = actual;
         this.exception = exception;
-        this.successful = successful;
     }
 
     @Override
@@ -64,16 +61,11 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
     }
 
     @Override
-    public boolean successful() {
-        return successful;
-    }
-
-    @Override
     public TT test() {
         return test;
     }
 
-    public static abstract class Builder<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT extends Test<TT, ET, RT, AT>, ET extends Expected, BT extends Builder<RT, AT, TT, ET, BT>> implements Result.Builder<RT, AT, TT, ET, BT> {
+    public static abstract class Builder<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT extends Test<TT, ET, RT, AT>, ET extends Expected, BT extends Result.Builder<RT, AT, TT, ET, BT>> implements Result.Builder<RT, AT, TT, ET, BT> {
 
         protected final Environment environment;
         protected TT test;
@@ -99,12 +91,6 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
             return (BT) this;
         }
 
-        public BT successful(boolean successful) {
-            this.successful = successful;
-            //noinspection unchecked
-            return (BT) this;
-        }
-
         @Override
         public BT test(TT test) {
             this.test = test;
@@ -112,7 +98,7 @@ public abstract class BasicResult<RT extends BasicResult<RT, AT, TT, ET>, AT ext
             return (BT) this;
         }
 
-        public static abstract class Factory<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT extends Test<TT, ET, RT, AT>, ET extends Expected, BT extends Builder<RT, AT, TT, ET, BT>> implements Result.Builder.Factory<RT, AT, TT, ET, BT> {
+        public static abstract class Factory<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT extends Test<TT, ET, RT, AT>, ET extends Expected, BT extends Result.Builder<RT, AT, TT, ET, BT>> implements Result.Builder.Factory<RT, AT, TT, ET, BT> {
 
             protected final Environment environment;
 

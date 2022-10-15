@@ -169,7 +169,7 @@ public final class TestUtils {
         final var cycle = TestCycleResolver.getTestCycle();
         if (cycle != null) {
             // Autograder Run
-            return cycle.getSubmission().getClassNames().stream()
+            return cycle.getClassLoader().getClassNames().stream()
                 .map(x -> assertDoesNotThrow(() -> Class.forName(x))).toArray(Class<?>[]::new);
         } else {
             // Regular Junit Run

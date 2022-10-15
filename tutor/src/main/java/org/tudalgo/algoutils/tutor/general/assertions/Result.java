@@ -53,7 +53,9 @@ public interface Result<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT
      *
      * @return if the test was successful
      */
-    boolean successful();
+    default boolean successful() {
+        return actual().successful();
+    }
 
     /**
      * <p>Returns the test this result belongs to.</p>
@@ -112,7 +114,6 @@ public interface Result<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT
          * @param <AT> the type of the actual behavior
          * @param <TT> the type of the test
          * @param <ET> the type of the expected behavior
-         * @param <BT> the type of the builder
          * @author Dustin Glaser
          */
         interface Factory<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT extends Test<TT, ET, RT, AT>, ET extends Expected, BT extends Builder<RT, AT, TT, ET, BT>> {

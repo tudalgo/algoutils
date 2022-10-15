@@ -1,6 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.assertions.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
+import org.tudalgo.algoutils.tutor.general.assertions.ResultOfExceptionalCall;
 import org.tudalgo.algoutils.tutor.general.assertions.TestOfExceptionalCall;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualException;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedException;
@@ -14,7 +15,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.actual.ActualExcept
  *
  * @param <T> the type of the expected exception
  */
-public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<BasicTestOfExceptionalCall<T>, ExpectedException<T>, BasicResultOfExceptionalCall<T>, ActualException<T>> implements TestOfExceptionalCall<T, BasicTestOfExceptionalCall<T>, BasicResultOfExceptionalCall<T>> {
+public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<TestOfExceptionalCall<T>, ExpectedException<T>, ResultOfExceptionalCall<T>, ActualException<T>> implements TestOfExceptionalCall<T> {
 
     /**
      * <p>Constructs a new test of a throwable call with the given environment and expected exception.</p>
@@ -27,7 +28,7 @@ public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<B
     }
 
     @Override
-    public BasicResultOfExceptionalCall<T> run(Callable callable) {
+    public ResultOfExceptionalCall<T> run(Callable callable) {
         var builder = new BasicResultOfExceptionalCall.Builder<T>(environment()).test(this);
         try {
             callable.call();
@@ -36,7 +37,7 @@ public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<B
             //noinspection unchecked
             if (expected().test((Class<T>) throwable.getClass())) {
                 //noinspection unchecked
-                builder.actual((T) throwable).successful(true);
+                builder.actual((T) throwable, true);
             } else {
                 builder.actual(unexpectedException());
                 builder.exception(throwable);
@@ -46,8 +47,8 @@ public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<B
     }
 
     public static final class Builder<T extends Exception>
-        extends BasicTest.Builder<BasicTestOfExceptionalCall<T>, ExpectedException<T>, BasicResultOfExceptionalCall<T>, ActualException<T>, Builder<T>>
-        implements TestOfExceptionalCall.Builder<T, BasicTestOfExceptionalCall<T>, BasicResultOfExceptionalCall<T>, Builder<T>> {
+        extends BasicTest.Builder<TestOfExceptionalCall<T>, ExpectedException<T>, ResultOfExceptionalCall<T>, ActualException<T>, TestOfExceptionalCall.Builder<T>>
+        implements TestOfExceptionalCall.Builder<T> {
 
         private Builder(Environment environment) {
             super(environment);
@@ -60,8 +61,8 @@ public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<B
 
 
         public static final class Factory<T extends Exception>
-            extends BasicTest.Builder.Factory<BasicTestOfExceptionalCall<T>, ExpectedException<T>, BasicResultOfExceptionalCall<T>, ActualException<T>, Builder<T>>
-            implements TestOfExceptionalCall.Builder.Factory<T, BasicTestOfExceptionalCall<T>, BasicResultOfExceptionalCall<T>, Builder<T>> {
+            extends BasicTest.Builder.Factory<TestOfExceptionalCall<T>, ExpectedException<T>, ResultOfExceptionalCall<T>, ActualException<T>, TestOfExceptionalCall.Builder<T>>
+            implements TestOfExceptionalCall.Builder.Factory<T> {
 
             public Factory(Environment environment) {
                 super(environment);

@@ -1,6 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.assertions.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
+import org.tudalgo.algoutils.tutor.general.assertions.ResultOfObject;
 import org.tudalgo.algoutils.tutor.general.assertions.TestOfObject;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualObject;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject;
@@ -11,7 +12,7 @@ import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
  *
  * @param <T> the type of object under test
  */
-public class BasicTestOfObject<T> extends BasicTest<BasicTestOfObject<T>, ExpectedObject<T>, BasicResultOfObject<T>, ActualObject<T>> implements TestOfObject<T, BasicTestOfObject<T>, BasicResultOfObject<T>> {
+public class BasicTestOfObject<T> extends BasicTest<TestOfObject<T>, ExpectedObject<T>, ResultOfObject<T>, ActualObject<T>> implements TestOfObject<T> {
 
     /**
      * <p>Constructs a new test of an object with the given environment and expected object.</p>
@@ -24,18 +25,18 @@ public class BasicTestOfObject<T> extends BasicTest<BasicTestOfObject<T>, Expect
     }
 
     @Override
-    public BasicResultOfObject<T> run(ObjectCallable<T> callable) {
+    public ResultOfObject<T> run(ObjectCallable<T> callable) {
         var builder = new BasicResultOfObject.Builder<T>(environment()).test(this);
         try {
             var object = callable.call();
-            builder.object(object).successful(expected().test(object));
+            builder.object(object, expected().test(object));
         } catch (Exception e) {
             builder.exception(e);
         }
         return builder.build();
     }
 
-    public static final class Builder<T> extends BasicTest.Builder<BasicTestOfObject<T>, ExpectedObject<T>, BasicResultOfObject<T>, ActualObject<T>, Builder<T>> implements TestOfObject.Builder<T, BasicTestOfObject<T>, BasicResultOfObject<T>, Builder<T>> {
+    public static final class Builder<T> extends BasicTest.Builder<TestOfObject<T>, ExpectedObject<T>, ResultOfObject<T>, ActualObject<T>, TestOfObject.Builder<T>> implements TestOfObject.Builder<T> {
 
         private Builder(Environment environment) {
             super(environment);
@@ -46,7 +47,7 @@ public class BasicTestOfObject<T> extends BasicTest<BasicTestOfObject<T>, Expect
             return new BasicTestOfObject<>(environment, expected);
         }
 
-        public static final class Factory<T> extends BasicTest.Builder.Factory<BasicTestOfObject<T>, ExpectedObject<T>, BasicResultOfObject<T>, ActualObject<T>, Builder<T>> implements TestOfObject.Builder.Factory<T, BasicTestOfObject<T>, BasicResultOfObject<T>, Builder<T>> {
+        public static final class Factory<T> extends BasicTest.Builder.Factory<TestOfObject<T>, ExpectedObject<T>, ResultOfObject<T>, ActualObject<T>, TestOfObject.Builder<T>> implements TestOfObject.Builder.Factory<T> {
 
             public Factory(Environment environment) {
                 super(environment);

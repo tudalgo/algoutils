@@ -1,18 +1,16 @@
 package org.tudalgo.algoutils.tutor.general.assertions;
 
-import org.tudalgo.algoutils.tutor.general.callable.Callable;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualException;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedException;
+import org.tudalgo.algoutils.tutor.general.callable.Callable;
 
 /**
  * <p>A type for testing the throwing behavior of callables.</p>
  *
- * @param <T>  the type of the expected exception
- * @param <TT> the type of the test
- * @param <RT> the type of the result
+ * @param <T> the type of the expected exception
  * @author Dustin Glaser
  */
-public interface TestOfExceptionalCall<T extends Exception, TT extends TestOfExceptionalCall<T, TT, RT>, RT extends ResultOfExceptionalCall<T, RT, TT>> extends Test<TT, ExpectedException<T>, RT, ActualException<T>> {
+public interface TestOfExceptionalCall<T extends Exception> extends Test<TestOfExceptionalCall<T>, ExpectedException<T>, ResultOfExceptionalCall<T>, ActualException<T>> {
 
     /**
      * Tests if the callable throws an exception and if the exception is as expected.
@@ -20,27 +18,16 @@ public interface TestOfExceptionalCall<T extends Exception, TT extends TestOfExc
      * @param callable the callable under test
      * @return the result of the test
      */
-    RT run(Callable callable);
+    ResultOfExceptionalCall<T> run(Callable callable);
 
     /**
      * <p>A builder for {@linkplain TestOfExceptionalCall tests of throwable calls}.</p>
      *
      * @param <T>  the type of the expected exception
-     * @param <TT> the type of the test
-     * @param <RT> the type of the result
-     * @param <BT> the type of the builder
      */
-    interface Builder<T extends Exception, TT extends TestOfExceptionalCall<T, TT, RT>, RT extends ResultOfExceptionalCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
+    interface Builder<T extends Exception> extends Test.Builder<TestOfExceptionalCall<T>, ExpectedException<T>, ResultOfExceptionalCall<T>, ActualException<T>, Builder<T>> {
 
-        /**
-         * <p>A factory for {@link Builder test of throwable call builders}.</p>
-         *
-         * @param <T>  the type of the expected exception
-         * @param <TT> the type of the test
-         * @param <RT> the type of the result
-         * @param <BT> the type of the builder
-         */
-        interface Factory<T extends Exception, TT extends TestOfExceptionalCall<T, TT, RT>, RT extends ResultOfExceptionalCall<T, RT, TT>, BT extends Builder<T, TT, RT, BT>> extends Test.Builder.Factory<TT, ExpectedException<T>, RT, ActualException<T>, BT> {
+        interface Factory<T extends Exception> extends Test.Builder.Factory<TestOfExceptionalCall<T>, ExpectedException<T>, ResultOfExceptionalCall<T>, ActualException<T>, Builder<T>> {
 
         }
     }

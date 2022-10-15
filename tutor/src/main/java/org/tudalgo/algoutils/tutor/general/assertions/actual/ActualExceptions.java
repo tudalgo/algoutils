@@ -7,8 +7,8 @@ package org.tudalgo.algoutils.tutor.general.assertions.actual;
  */
 public final class ActualExceptions {
 
-    private static final ActualException<?> NOTHING = ActualException.of(null, s -> "no exception was thrown");
-    private static final ActualException<?> UNEXPECTED = ActualException.of(null, s -> "unexpected exception was thrown");
+    private static final ActualException<?> NOTHING = ActualException.of(null, false, s -> "no exception was thrown");
+    private static final ActualException<?> UNEXPECTED = ActualException.of(null, false, s -> "unexpected exception was thrown");
 
     // no instantiation allowed
     private ActualExceptions() {

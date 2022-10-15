@@ -23,6 +23,10 @@ public interface Expected {
      */
     Object behavior();
 
+    default boolean display() {
+        return true;
+    }
+
     /**
      * <p>Returns a string representation of the expected behavior using the given stringifier to make the behavior human-readable.</p>
      *

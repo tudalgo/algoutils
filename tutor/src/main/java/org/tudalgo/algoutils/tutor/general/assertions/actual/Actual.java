@@ -25,6 +25,12 @@ public interface Actual {
      */
     Object behavior();
 
+    boolean successful();
+
+    default boolean display() {
+        return true;
+    }
+
     /**
      * <p>Returns a string representation of the behavior under test using the given stringifier to make the behavior human-readable.</p>
      *
