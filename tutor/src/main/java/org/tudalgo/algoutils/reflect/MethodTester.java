@@ -2,8 +2,6 @@ package org.tudalgo.algoutils.reflect;
 
 import org.junit.jupiter.api.Assertions;
 import org.mockito.invocation.Invocation;
-import org.sourcegrade.docwatcher.api.MethodDocumentation;
-import org.sourcegrade.docwatcher.api.SourceDocumentation;
 import spoon.Launcher;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtMethod;
@@ -863,22 +861,5 @@ public class MethodTester {
             resolveMethod();
         }
         return this;
-    }
-
-    /**
-     * Gets method documentation for JavaDoc.
-     *
-     * @param d the source documentation
-     * @return the method documentation
-     */
-    public MethodDocumentation getMethodDocumentation(final SourceDocumentation d) {
-        try {
-            this.classTester.assureClassResolved();
-            final var resolvedMethod = assureMethodResolved().getTheMethod();
-            return d.forTopLevelType(this.classTester.getTheClass().getName()).forMethod(
-                resolvedMethod.getName(), resolvedMethod.getParameterTypes());
-        } catch (final Throwable e) {
-            return d.forTopLevelType("").forMethod("");
-        }
     }
 }
