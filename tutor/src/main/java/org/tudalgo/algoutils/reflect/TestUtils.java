@@ -2,20 +2,16 @@ package org.tudalgo.algoutils.reflect;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
-import org.apache.logging.log4j.Logger;
 import org.sourcegrade.jagr.api.testing.RuntimeClassLoader;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
-import org.sourcegrade.jagr.launcher.env.Jagr;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A utility class used for JUnit tests which provides reflective access to some properties and
