@@ -2,13 +2,17 @@ package org.tudalgo.algoutils.reflect;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
+import org.apache.logging.log4j.Logger;
+import org.sourcegrade.jagr.api.testing.RuntimeClassLoader;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
+import org.sourcegrade.jagr.launcher.env.Jagr;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -168,9 +172,12 @@ public final class TestUtils {
     public static Class<?>[] getClasses(final String packageName) throws IOException {
         final var cycle = TestCycleResolver.getTestCycle();
         if (cycle != null) {
+            RuntimeClassLoader classLoader = cycle.getClassLoader();
             // Autograder Run
-            return cycle.getClassLoader().getClassNames().stream()
-                .map(x -> assertDoesNotThrow(() -> Class.forName(x))).toArray(Class<?>[]::new);
+            return classLoader.getClassNames().stream()
+                .filter(name -> name.startsWith(packageName))
+                .map(classLoader::loadClass)
+                .toArray(Class<?>[]::new);
         } else {
             // Regular Junit Run
             final ClassLoader loader = Thread.currentThread().getContextClassLoader();
