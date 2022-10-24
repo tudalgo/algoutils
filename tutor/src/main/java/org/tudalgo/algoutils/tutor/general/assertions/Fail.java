@@ -14,7 +14,7 @@ public interface Fail extends Test<Fail, Nothing, ResultOfFail, Nothing> {
      * @param cause the cause of the failure
      * @return the result of this fail
      */
-    ResultOfFail run(Exception cause);
+    ResultOfFail run(Nothing actual, Exception cause);
 
     /**
      * <p>Fails this test (there is no other option).</p>
@@ -22,7 +22,7 @@ public interface Fail extends Test<Fail, Nothing, ResultOfFail, Nothing> {
      * @return the result of this fail
      */
     default ResultOfFail run() {
-        return run(null);
+        return run(null, null);
     }
 
     /**
