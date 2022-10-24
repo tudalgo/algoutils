@@ -62,20 +62,33 @@ public class BasicFieldLink implements FieldLink {
         if (!Modifier.isStatic(modifiers())) {
             throw new RuntimeException(); // TODO
         }
-        try {
-            field.set(null, object);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e); // TODO
-        }
+        set(null, object);
     }
 
     @Override
     public void set(Object instance, Object object) {
-        if (Modifier.isStatic(modifiers())) {
-            throw new RuntimeException(); // TODO
-        }
         try {
-            field.set(instance, object);
+            if (!field.getType().isPrimitive()) {
+                field.set(instance, object);
+            } else if (field.getType() == boolean.class) {
+                field.setBoolean(instance, (boolean) object);
+            } else if (field.getType() == byte.class) {
+                field.setByte(instance, (byte) object);
+            } else if (field.getType() == char.class) {
+                field.setChar(instance, (char) object);
+            } else if (field.getType() == double.class) {
+                field.setDouble(instance, (double) object);
+            } else if (field.getType() == float.class) {
+                field.setFloat(instance, (float) object);
+            } else if (field.getType() == int.class) {
+                field.setInt(instance, (int) object);
+            } else if (field.getType() == long.class) {
+                field.setLong(instance, (long) object);
+            } else if (field.getType() == short.class) {
+                field.setShort(instance, (short) object);
+            } else {
+                throw new RuntimeException(); // TODO
+            }
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e); // TODO
         }

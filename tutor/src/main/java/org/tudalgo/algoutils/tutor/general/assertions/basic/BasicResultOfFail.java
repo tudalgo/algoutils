@@ -5,8 +5,6 @@ import org.tudalgo.algoutils.tutor.general.assertions.Fail;
 import org.tudalgo.algoutils.tutor.general.assertions.ResultOfFail;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 
-import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.nothing;
-
 /**
  * <p>A basic implementation of a result of an always failing test.</p>
  *
@@ -19,8 +17,8 @@ public class BasicResultOfFail extends BasicResult<ResultOfFail, Nothing, Fail, 
      *
      * @param test the test
      */
-    public BasicResultOfFail(Environment environment, Fail test, Exception exception) {
-        super(environment, test, nothing(), exception);
+    public BasicResultOfFail(Environment environment, Fail test, Nothing actual, Exception exception) {
+        super(environment, test, actual, exception);
     }
 
     public static class Builder extends BasicResult.Builder<ResultOfFail, Nothing, Fail, Nothing, ResultOfFail.Builder> implements ResultOfFail.Builder {
@@ -31,7 +29,7 @@ public class BasicResultOfFail extends BasicResult<ResultOfFail, Nothing, Fail, 
 
         @Override
         public BasicResultOfFail build() {
-            return new BasicResultOfFail(environment, test, exception);
+            return new BasicResultOfFail(environment, test, actual, exception);
         }
 
         public static class Factory extends BasicResult.Builder.Factory<ResultOfFail, Nothing, Fail, Nothing, ResultOfFail.Builder> implements ResultOfFail.Builder.Factory {

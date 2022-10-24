@@ -66,7 +66,7 @@ public interface TypeLink extends Link, Identifiable {
      * @param matcher the matcher
      * @return the method or null
      */
-    default MethodLink getMethod(Matcher<MethodLink> matcher) {
+    default MethodLink getMethod(Matcher<? super MethodLink> matcher) {
         return getMethods(matcher).stream().findFirst().orElse(null);
     }
 
@@ -79,7 +79,7 @@ public interface TypeLink extends Link, Identifiable {
      * @param matcher the matcher
      * @return the sublist of methods
      */
-    default Collection<MethodLink> getMethods(Matcher<MethodLink> matcher) {
+    default Collection<MethodLink> getMethods(Matcher<? super MethodLink> matcher) {
         return getMethods().stream().map(matcher::match).sorted().map(Match::object).collect(toUnmodifiableList());
     }
 
