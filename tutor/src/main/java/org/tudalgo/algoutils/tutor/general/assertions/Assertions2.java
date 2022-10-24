@@ -22,6 +22,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedOb
 public final class Assertions2 {
 
     private static final Environment environment = new BasicEnvironment();
+    private static final TestOfCall.Builder.Factory TEST_OF_CALL_BUILDER_FACTORY = new BasicTestOfCall.Builder.Factory(environment);
     private static final TestOfObject.Builder.Factory<?> TEST_OF_OBJECT_BUILDER_FACTORY = new BasicTestOfObject.Builder.Factory<>(environment);
     private static final TestOfExceptionalCall.Builder.Factory<?> TEST_OF_THROWABLE_CALL_BUILDER_FACTORY = new BasicTestOfExceptionalCall.Builder.Factory<>(environment);
     private static final Fail.Builder.Factory FAIL_BUILDER_FACTORY = new BasicFail.Builder.Factory(environment);
@@ -240,6 +241,14 @@ public final class Assertions2 {
         return Assertions2.<T>testOfThrowableCallBuilder().expected(ExpectedExceptional.instanceOf(expected)).build().run(callable).check(context, preCommentSupplier).actual().behavior();
     }
 
+    public static void call(Callable callable, Context context, PreCommentSupplier<? super ResultOfCall> preCommentSupplier) {
+        Assertions2.testOfCallBuilder().expected(nothing()).build().run(callable).check(context, preCommentSupplier);
+    }
+
+    public static <T> T callObject(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
+        return Assertions2.<T>testOfObjectBuilder().expected(something()).build().run(callable).check(context, preCommentSupplier).object();
+    }
+
     /**
      * Asserts that the given boolean value is true.
      *
@@ -303,6 +312,10 @@ public final class Assertions2 {
      */
     public static Fail.Builder failBuilder() {
         return FAIL_BUILDER_FACTORY.builder();
+    }
+
+    public static TestOfCall.Builder testOfCallBuilder() {
+        return TEST_OF_CALL_BUILDER_FACTORY.builder();
     }
 
     /**
