@@ -27,17 +27,16 @@ public interface Context {
     /**
      * <p>A builder for {@linkplain Context contexts}.</p>
      *
-     * @param <CT> the type of the context to build
      * @param <BT> the type of the builder
      */
-    interface Builder<CT extends Context, BT extends Builder<CT, BT>> {
+    interface Builder<BT extends Builder<BT>> {
 
         /**
          * Returns a {@link Context} with the given properties.
          *
          * @return the context
          */
-        CT build();
+        Context build();
 
         /**
          * Sets the value for the given key.
@@ -45,8 +44,18 @@ public interface Context {
          * @param key   the key
          * @param value the value
          * @return this builder
+         * @deprecated use {@link #add(String, Object)} instead
          */
-        BT property(String key, Object value);
+        @Deprecated
+        default BT property(String key, Object value) {
+            return add(key, value);
+        }
+
+        BT add(String key, Object value);
+
+        BT add(Property... property);
+
+        BT add(Context... context);
 
         /**
          * Sets the subject of this context.
@@ -59,17 +68,16 @@ public interface Context {
         /**
          * <p>A factory for {@linkplain Builder builders}.</p>
          *
-         * @param <CT> the type of the context to build
          * @param <BT> the type of the builder
          */
-        interface Factory<CT extends Context, BT extends Builder<CT, BT>> {
+        interface Factory<BT extends Builder<BT>> {
 
             /**
              * Returns a new builder.
              *
              * @return a new builder
              */
-            Builder<CT, BT> builder();
+            Builder<BT> builder();
         }
     }
 }
