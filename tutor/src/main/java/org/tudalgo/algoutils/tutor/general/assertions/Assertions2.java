@@ -1,11 +1,9 @@
 package org.tudalgo.algoutils.tutor.general.assertions;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicFail;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfExceptionalCall;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfObject;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.*;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedExceptional;
+import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
@@ -13,6 +11,7 @@ import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 import java.lang.reflect.InvocationTargetException;
 
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.*;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.nothing;
 
 /**
  * A collection of assertion methods.
@@ -22,11 +21,11 @@ import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedOb
 public final class Assertions2 {
 
     private static final Environment environment = new BasicEnvironment();
+    private static final TestOfCall.Builder.Factory TEST_OF_CALL_BUILDER_FACTORY = new BasicTestOfCall.Builder.Factory(environment);
     private static final TestOfObject.Builder.Factory<?> TEST_OF_OBJECT_BUILDER_FACTORY = new BasicTestOfObject.Builder.Factory<>(environment);
     private static final TestOfExceptionalCall.Builder.Factory<?> TEST_OF_THROWABLE_CALL_BUILDER_FACTORY = new BasicTestOfExceptionalCall.Builder.Factory<>(environment);
     private static final Fail.Builder.Factory FAIL_BUILDER_FACTORY = new BasicFail.Builder.Factory(environment);
-    private static final Context.Builder.Factory<?, ?> CONTEXT_BUILDER_FACTORY = new BasicContext.Builder.Factory();
-    private static final Context CONTEXT_EMPTY = contextBuilder().build();
+    private static final Context.Builder.Factory<?> CONTEXT_BUILDER_FACTORY = new BasicContext.Builder.Factory();
 
     // no instantiation allowed
     private Assertions2() {
@@ -240,6 +239,14 @@ public final class Assertions2 {
         return Assertions2.<T>testOfThrowableCallBuilder().expected(ExpectedExceptional.instanceOf(expected)).build().run(callable).check(context, preCommentSupplier).actual().behavior();
     }
 
+    public static void call(Callable callable, Context context, PreCommentSupplier<? super ResultOfCall> preCommentSupplier) {
+        Assertions2.testOfCallBuilder().expected(nothing()).build().run(callable).check(context, preCommentSupplier);
+    }
+
+    public static <T> T callObject(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
+        return Assertions2.<T>testOfObjectBuilder().expected(something()).build().run(callable).check(context, preCommentSupplier).object();
+    }
+
     /**
      * Asserts that the given boolean value is true.
      *
@@ -257,7 +264,7 @@ public final class Assertions2 {
      *
      * @return the context builder
      */
-    public static Context.Builder<?, ?> contextBuilder() {
+    public static Context.Builder<?> contextBuilder() {
         return CONTEXT_BUILDER_FACTORY.builder();
     }
 
@@ -267,7 +274,7 @@ public final class Assertions2 {
      * @return the empty context
      */
     public static Context emptyContext() {
-        return CONTEXT_EMPTY;
+        return contextBuilder().build();
     }
 
     /**
@@ -292,7 +299,12 @@ public final class Assertions2 {
      * @return nothing
      */
     public static <T> T fail(Exception cause, Context context, PreCommentSupplier<? super ResultOfFail> preCommentSupplier) {
-        failBuilder().build().run(cause).check(context, preCommentSupplier);
+        failBuilder().expected(nothing()).build().run(nothing(), cause).check(context, preCommentSupplier);
+        return null;
+    }
+
+    public static <T> T fail(Nothing expected, Nothing actual, Context context, PreCommentSupplier<? super ResultOfFail> preCommentSupplier) {
+        failBuilder().expected(expected).build().run(actual, null).check(context, preCommentSupplier);
         return null;
     }
 
@@ -303,6 +315,10 @@ public final class Assertions2 {
      */
     public static Fail.Builder failBuilder() {
         return FAIL_BUILDER_FACTORY.builder();
+    }
+
+    public static TestOfCall.Builder testOfCallBuilder() {
+        return TEST_OF_CALL_BUILDER_FACTORY.builder();
     }
 
     /**
@@ -325,19 +341,25 @@ public final class Assertions2 {
         return (TestOfExceptionalCall.Builder<T>) TEST_OF_THROWABLE_CALL_BUILDER_FACTORY.builder();
     }
 
-    public static Context context(Object record) {
-        if (record.getClass().isRecord()) {
-            try {
-                var c = record.getClass().getRecordComponents();
-                var cb = contextBuilder();
-                for (var component : c) {
-                    cb = cb.property(component.getName(), component.getAccessor().invoke(record));
+    public static Context context(Object... records) {
+        var cb = contextBuilder();
+        for (var record : records) {
+            if (record.getClass().isRecord()) {
+                try {
+                    var c = record.getClass().getRecordComponents();
+                    for (var component : c) {
+                        var value = component.getAccessor().invoke(record);
+                        if (value != null && value.getClass().isRecord()) {
+                            cb.add(component.getName(), context(value));
+                        } else {
+                            cb.add(component.getName(), value);
+                        }
+                    }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
                 }
-                return cb.build();
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
             }
         }
-        return null;
+        return cb.build();
     }
 }

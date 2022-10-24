@@ -37,7 +37,7 @@ public class BasicContext implements Context {
         return subject;
     }
 
-    public static final class Builder implements Context.Builder<BasicContext, Builder> {
+    public static final class Builder implements Context.Builder<Builder> {
 
         private final List<Property> properties = new LinkedList<>();
         private Object subject;
@@ -52,9 +52,27 @@ public class BasicContext implements Context {
         }
 
         @Override
-        public Builder property(String key, Object value) {
-            if (key != null) {
-                properties.add(new BasicProperty(key, value));
+        public Builder add(String key, Object value) {
+            return add(new BasicProperty(key, value));
+        }
+
+        @Override
+        public Builder add(Property... properties) {
+            for (var property : properties) {
+                var index = this.properties.indexOf(property);
+                if (index == -1) {
+                    this.properties.add(property);
+                } else {
+                    this.properties.set(index, property);
+                }
+            }
+            return this;
+        }
+
+        @Override
+        public Builder add(Context... contexts) {
+            for (var context : contexts) {
+                context.properties().forEach(this::add);
             }
             return this;
         }
@@ -65,7 +83,7 @@ public class BasicContext implements Context {
             return this;
         }
 
-        public static class Factory implements Context.Builder.Factory<BasicContext, Builder> {
+        public static class Factory implements Context.Builder.Factory<Builder> {
 
             @Override
             public Builder builder() {
