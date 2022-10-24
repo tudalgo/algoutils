@@ -325,19 +325,25 @@ public final class Assertions2 {
         return (TestOfExceptionalCall.Builder<T>) TEST_OF_THROWABLE_CALL_BUILDER_FACTORY.builder();
     }
 
-    public static Context context(Object record) {
-        if (record.getClass().isRecord()) {
-            try {
-                var c = record.getClass().getRecordComponents();
-                var cb = contextBuilder();
-                for (var component : c) {
-                    cb = cb.property(component.getName(), component.getAccessor().invoke(record));
+    public static Context context(Object... records) {
+        var cb = contextBuilder();
+        for (var record : records) {
+            if (record.getClass().isRecord()) {
+                try {
+                    var c = record.getClass().getRecordComponents();
+                    for (var component : c) {
+                        var value = component.getAccessor().invoke(record);
+                        if (value != null && value.getClass().isRecord()) {
+                            cb.add(component.getName(), context(value));
+                        } else {
+                            cb.add(component.getName(), value);
+                        }
+                    }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
                 }
-                return cb.build();
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
             }
         }
-        return null;
+        return cb.build();
     }
 }
