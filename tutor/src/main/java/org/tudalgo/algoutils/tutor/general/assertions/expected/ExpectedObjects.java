@@ -18,6 +18,16 @@ public final class ExpectedObjects {
     }
 
     /**
+     * <p>Returns an <i>expected</i> where the actual result is not relevant.</p>
+     *
+     * @param <T> the type of the expected object
+     * @return the <i>expected</i>
+     */
+    public static <T> ExpectedObject<T> something() {
+        return of(null, o -> true);
+    }
+
+    /**
      * <p>Returns an expected object where the object is expected to be equal to the actual object.</p>
      *
      * @param object the expected object
