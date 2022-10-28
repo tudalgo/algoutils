@@ -39,7 +39,7 @@ public interface TypeLink extends Link, Identifiable {
      * @return the sublist of field
      */
     default List<FieldLink> getFields(Matcher<? super FieldLink> matcher) {
-        return getFields().stream().map(matcher::match).sorted().map(Match::object).collect(toUnmodifiableList());
+        return getFields().stream().map(matcher::match).filter(Match::matched).sorted().map(Match::object).toList();
     }
 
     /**
@@ -80,7 +80,7 @@ public interface TypeLink extends Link, Identifiable {
      * @return the sublist of methods
      */
     default Collection<MethodLink> getMethods(Matcher<? super MethodLink> matcher) {
-        return getMethods().stream().map(matcher::match).sorted().map(Match::object).collect(toUnmodifiableList());
+        return getMethods().stream().map(matcher::match).filter(Match::matched).sorted().map(Match::object).toList();
     }
 
     /**
