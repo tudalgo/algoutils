@@ -6,6 +6,8 @@ import org.tudalgo.algoutils.tutor.general.assertions.TestOfExceptionalCall;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualException;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedException;
 
+import java.util.Objects;
+
 public class BasicResultOfExceptionalCall<T extends Exception> extends BasicResult<ResultOfExceptionalCall<T>, ActualException<T>, TestOfExceptionalCall<T>, ExpectedException<T>> implements ResultOfExceptionalCall<T> {
 
     public BasicResultOfExceptionalCall(Environment environment, TestOfExceptionalCall<T> test, ActualException<T> actual, Exception exception, boolean successful) {
@@ -20,6 +22,10 @@ public class BasicResultOfExceptionalCall<T extends Exception> extends BasicResu
 
         @Override
         public BasicResultOfExceptionalCall<T> build() {
+            Objects.requireNonNull(environment, "environment is null");
+            Objects.requireNonNull(test, "test is null");
+            Objects.requireNonNull(actual, "actual is null");
+            Objects.requireNonNull(exception, "exception is null");
             return new BasicResultOfExceptionalCall<>(environment, test, actual, exception, successful);
         }
 

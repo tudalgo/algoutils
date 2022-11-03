@@ -7,6 +7,8 @@ import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualObject;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 
+import java.util.Objects;
+
 /**
  * <p>A basic implementation of a test of an object.</p>
  *
@@ -44,6 +46,8 @@ public class BasicTestOfObject<T> extends BasicTest<TestOfObject<T>, ExpectedObj
 
         @Override
         public BasicTestOfObject<T> build() {
+            Objects.requireNonNull(environment, "environment is null");
+            Objects.requireNonNull(expected, "expected is null");
             return new BasicTestOfObject<>(environment, expected);
         }
 

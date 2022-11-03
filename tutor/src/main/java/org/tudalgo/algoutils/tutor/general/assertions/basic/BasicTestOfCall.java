@@ -6,6 +6,8 @@ import org.tudalgo.algoutils.tutor.general.assertions.TestOfCall;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 
+import java.util.Objects;
+
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.successBehavior;
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.text;
 
@@ -33,6 +35,8 @@ public class BasicTestOfCall extends BasicTest<TestOfCall, Nothing, ResultOfCall
 
         @Override
         public TestOfCall build() {
+            Objects.requireNonNull(environment, "environment is null");
+            Objects.requireNonNull(expected, "expected is null");
             return new BasicTestOfCall(environment, expected);
         }
 

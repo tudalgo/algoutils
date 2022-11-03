@@ -7,6 +7,8 @@ import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualException;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedException;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 
+import java.util.Objects;
+
 import static org.tudalgo.algoutils.tutor.general.assertions.actual.ActualExceptions.noException;
 import static org.tudalgo.algoutils.tutor.general.assertions.actual.ActualExceptions.unexpectedException;
 
@@ -56,6 +58,8 @@ public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<T
 
         @Override
         public BasicTestOfExceptionalCall<T> build() {
+            Objects.requireNonNull(environment, "environment is null");
+            Objects.requireNonNull(expected, "expected is null");
             return new BasicTestOfExceptionalCall<>(environment, expected);
         }
 

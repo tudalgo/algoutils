@@ -6,6 +6,8 @@ import org.tudalgo.algoutils.tutor.general.assertions.TestOfObject;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualObject;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject;
 
+import java.util.Objects;
+
 /**
  * <p>A basic implementation of a result of an object test.</p>
  *
@@ -36,6 +38,10 @@ public class BasicResultOfObject<T> extends BasicResult<ResultOfObject<T>, Actua
 
         @Override
         public BasicResultOfObject<T> build() {
+            Objects.requireNonNull(environment, "environment is null");
+            Objects.requireNonNull(test, "test is null");
+            Objects.requireNonNull(actual, "actual is null");
+            Objects.requireNonNull(exception, "exception is null");
             return new BasicResultOfObject<>(environment, test, actual, exception, successful);
         }
 
