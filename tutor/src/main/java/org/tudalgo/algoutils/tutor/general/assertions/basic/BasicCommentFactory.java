@@ -20,7 +20,7 @@ import static java.util.Arrays.stream;
 @SuppressWarnings("ClassCanBeRecord")
 public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?, ?>> {
 
-    private static final int TRACE_LINES = 3;
+    private static int TRACE_LINES = 10;
 
     private final Environment environment;
 
@@ -104,6 +104,13 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
 
     private static String e(String string) {
         return format("\\<b\\>%s\\</b\\>", string);
+    }
+
+    public static void setNumberOfTraceLines(int lines) {
+        if (lines < 0) {
+            throw new IllegalArgumentException("number of trace lines must be non-negative");
+        }
+        TRACE_LINES = lines;
     }
 }
 
