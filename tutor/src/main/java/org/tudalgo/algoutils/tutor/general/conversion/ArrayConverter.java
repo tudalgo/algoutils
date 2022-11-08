@@ -21,7 +21,28 @@ public class ArrayConverter {
      */
     public static class Auto implements ArgumentConverter {
 
-        private static final Map<Class<?>, AbstractArrayNodeConversion<?>> CONVERSION_MAP = Map.ofEntries(Map.entry(java.math.BigDecimal.class, new BigDecimal()), Map.entry(java.math.BigInteger.class, new BigInteger()), Map.entry(java.lang.Boolean.class, new Boolean()), Map.entry(java.lang.Double.class, new Double()), Map.entry(java.lang.Float.class, new Float()), Map.entry(java.lang.Integer.class, new Integer()), Map.entry(java.lang.Long.class, new Long()), Map.entry(java.lang.Number.class, new Number()), Map.entry(java.lang.Short.class, new Short()), Map.entry(java.lang.String.class, new String()), Map.entry(java.math.BigDecimal[].class, new BigDecimal2D()), Map.entry(java.math.BigInteger[].class, new BigInteger2D()), Map.entry(java.lang.Boolean[].class, new Boolean2D()), Map.entry(java.lang.Double[].class, new Double2D()), Map.entry(java.lang.Float[].class, new Float2D()), Map.entry(java.lang.Integer[].class, new Integer2D()), Map.entry(java.lang.Long[].class, new Long2D()), Map.entry(java.lang.Number[].class, new Number2D()), Map.entry(java.lang.Short[].class, new Short2D()), Map.entry(java.lang.String[].class, new String2D()));
+        private static final Map<Class<?>, AbstractArrayNodeConversion<?>> CONVERSION_MAP = Map.ofEntries(
+            Map.entry(java.math.BigDecimal.class, new BigDecimal()),
+            Map.entry(java.math.BigInteger.class, new BigInteger()),
+            Map.entry(java.lang.Boolean.class, new Boolean()),
+            Map.entry(java.lang.Double.class, new Double()),
+            Map.entry(java.lang.Float.class, new Float()),
+            Map.entry(java.lang.Integer.class, new Integer()),
+            Map.entry(java.lang.Long.class, new Long()),
+            Map.entry(java.lang.Number.class, new Number()),
+            Map.entry(java.lang.Short.class, new Short()),
+            Map.entry(java.lang.String.class, new String()),
+            Map.entry(java.math.BigDecimal[].class, new BigDecimal2D()),
+            Map.entry(java.math.BigInteger[].class, new BigInteger2D()),
+            Map.entry(java.lang.Boolean[].class, new Boolean2D()),
+            Map.entry(java.lang.Double[].class, new Double2D()),
+            Map.entry(java.lang.Float[].class, new Float2D()),
+            Map.entry(java.lang.Integer[].class, new Integer2D()),
+            Map.entry(java.lang.Long[].class, new Long2D()),
+            Map.entry(java.lang.Number[].class, new Number2D()),
+            Map.entry(java.lang.Short[].class, new Short2D()),
+            Map.entry(java.lang.String[].class, new String2D())
+    );
 
         @Override
         public Object convert(Object source, ParameterContext context) throws ArgumentConversionException {
