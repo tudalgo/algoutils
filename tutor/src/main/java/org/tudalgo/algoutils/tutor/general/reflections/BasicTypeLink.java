@@ -63,7 +63,7 @@ public class BasicTypeLink implements TypeLink {
             stream(enumType.getEnumConstants()).map(BasicEnumConstantLink::of).forEach(enums::add);
         }
         return unmodifiableEnums;
-    }    private final List<TypeLink> interfaces = new LinkedList<>(), unmodifiableInterfaces = unmodifiableList(interfaces);
+    }    private final List<TypeLink> interfaces = new ArrayList<>(), unmodifiableInterfaces = unmodifiableList(interfaces);
 
     @Override
     public String identifier() {
