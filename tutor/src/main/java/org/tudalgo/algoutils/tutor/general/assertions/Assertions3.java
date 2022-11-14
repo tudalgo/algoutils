@@ -96,7 +96,7 @@ public class Assertions3 {
         for (int i = 0; i < matchers.length; i++) {
             if (matchers.length != actual.length || !matchers[i].match(actual[i]).matched()) {
                 fail(
-                    of(List.of(matchers)),
+                    Expected.of(List.of(matchers)),
                     unexpected(List.of(actual)),
                     contextBuilder().subject(withParameters).build(),
                     e -> "%s does not have correct parameters".formatted(name)
