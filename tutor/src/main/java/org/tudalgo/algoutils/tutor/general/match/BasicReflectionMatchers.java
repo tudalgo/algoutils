@@ -1,9 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.match;
 
-import org.tudalgo.algoutils.tutor.general.reflections.Modifier;
-import org.tudalgo.algoutils.tutor.general.reflections.TypeLink;
-import org.tudalgo.algoutils.tutor.general.reflections.WithModifiers;
-import org.tudalgo.algoutils.tutor.general.reflections.WithTypeList;
+import org.tudalgo.algoutils.tutor.general.reflections.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +10,7 @@ public class BasicReflectionMatchers {
     private BasicReflectionMatchers() {
     }
 
-    public static <T extends TypeLink> Matcher<T> sameType(TypeLink link) {
+    public static <T extends WithType> Matcher<T> sameType(TypeLink link) {
         return Matcher.of(l -> Objects.equals(l, link), link);
     }
 
