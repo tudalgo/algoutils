@@ -18,6 +18,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.expected.Expected.o
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.items;
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.text;
 
+@SuppressWarnings("unused")
 public class Assertions3 {
 
     private static final Environment ENVIRONMENT = BasicEnvironment.getInstance();
