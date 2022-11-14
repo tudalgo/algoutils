@@ -39,7 +39,7 @@ public class Assertions3 {
         );
     }
 
-    public static <T extends WithModifiers> T assertCorrectAttributes(
+    public static <T extends WithModifiers> T assertCorrectModifiers(
         T link,
         Modifier... attributes
     ) {
