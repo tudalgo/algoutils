@@ -3,7 +3,6 @@ package org.tudalgo.algoutils.tutor.general.assertions;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.ActualObject;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject;
 
-import static org.tudalgo.algoutils.tutor.general.assertions.actual.ActualObject.of;
 
 /**
  * A type representing the result of a {@link TestOfObject}.
@@ -37,7 +36,7 @@ public interface ResultOfObject<T> extends Result<ResultOfObject<T>, ActualObjec
          * @return this builder
          */
         default Builder<T> object(T actual, boolean successful) {
-            return actual(of(actual, successful));
+            return actual(ActualObject.of(actual, successful));
         }
 
         /**

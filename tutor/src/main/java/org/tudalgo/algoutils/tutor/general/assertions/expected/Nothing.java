@@ -68,14 +68,30 @@ public final class Nothing implements Actual, Expected {
         String suffixPlural
     ) {
         if (items.size() == 0) {
-            return new Nothing("no " + prefixPlural + " " + suffixPlural, false);
+            return new Nothing(("no " + prefixPlural + " " + suffixPlural).trim(), false);
         } else if (items.size() == 1) {
             var item = Objects.toString(items.get(0));
-            return new Nothing(prefixSingular + " " + item + " " + suffixSingular, false);
+            return new Nothing((prefixSingular + " " + item + " " + suffixSingular).trim(), false);
         }
         var firstItems = items.stream().limit(items.size() - 1).map(Objects::toString).collect(joining(", "));
         var lastItem = Objects.toString(items.get(items.size() - 1));
-        return new Nothing(prefixPlural + " " + firstItems + " and " + lastItem + " " + suffixPlural, false);
+        return new Nothing((prefixPlural + " " + firstItems + " and " + lastItem + " " + suffixPlural).trim(), false);
+    }
+
+    public static Nothing items(String prefix, List<?> items, String suffix) {
+        return items(prefix, prefix, items, suffix, suffix);
+    }
+
+    public static Nothing items(String prefix, List<?> items) {
+        return items(prefix, prefix, items, "", "");
+    }
+
+    public static Nothing items(List<?> list, String suffix) {
+        return items("", "", list, suffix, suffix);
+    }
+
+    public static Nothing items(List<?> list) {
+        return items("", "", list, "", "");
     }
 
     public static Nothing items(

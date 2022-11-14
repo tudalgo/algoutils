@@ -3,6 +3,8 @@ package org.tudalgo.algoutils.tutor.general.assertions.basic;
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.assertions.Fail;
 import org.tudalgo.algoutils.tutor.general.assertions.ResultOfFail;
+import org.tudalgo.algoutils.tutor.general.assertions.actual.Actual;
+import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 
 /**
@@ -10,23 +12,23 @@ import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
  *
  * @author Dustin Glaser
  */
-public class BasicFail extends BasicTest<Fail, Nothing, ResultOfFail, Nothing> implements Fail {
+public class BasicFail extends BasicTest<Fail, Expected, ResultOfFail, Actual> implements Fail {
 
     /**
      * <p>Constructs a new fail with the given environment.</p>
      *
      * @param environment the environment
      */
-    public BasicFail(Environment environment, Nothing expected) {
+    public BasicFail(Environment environment, Expected expected) {
         super(environment, expected);
     }
 
     @Override
-    public ResultOfFail run(Nothing actual, Exception cause) {
+    public ResultOfFail run(Actual actual, Exception cause) {
         return new BasicResultOfFail.Builder(environment()).test(this).actual(actual).exception(cause).build();
     }
 
-    public static class Builder extends BasicTest.Builder<Fail, Nothing, ResultOfFail, Nothing, Fail.Builder> implements Fail.Builder {
+    public static class Builder extends BasicTest.Builder<Fail, Expected, ResultOfFail, Actual, Fail.Builder> implements Fail.Builder {
 
         public Builder(Environment environment) {
             super(environment);
@@ -37,7 +39,7 @@ public class BasicFail extends BasicTest<Fail, Nothing, ResultOfFail, Nothing> i
             return new BasicFail(environment, expected);
         }
 
-        public static class Factory extends BasicTest.Builder.Factory<Fail, Nothing, ResultOfFail, Nothing, Fail.Builder> implements Fail.Builder.Factory {
+        public static class Factory extends BasicTest.Builder.Factory<Fail, Expected, ResultOfFail, Actual, Fail.Builder> implements Fail.Builder.Factory {
 
             public Factory(Environment environment) {
                 super(environment);

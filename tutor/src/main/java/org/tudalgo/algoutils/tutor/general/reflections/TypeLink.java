@@ -1,21 +1,19 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
-import org.tudalgo.algoutils.tutor.general.match.Identifiable;
-import org.tudalgo.algoutils.tutor.general.match.Match;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
 
 import java.util.Collection;
 import java.util.List;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
-import static org.tudalgo.algoutils.tutor.general.match.Matcher.always;
+import static org.tudalgo.algoutils.tutor.general.match.MatchingUtils.firstMatch;
+import static org.tudalgo.algoutils.tutor.general.match.MatchingUtils.matches;
 
 /**
  * <p>An interface used to simply access classes, interfaces and enumerations.</p>
  *
  * @author Dustin Glaser
  */
-public interface TypeLink extends Link, Identifiable {
+public interface TypeLink extends Link, WithType, WithModifiers, WithName {
 
     /**
      * <p>Returns the field contained in the type linked by this type link and matched by the given matcher with the highest match score.</p>
@@ -26,7 +24,7 @@ public interface TypeLink extends Link, Identifiable {
      * @return the field or null
      */
     default FieldLink getField(Matcher<? super FieldLink> matcher) {
-        return getFields(matcher).stream().findFirst().orElse(null);
+        return firstMatch(getFields(), matcher);
     }
 
     /**
@@ -39,7 +37,7 @@ public interface TypeLink extends Link, Identifiable {
      * @return the sublist of field
      */
     default List<FieldLink> getFields(Matcher<? super FieldLink> matcher) {
-        return getFields().stream().map(matcher::match).filter(Match::matched).sorted().map(Match::object).toList();
+        return matches(getFields(), matcher);
     }
 
     /**
@@ -47,16 +45,29 @@ public interface TypeLink extends Link, Identifiable {
      *
      * @return the collection of fields
      */
-    default Collection<FieldLink> getFields() {
-        return getFields(always());
-    }
+    Collection<FieldLink> getFields();
 
     /**
      * <p>Returns a collection of all interfaces extended (interfaces) or implemented (classes and enums) by the type linked by this type link.</p>
      *
      * @return the collection of interfaces
      */
-    Collection<TypeLink> getInterfaces();
+    Collection<TypeLink> interfaces();
+
+    default List<TypeLink> interfaces(Matcher<? super TypeLink> matcher) {
+        return matches(interfaces(), matcher);
+    }
+
+    default TypeLink getInterface(Matcher<? super TypeLink> matcher) {
+        return firstMatch(interfaces(), matcher);
+    }
+
+    /**
+     * <p>Returns the type link to the super type of the type linked by this type link.</p>
+     *
+     * @return the link to the super type
+     */
+    TypeLink superType();
 
     /**
      * <p>Returns the method contained in the type linked by this type link and matched by the given matcher with the highest match score.</p>
@@ -67,7 +78,7 @@ public interface TypeLink extends Link, Identifiable {
      * @return the method or null
      */
     default MethodLink getMethod(Matcher<? super MethodLink> matcher) {
-        return getMethods(matcher).stream().findFirst().orElse(null);
+        return firstMatch(getMethods(), matcher);
     }
 
     /**
@@ -79,8 +90,8 @@ public interface TypeLink extends Link, Identifiable {
      * @param matcher the matcher
      * @return the sublist of methods
      */
-    default Collection<MethodLink> getMethods(Matcher<? super MethodLink> matcher) {
-        return getMethods().stream().map(matcher::match).filter(Match::matched).sorted().map(Match::object).toList();
+    default List<MethodLink> getMethods(Matcher<? super MethodLink> matcher) {
+        return matches(getMethods(), matcher);
     }
 
     /**
@@ -91,34 +102,98 @@ public interface TypeLink extends Link, Identifiable {
     Collection<MethodLink> getMethods();
 
     /**
-     * <p>Returns the actual type behind this type link.</p>
+     * <p>Returns a collection of constructors declared in the type linked by this type link.</p>
      *
-     * @return the type
+     * @return the collection of constructors
      */
-    default Type getType() {
-        return Type.of(link());
+    Collection<ConstructorLink> getConstructors();
+
+    /**
+     * <p>Returns the constructor contained in the type linked by this type link and matched by the given matcher with the highest match score.</p>
+     *
+     * <p>If there is not such a constructor, null is returned.</p>
+     *
+     * @param matcher the matcher
+     * @return the constructor or null
+     */
+    default ConstructorLink getConstructor(Matcher<? super ConstructorLink> matcher) {
+        return firstMatch(getConstructors(), matcher);
     }
+
+    /**
+     * <p>Returns a list of all constructors contained in the type linked by this type link and
+     * matched by the given matcher.</p>
+     *
+     * <p>The list is sorted by match scores in descending order.</p>
+     *
+     * @param matcher the matcher
+     * @return the sublist of constructors
+     */
+    default List<ConstructorLink> getConstructors(Matcher<? super ConstructorLink> matcher) {
+        return matches(getConstructors(), matcher);
+    }
+
+
+    /**
+     * <p>Returns a list of all enum constants contained in the type linked by this type link and matched by the given matcher.</p>
+     *
+     * <p>The list is sorted by match scores in descending order.</p>
+     *
+     * @param matcher the matcher
+     * @return the sublist of enum constants
+     */
+    default List<EnumConstantLink> getEnumConstants(Matcher<? super EnumConstantLink> matcher) {
+        return matches(getEnumConstants(), matcher);
+    }
+
+    /**
+     * <p>Returns the enum constant contained in the type linked by this type link and matched by the given matcher with the highest match score.</p>
+     *
+     * <p>If there is not such a enum constant, null is returned.</p>
+     *
+     * @param matcher the matcher
+     * @return the enum constant or null
+     */
+    default EnumConstantLink getEnumConstant(Matcher<? super EnumConstantLink> matcher) {
+        return firstMatch(getEnumConstants(), matcher);
+    }
+
+    /**
+     * <p>Returns a collection of all enum constants contained in the type linked by this type link.</p>
+     *
+     * @return the collection of enum constants
+     */
+    Collection<EnumConstantLink> getEnumConstants();
+
+    /**
+     * @deprecated use {@linkplain #reflection()} instead
+     */
+    @Deprecated
+    default Class<?> link() {
+        return reflection();
+    }
+
+    @Override
+    default int modifiers() {
+        return link().getModifiers();
+    }
+
 
     /**
      * <p>Returns the actual {@linkplain Class type} behind this type link.</p>
      *
      * @return the type
      */
-    Class<?> link();
+    Class<?> reflection();
 
-    /**
-     * <p>An enumeration of actual types behind type links.</p>
-     *
-     * @author Dustin Glaser
-     */
-    enum Type {
-        CLASS, INTERFACE, ENUM, ANNOTATION;
 
-        private static Type of(Class<?> type) {
-            if (type.isAnnotation()) return ANNOTATION;
-            if (type.isEnum()) return ENUM;
-            if (type.isInterface()) return INTERFACE;
-            return CLASS;
-        }
+    @Override
+    default String name() {
+        return link().getSimpleName();
+    }
+
+    @Override
+    default TypeLink type() {
+        return this;
     }
 }

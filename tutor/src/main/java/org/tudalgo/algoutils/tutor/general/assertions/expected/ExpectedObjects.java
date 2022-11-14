@@ -1,8 +1,10 @@
 package org.tudalgo.algoutils.tutor.general.assertions.expected;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import static java.lang.String.format;
+import static java.util.function.Function.identity;
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject.of;
 
 /**
@@ -35,7 +37,7 @@ public final class ExpectedObjects {
      * @return the expected behavior
      */
     public static <T> ExpectedObject<T> equalTo(T object) {
-        return of(object, o -> Objects.equals(object, o));
+        return of(object, o -> Objects.equals(object, o), identity());
     }
 
     /**
@@ -44,7 +46,7 @@ public final class ExpectedObjects {
      * @return the expected behavior
      */
     public static ExpectedObject<Boolean> equalsFalse() {
-        return of(false, b -> !b);
+        return of(false, b -> !b, identity());
     }
 
     /**
@@ -53,7 +55,7 @@ public final class ExpectedObjects {
      * @return the expected behavior
      */
     public static <T> ExpectedObject<T> equalsNull() {
-        return of(null, Objects::isNull);
+        return of(null, Objects::isNull, identity());
     }
 
     /**
@@ -62,7 +64,7 @@ public final class ExpectedObjects {
      * @return the expected behavior
      */
     public static ExpectedObject<Boolean> equalsTrue() {
-        return of(true, b -> b);
+        return of(true, b -> b, identity());
     }
 
     /**
@@ -75,9 +77,9 @@ public final class ExpectedObjects {
      */
     public static <T> ExpectedObject<Class<T>> instanceOf(Class<T> type, boolean subtypes) {
         if (subtypes) {
-            return of(type, type::isAssignableFrom);
+            return of(type, type::isAssignableFrom, identity());
         }
-        return of(type, t -> type == t);
+        return of(type, t -> type == t, identity());
     }
 
     /**

@@ -46,6 +46,11 @@ public interface ExpectedObject<T> extends Expected {
             public boolean test(T object) {
                 return test.test(object);
             }
+
+            @Override
+            public boolean display() {
+                return formatter != null;
+            }
         };
     }
 
@@ -63,7 +68,7 @@ public interface ExpectedObject<T> extends Expected {
         T object,
         Predicate<T> test
     ) {
-        return of(object, test, Function.identity());
+        return of(object, test, null);
     }
 
     /**
