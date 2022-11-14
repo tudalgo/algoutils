@@ -68,7 +68,7 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
             builder.append(" ");
             builder.append(properties);
         }
-        if ((comment != null || subject != null || !properties.isEmpty()) && ((result.expected() != null && result.expected().display()) || result.actual() != null && result.actual().display())) {
+        if ((comment != null || subject != null || !properties.isEmpty()) && ((result.expected() != null && result.expected().display()) || (result.actual() != null && result.actual().display()))) {
             builder.append("\\<br\\>");
         }
         // expected
