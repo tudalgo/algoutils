@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static org.tudalgo.algoutils.tutor.general.stringify.HTML.*;
 
 /**
  * <p>A basic implementation of a comment factory.</p>
@@ -45,20 +46,19 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
             trace = "\\<div class=\"alert alert-danger\" role=\"alert\"\\>" +
                 result.cause().toString() +
                 "\n" +
-                stream(result.cause().getStackTrace()).limit(TRACE_LINES).map(e -> "\t" + e).collect(Collectors.joining("\n")) +
-                "\n...\n" +
+                pl4(stream(result.cause().getStackTrace()).limit(TRACE_LINES).map(e -> "\t" + e).collect(Collectors.joining("\n")) + "\n...\n") +
                 "\\</div\\>";
         }
         // comment
         var comment = commentSupplier != null ? commentSupplier.getPreComment(result) : null;
         if (comment != null) {
-            builder.append(e(comment));
+            builder.append(nobr(e(comment)));
         }
         // subject
         var subject = context != null && context.subject() != null ? stringifier.stringify(context.subject()) : null;
         if (subject != null) {
-            builder.append(" @ ");
-            builder.append(subject);
+            builder.append(wbr());
+            builder.append(format(nobr(e(" @ %s")), subject));
         }
         // properties
         var properties = context != null ? properties(context, 0) : "";
@@ -68,17 +68,17 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
             builder.append(" ");
             builder.append(properties);
         }
-        if ((comment != null || subject != null || !properties.isEmpty()) && (result.expected().display() || result.actual().display())) {
+        if ((comment != null || subject != null || !properties.isEmpty()) && (result.expected() != null && result.expected().display() || result.actual() != null && result.actual().display())) {
             builder.append("\\<br\\>");
         }
         // expected
-        if (result.expected().display()) {
-            builder.append(e("expected")).append(" ").append(result.expected().string(stringifier));
+        if (result.expected() != null && result.expected().display()) {
+            builder.append(nobr(format("%s %s", e("expected"), result.expected().string(stringifier))));
             builder.append("\\<br\\>");
         }
         // actual
-        if (result.actual().display()) {
-            builder.append(e("actual")).append(" ").append(result.actual().string(stringifier));
+        if (result.actual() != null && result.actual().display()) {
+            builder.append(nobr(format("%s %s", e("actual"), result.actual().string(stringifier))));
             builder.append("\\<br\\>");
         }
         // trace
@@ -103,7 +103,7 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
     }
 
     private static String e(String string) {
-        return format("\\<b\\>%s\\</b\\>", string);
+        return it(string);
     }
 
     public static void setNumberOfTraceLines(int lines) {
