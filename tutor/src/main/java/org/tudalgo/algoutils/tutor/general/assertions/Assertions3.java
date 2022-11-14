@@ -1,6 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.assertions;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
+import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
 import org.tudalgo.algoutils.tutor.general.match.Stringifiable;
