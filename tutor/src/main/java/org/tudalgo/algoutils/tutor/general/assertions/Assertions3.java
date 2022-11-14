@@ -64,7 +64,7 @@ public class Assertions3 {
         }
         var typeName = link.name();
         return fail(
-            of(matcher),
+            Expected.of(matcher),
             unexpected(link.returnType()),
             contextBuilder().subject(link).build(),
             e -> format("return type of method %s is not correct", typeName)
