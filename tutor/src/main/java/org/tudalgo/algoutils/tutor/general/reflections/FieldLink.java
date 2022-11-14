@@ -1,7 +1,5 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
-import org.tudalgo.algoutils.tutor.general.match.Identifiable;
-
 import java.lang.reflect.Field;
 
 /**
@@ -9,7 +7,7 @@ import java.lang.reflect.Field;
  *
  * @author Dustin Glaser
  */
-public interface FieldLink extends Link, Identifiable {
+public interface FieldLink extends Link, WithModifiers, WithName {
 
     /**
      * <p>Returns the object assigned to the type of this field.</p>
@@ -29,11 +27,20 @@ public interface FieldLink extends Link, Identifiable {
     <T> T get(Object instance);
 
     /**
-     * Returns the actual {@linkplain Field field} behind this field link.
-     *
-     * @return the field
+     * @deprecated use {@linkplain #reflection()} instead
      */
-    Field link();
+    @Deprecated
+    default Field link() {
+        return reflection();
+    }
+
+    /**
+     * <p>Returns the type of the field linked by this field link.</p>
+     *
+     * @return the type
+     */
+    @Override
+    Field reflection();
 
     /**
      * <p>Sets the object assigned to the type of this field.</p>
@@ -51,4 +58,16 @@ public interface FieldLink extends Link, Identifiable {
      * @param object   the object
      */
     void set(Object instance, Object object);
+
+    @Override
+    default Kind kind() {
+        return Kind.FIELD;
+    }
+
+    @Override
+    default int modifiers() {
+        return link().getModifiers();
+    }
+
+    TypeLink staticType();
 }

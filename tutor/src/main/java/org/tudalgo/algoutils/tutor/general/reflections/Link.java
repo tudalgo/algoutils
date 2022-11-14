@@ -2,10 +2,26 @@ package org.tudalgo.algoutils.tutor.general.reflections;
 
 public interface Link {
 
+    Object reflection();
+
+    Kind kind();
+
     /**
-     * <p>Returns a bit representation of all modifiers of this type.</p>
+     * <p>An enumeration of kinds of links.</p>
      *
-     * @return the bit representation
+     * @author Dustin Glaser
      */
-    int modifiers();
+    enum Kind {
+        PACKAGE,
+        CLASS,
+        INTERFACE,
+        ENUM,
+        RECORD,
+        FIELD,
+        CONSTRUCTOR,
+        METHOD,
+        PRIMITIVE,
+        ARRAY,
+        ANNOTATION
+    }
 }
