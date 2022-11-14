@@ -1,9 +1,10 @@
 package org.tudalgo.algoutils.tutor.general.assertions;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
+import org.tudalgo.algoutils.tutor.general.assertions.actual.Actual;
 import org.tudalgo.algoutils.tutor.general.assertions.basic.*;
+import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedExceptional;
-import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
@@ -20,7 +21,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.no
  */
 public final class Assertions2 {
 
-    private static final Environment environment = new BasicEnvironment();
+    private static final Environment environment = BasicEnvironment.getInstance();
     private static final TestOfCall.Builder.Factory TEST_OF_CALL_BUILDER_FACTORY = new BasicTestOfCall.Builder.Factory(environment);
     private static final TestOfObject.Builder.Factory<?> TEST_OF_OBJECT_BUILDER_FACTORY = new BasicTestOfObject.Builder.Factory<>(environment);
     private static final TestOfExceptionalCall.Builder.Factory<?> TEST_OF_THROWABLE_CALL_BUILDER_FACTORY = new BasicTestOfExceptionalCall.Builder.Factory<>(environment);
@@ -303,7 +304,7 @@ public final class Assertions2 {
         return null;
     }
 
-    public static <T> T fail(Nothing expected, Nothing actual, Context context, PreCommentSupplier<? super ResultOfFail> preCommentSupplier) {
+    public static <T> T fail(Expected expected, Actual actual, Context context, PreCommentSupplier<? super ResultOfFail> preCommentSupplier) {
         failBuilder().expected(expected).build().run(actual, null).check(context, preCommentSupplier);
         return null;
     }
@@ -348,6 +349,9 @@ public final class Assertions2 {
                 try {
                     var c = record.getClass().getRecordComponents();
                     for (var component : c) {
+                        if (component.getName().startsWith("_")) {
+                            continue;
+                        }
                         var value = component.getAccessor().invoke(record);
                         if (value != null && value.getClass().isRecord()) {
                             cb.add(component.getName(), context(value));
