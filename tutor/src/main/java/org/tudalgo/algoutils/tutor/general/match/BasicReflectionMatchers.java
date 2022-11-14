@@ -11,7 +11,7 @@ public class BasicReflectionMatchers {
     }
 
     public static <T extends WithType> Matcher<T> sameType(TypeLink link) {
-        return Matcher.of(l -> Objects.equals(l, link), link);
+        return Matcher.of(l -> Objects.equals(l.type(), link), link);
     }
 
     /**
