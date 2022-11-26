@@ -36,7 +36,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * @param matcher the matcher
      * @return the sublist of field
      */
-    default List<FieldLink> getFields(Matcher<? super FieldLink> matcher) {
+    default List<? extends FieldLink> getFields(Matcher<? super FieldLink> matcher) {
         return matches(getFields(), matcher);
     }
 
@@ -45,16 +45,16 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      *
      * @return the collection of fields
      */
-    Collection<FieldLink> getFields();
+    Collection<? extends FieldLink> getFields();
 
     /**
      * <p>Returns a collection of all interfaces extended (interfaces) or implemented (classes and enums) by the type linked by this type link.</p>
      *
      * @return the collection of interfaces
      */
-    Collection<TypeLink> interfaces();
+    Collection<? extends TypeLink> interfaces();
 
-    default List<TypeLink> interfaces(Matcher<? super TypeLink> matcher) {
+    default List<? extends TypeLink> interfaces(Matcher<? super TypeLink> matcher) {
         return matches(interfaces(), matcher);
     }
 
@@ -90,7 +90,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * @param matcher the matcher
      * @return the sublist of methods
      */
-    default List<MethodLink> getMethods(Matcher<? super MethodLink> matcher) {
+    default List<? extends MethodLink> getMethods(Matcher<? super MethodLink> matcher) {
         return matches(getMethods(), matcher);
     }
 
@@ -99,14 +99,14 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      *
      * @return the collection of methods
      */
-    Collection<MethodLink> getMethods();
+    Collection<? extends MethodLink> getMethods();
 
     /**
      * <p>Returns a collection of constructors declared in the type linked by this type link.</p>
      *
      * @return the collection of constructors
      */
-    Collection<ConstructorLink> getConstructors();
+    Collection<? extends ConstructorLink> getConstructors();
 
     /**
      * <p>Returns the constructor contained in the type linked by this type link and matched by the given matcher with the highest match score.</p>
@@ -129,7 +129,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * @param matcher the matcher
      * @return the sublist of constructors
      */
-    default List<ConstructorLink> getConstructors(Matcher<? super ConstructorLink> matcher) {
+    default List<? extends ConstructorLink> getConstructors(Matcher<? super ConstructorLink> matcher) {
         return matches(getConstructors(), matcher);
     }
 
@@ -142,7 +142,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * @param matcher the matcher
      * @return the sublist of enum constants
      */
-    default List<EnumConstantLink> getEnumConstants(Matcher<? super EnumConstantLink> matcher) {
+    default List<? extends EnumConstantLink> getEnumConstants(Matcher<? super EnumConstantLink> matcher) {
         return matches(getEnumConstants(), matcher);
     }
 
@@ -163,7 +163,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      *
      * @return the collection of enum constants
      */
-    Collection<EnumConstantLink> getEnumConstants();
+    Collection<? extends EnumConstantLink> getEnumConstants();
 
     /**
      * @deprecated use {@linkplain #reflection()} instead
