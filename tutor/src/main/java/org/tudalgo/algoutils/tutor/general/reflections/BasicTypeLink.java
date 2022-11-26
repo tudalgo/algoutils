@@ -1,6 +1,12 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
@@ -24,7 +30,7 @@ public class BasicTypeLink implements TypeLink {
     }
 
     @Override
-    public Collection<TypeLink> interfaces() {
+    public Collection<BasicTypeLink> interfaces() {
         if (interfaces.isEmpty()) {
             stream(type.getInterfaces()).map(BasicTypeLink::of).forEach(interfaces::add);
         }
@@ -34,10 +40,12 @@ public class BasicTypeLink implements TypeLink {
     @Override
     public TypeLink superType() {
         return of(type.getSuperclass());
-    }    private final List<FieldLink> fields = new LinkedList<>(), unmodifiableFields = unmodifiableList(fields);
+    }
+
+    private final List<BasicFieldLink> fields = new LinkedList<>(), unmodifiableFields = unmodifiableList(fields);
 
     @Override
-    public List<FieldLink> getFields() {
+    public List<BasicFieldLink> getFields() {
         if (fields.isEmpty()) {
             stream(type.getDeclaredFields()).map(BasicFieldLink::of).forEach(fields::add);
         }
@@ -45,7 +53,7 @@ public class BasicTypeLink implements TypeLink {
     }
 
     @Override
-    public Collection<ConstructorLink> getConstructors() {
+    public Collection<BasicConstructorLink> getConstructors() {
         if (constructors.isEmpty()) {
             stream(type.getDeclaredConstructors()).map(BasicConstructorLink::of).forEach(constructors::add);
         }
@@ -53,7 +61,7 @@ public class BasicTypeLink implements TypeLink {
     }
 
     @Override
-    public Collection<EnumConstantLink> getEnumConstants() {
+    public Collection<BasicEnumConstantLink> getEnumConstants() {
         if (!type.isEnum()) {
             return Collections.emptyList();
         }
@@ -63,7 +71,9 @@ public class BasicTypeLink implements TypeLink {
             stream(enumType.getEnumConstants()).map(BasicEnumConstantLink::of).forEach(enums::add);
         }
         return unmodifiableEnums;
-    }    private final List<TypeLink> interfaces = new ArrayList<>(), unmodifiableInterfaces = unmodifiableList(interfaces);
+    }
+
+    private final List<BasicTypeLink> interfaces = new ArrayList<>(), unmodifiableInterfaces = unmodifiableList(interfaces);
 
     @Override
     public String identifier() {
@@ -94,10 +104,10 @@ public class BasicTypeLink implements TypeLink {
         }
     }
 
-    private final List<MethodLink> methods = new LinkedList<>(), unmodifiableMethods = unmodifiableList(methods);
+    private final List<BasicMethodLink> methods = new LinkedList<>(), unmodifiableMethods = unmodifiableList(methods);
 
     @Override
-    public Collection<MethodLink> getMethods() {
+    public Collection<BasicMethodLink> getMethods() {
         if (methods.isEmpty()) {
             stream(type.getDeclaredMethods()).map(BasicMethodLink::of).forEach(methods::add);
         }
@@ -105,10 +115,8 @@ public class BasicTypeLink implements TypeLink {
     }
 
 
-
-    private final List<ConstructorLink> constructors = new LinkedList<>(), unmodifiableConstructors = unmodifiableList(constructors);
-
+    private final List<BasicConstructorLink> constructors = new LinkedList<>(), unmodifiableConstructors = unmodifiableList(constructors);
 
 
-    private final List<EnumConstantLink> enums = new LinkedList<>(), unmodifiableEnums = unmodifiableList(enums);
+    private final List<BasicEnumConstantLink> enums = new LinkedList<>(), unmodifiableEnums = unmodifiableList(enums);
 }

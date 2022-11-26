@@ -28,7 +28,7 @@ public class BasicConstructorLink extends BasicLink implements ConstructorLink {
      * @param constructor the constructor
      * @return the constructor link
      */
-    public static ConstructorLink of(Constructor<?> constructor) {
+    public static BasicConstructorLink of(Constructor<?> constructor) {
         return INSTANCES.computeIfAbsent(constructor, BasicConstructorLink::new);
     }
 
