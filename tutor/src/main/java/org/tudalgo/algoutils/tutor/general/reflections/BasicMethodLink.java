@@ -38,7 +38,7 @@ public class BasicMethodLink extends BasicLink implements MethodLink {
     }
 
     @Override
-    public TypeLink returnType() {
+    public BasicTypeLink returnType() {
         return returnTypeLink;
     }
 
