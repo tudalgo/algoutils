@@ -10,6 +10,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -23,10 +24,6 @@ import static java.lang.String.format;
 public final class ReflectionStringifier implements Stringifier {
 
     private static final ReflectionStringifier instance = new ReflectionStringifier();
-
-    private ReflectionStringifier() {
-
-    }
 
     /**
      * Returns an instance of this class
@@ -43,6 +40,26 @@ public final class ReflectionStringifier implements Stringifier {
             return null;
         if (object instanceof String s) {
             return s;
+        } else if (object instanceof boolean[]) {
+            return Arrays.toString((boolean[]) object);
+        } else if (object instanceof byte[]) {
+            return Arrays.toString((byte[]) object);
+        } else if (object instanceof char[]) {
+            return Arrays.toString((char[]) object);
+        } else if (object instanceof double[]) {
+            return Arrays.toString((double[]) object);
+        } else if (object instanceof float[]) {
+            return Arrays.toString((float[]) object);
+        } else if (object instanceof int[]) {
+            return Arrays.toString((int[]) object);
+        } else if (object instanceof long[]) {
+            return Arrays.toString((long[]) object);
+        } else if (object instanceof short[]) {
+            return Arrays.toString((short[]) object);
+        } else if (object instanceof Object[]) {
+            return Arrays.stream((Object[]) object)
+                .map(this::stringifyOrElseNull)
+                .collect(Collectors.joining(", ", "[", "]"));
         } else if (object instanceof List<?> l) {
             return l.stream().map(this::stringifyOrElseNull).collect(Collectors.joining(", ", "[", "]"));
         } else if (object instanceof Matcher<?> m) {
