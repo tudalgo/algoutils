@@ -40,4 +40,26 @@ public interface Actual {
     default String string(Stringifier stringifier) {
         return BRACKET_FORMATTER.apply(stringifier.stringify(behavior()));
     }
+
+    static Actual of(Object behavior, boolean successful) {
+        return new Actual() {
+            @Override
+            public Object behavior() {
+                return behavior;
+            }
+
+            @Override
+            public boolean successful() {
+                return successful;
+            }
+        };
+    }
+
+    static Actual successful(Object behavior) {
+        return of(behavior, true);
+    }
+
+    static Actual unexpected(Object behavior) {
+        return of(behavior, false);
+    }
 }

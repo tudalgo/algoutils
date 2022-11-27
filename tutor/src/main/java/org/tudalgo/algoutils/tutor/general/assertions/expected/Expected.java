@@ -36,4 +36,8 @@ public interface Expected {
     default String string(Stringifier stringifier) {
         return BRACKET_FORMATTER.apply(stringifier.stringify(behavior()));
     }
+
+    static Expected of(Object behavior) {
+        return () -> behavior;
+    }
 }

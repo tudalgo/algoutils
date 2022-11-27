@@ -3,6 +3,8 @@ package org.tudalgo.algoutils.tutor.general.assertions.basic;
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.assertions.Fail;
 import org.tudalgo.algoutils.tutor.general.assertions.ResultOfFail;
+import org.tudalgo.algoutils.tutor.general.assertions.actual.Actual;
+import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 
 /**
@@ -10,18 +12,18 @@ import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
  *
  * @author Dustin Glaser
  */
-public class BasicResultOfFail extends BasicResult<ResultOfFail, Nothing, Fail, Nothing> implements ResultOfFail {
+public class BasicResultOfFail extends BasicResult<ResultOfFail, Actual, Fail, Expected> implements ResultOfFail {
 
     /**
      * <p>Constructs a new result with the given environment, test and exception.</p>
      *
      * @param test the test
      */
-    public BasicResultOfFail(Environment environment, Fail test, Nothing actual, Exception exception) {
+    public BasicResultOfFail(Environment environment, Fail test, Actual actual, Exception exception) {
         super(environment, test, actual, exception);
     }
 
-    public static class Builder extends BasicResult.Builder<ResultOfFail, Nothing, Fail, Nothing, ResultOfFail.Builder> implements ResultOfFail.Builder {
+    public static class Builder extends BasicResult.Builder<ResultOfFail, Actual, Fail, Expected, ResultOfFail.Builder> implements ResultOfFail.Builder {
 
         public Builder(Environment environment) {
             super(environment);
@@ -32,7 +34,7 @@ public class BasicResultOfFail extends BasicResult<ResultOfFail, Nothing, Fail, 
             return new BasicResultOfFail(environment, test, actual, exception);
         }
 
-        public static class Factory extends BasicResult.Builder.Factory<ResultOfFail, Nothing, Fail, Nothing, ResultOfFail.Builder> implements ResultOfFail.Builder.Factory {
+        public static class Factory extends BasicResult.Builder.Factory<ResultOfFail, Actual, Fail, Expected, ResultOfFail.Builder> implements ResultOfFail.Builder.Factory {
 
             public Factory(Environment environment) {
                 super(environment);

@@ -3,7 +3,7 @@ package org.tudalgo.algoutils.tutor.general.reflections;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-public class BasicFieldLink implements FieldLink {
+public class BasicFieldLink extends BasicLink implements FieldLink {
 
     private final Field field;
 
@@ -48,13 +48,17 @@ public class BasicFieldLink implements FieldLink {
     }
 
     @Override
-    public Field link() {
+    public Field reflection() {
         return field;
     }
 
-    @Override
     public int modifiers() {
         return field.getModifiers();
+    }
+
+    @Override
+    public TypeLink staticType() {
+        return BasicTypeLink.of(field.getType());
     }
 
     @Override
@@ -99,5 +103,10 @@ public class BasicFieldLink implements FieldLink {
         return "BasicFieldLink{" +
             "field=" + field +
             '}';
+    }
+
+    @Override
+    public String name() {
+        return field.getName();
     }
 }

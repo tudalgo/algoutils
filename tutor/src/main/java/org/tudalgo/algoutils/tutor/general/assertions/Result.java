@@ -54,7 +54,7 @@ public interface Result<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT
      * @return if the test was successful
      */
     default boolean successful() {
-        return actual().successful();
+        return actual() != null && actual().successful();
     }
 
     /**
