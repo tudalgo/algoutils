@@ -5,6 +5,8 @@ import org.tudalgo.algoutils.tutor.general.assertions.actual.Actual;
 import org.tudalgo.algoutils.tutor.general.assertions.basic.*;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedExceptional;
+import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject;
+import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
@@ -30,6 +32,30 @@ public final class Assertions2 {
 
     // no instantiation allowed
     private Assertions2() {
+    }
+
+    public static <T> T objectAssert(ExpectedObject<T> expected, T object, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
+        return Assertions2.<T>testOfObjectBuilder().expected(expected).build().run(object).check(context, preCommentSupplier).object();
+    }
+
+    public static <T> T objectAssert(ExpectedObject<T> expected, T object, Context context) {
+        return objectAssert(expected, object, context, null);
+    }
+
+    public static <T> T objectAssert(ExpectedObject<T> expected, T object, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
+        return objectAssert(expected, object, null, preCommentSupplier);
+    }
+
+    public static <T> T objectAssert(ExpectedObject<T> expected, ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
+        return Assertions2.<T>testOfObjectBuilder().expected(expected).build().run(callable).check(context, preCommentSupplier).object();
+    }
+
+    public static <T> T objectAssert(ExpectedObject<T> expected, ObjectCallable<T> callable, Context context) {
+        return objectAssert(expected, callable, context, null);
+    }
+
+    public static <T> T objectAssert(ExpectedObject<T> expected, ObjectCallable<T> callable, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
+        return objectAssert(expected, callable, null, preCommentSupplier);
     }
 
     /**
