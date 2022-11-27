@@ -21,11 +21,14 @@ public class BasicMethodLink extends BasicLink implements MethodLink {
 
     private final List<BasicTypeLink> parameterTypeLinks;
 
+    private final BasicTypeLink parent;
+
     private BasicMethodLink(Method method) {
         method.setAccessible(true);
         this.method = method;
         this.returnTypeLink = BasicTypeLink.of(method.getReturnType());
         this.parameterTypeLinks = stream(method.getParameterTypes()).map(BasicTypeLink::of).toList();
+        this.parent = BasicTypeLink.of(method.getDeclaringClass());
     }
 
     public static BasicMethodLink of(Method method) {
