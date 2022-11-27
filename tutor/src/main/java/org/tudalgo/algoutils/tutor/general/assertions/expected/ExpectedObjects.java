@@ -1,7 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.assertions.expected;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import static java.lang.String.format;
 import static java.util.function.Function.identity;
@@ -75,7 +74,7 @@ public final class ExpectedObjects {
      * @param <T>      the type of the expected object
      * @return the expected behavior
      */
-    public static <T> ExpectedObject<Class<T>> instanceOf(Class<T> type, boolean subtypes) {
+    public static <T, U extends T> ExpectedObject<Class<? extends T>> instanceOf(Class<U> type, boolean subtypes) {
         if (subtypes) {
             return of(type, type::isAssignableFrom, identity());
         }

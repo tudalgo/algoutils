@@ -1,8 +1,10 @@
 package org.tudalgo.algoutils.tutor.general.stringify.basic;
 
+import org.tudalgo.algoutils.tutor.general.SpoonUtils;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
 import org.tudalgo.algoutils.tutor.general.reflections.Link;
 import org.tudalgo.algoutils.tutor.general.stringify.Stringifier;
+import spoon.reflect.declaration.CtElement;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -48,7 +50,8 @@ public final class ReflectionStringifier implements Stringifier {
         } else if (object instanceof Link l) {
             return stringifyOrElseNull(l.reflection());
         } else if (object instanceof Class<?> clazz) {
-            return clazz.getSimpleName();
+            var spoonName = SpoonUtils.getNameOfCtElement(clazz);
+            return spoonName != null ? spoonName : clazz.getSimpleName();
         } else if (object instanceof Field field) {
             var clazzString = field.getDeclaringClass().getSimpleName();
             var typeString = field.getType().getSimpleName();
@@ -66,6 +69,8 @@ public final class ReflectionStringifier implements Stringifier {
             return format("%s", typeString);
         } else if (object instanceof Constructor<?> c) {
             return format("constructor of %s", c.getDeclaringClass().getSimpleName());
+        } else if (object instanceof CtElement e) {
+            return SpoonUtils.getNameOfCtElement(e);
         }
         return Objects.toString(object);
     }

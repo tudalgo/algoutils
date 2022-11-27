@@ -1,5 +1,10 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
+import org.tudalgo.algoutils.tutor.general.ResourceUtils;
+import org.tudalgo.algoutils.tutor.general.SpoonUtils;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,11 +15,12 @@ import java.util.Map;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
+import static org.tudalgo.algoutils.tutor.general.match.BasicStringMatchers.identical;
 
 /**
  * A basic implementation of a {@link TypeLink type link}.
  */
-public class BasicTypeLink implements TypeLink {
+public class BasicTypeLink implements TypeLink, WithCtElement {
 
     private static final Map<Class<?>, BasicTypeLink> INSTANCES = new HashMap<>();
 
@@ -119,4 +125,15 @@ public class BasicTypeLink implements TypeLink {
 
 
     private final List<BasicEnumConstantLink> enums = new LinkedList<>(), unmodifiableEnums = unmodifiableList(enums);
+
+    private CtType<?> element;
+
+    @Override
+    public CtElement getCtElement() {
+        if (element != null) {
+            return element;
+        }
+        var source = ResourceUtils.getTypeContent(type);
+        return element = SpoonUtils.getCtElementForSourceCode(source, CtType.class, identical(type.getSimpleName()));
+    }
 }

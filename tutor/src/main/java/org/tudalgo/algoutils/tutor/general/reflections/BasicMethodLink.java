@@ -1,5 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
+import spoon.reflect.declaration.CtMethod;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -7,11 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.stream;
+import static org.tudalgo.algoutils.tutor.general.ResourceUtils.toShortSignature;
 
 /**
  * A basic implementation of a {@link MethodLink method link}.
  */
-public class BasicMethodLink extends BasicLink implements MethodLink {
+public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElement {
 
     private static final Map<Method, BasicMethodLink> INSTANCES = new HashMap<>();
 
@@ -21,11 +24,14 @@ public class BasicMethodLink extends BasicLink implements MethodLink {
 
     private final List<BasicTypeLink> parameterTypeLinks;
 
+    private final BasicTypeLink parent;
+
     private BasicMethodLink(Method method) {
         method.setAccessible(true);
         this.method = method;
         this.returnTypeLink = BasicTypeLink.of(method.getReturnType());
         this.parameterTypeLinks = stream(method.getParameterTypes()).map(BasicTypeLink::of).toList();
+        this.parent = BasicTypeLink.of(method.getDeclaringClass());
     }
 
     public static BasicMethodLink of(Method method) {
@@ -79,5 +85,16 @@ public class BasicMethodLink extends BasicLink implements MethodLink {
     @Override
     public BasicTypeLink type() {
         return returnTypeLink;
+    }
+
+    private CtMethod<?> element;
+
+    @Override
+    public CtMethod<?> getCtElement() {
+        if (element != null) {
+            return element;
+        }
+        return element = (CtMethod<?>) parent.getCtElement().getElements(f -> f instanceof CtMethod<?> m &&
+            m.getSignature().equals(toShortSignature(reflection()))).get(0);
     }
 }
