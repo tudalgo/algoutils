@@ -64,9 +64,9 @@ public interface Matcher<T> {
         return new Matcher<U>() {
             @Override
             public <ST extends U> Match<ST> match(ST object) {
-                Match<ST> match = Matcher.this.match(object);
+                Match<ST> match = other.match(object);
                 if (match.matched()) {
-                    return other.match(object);
+                    return Matcher.this.match(object);
                 }
                 return match;
             }
