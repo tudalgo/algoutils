@@ -66,9 +66,11 @@ public final class ReflectionStringifier implements Stringifier {
             return stringifyOrElseNull(m.object());
         } else if (object instanceof Link l) {
             return stringifyOrElseNull(l.reflection());
-        } else if (object instanceof Class<?> clazz) {
+        } else if (object instanceof Class<?> clazz && clazz.isAssignableFrom(CtElement.class)) {
             var spoonName = SpoonUtils.getNameOfCtElement(clazz);
             return spoonName != null ? spoonName : clazz.getSimpleName();
+        } else if (object instanceof Class<?> clazz) {
+            return clazz.getSimpleName();
         } else if (object instanceof Field field) {
             var clazzString = field.getDeclaringClass().getSimpleName();
             var typeString = field.getType().getSimpleName();
