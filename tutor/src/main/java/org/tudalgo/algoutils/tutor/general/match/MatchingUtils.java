@@ -3,6 +3,8 @@ package org.tudalgo.algoutils.tutor.general.match;
 import java.util.Collection;
 import java.util.List;
 
+import static java.util.Comparator.reverseOrder;
+
 public class MatchingUtils {
 
     /**
@@ -14,7 +16,7 @@ public class MatchingUtils {
      * @return the list of matched objects
      */
     public static <T> List<T> matches(Collection<T> objects, Matcher<? super T> matcher) {
-        return objects.stream().map(matcher::match).filter(Match::matched).sorted().map(Match::object).toList();
+        return objects.stream().map(matcher::match).filter(Match::matched).sorted(reverseOrder()).map(Match::object).toList();
     }
 
     /**
