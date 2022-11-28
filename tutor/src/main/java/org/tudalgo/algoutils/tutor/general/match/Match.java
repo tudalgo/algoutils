@@ -56,7 +56,7 @@ public interface Match<T> extends Comparable<Match<T>> {
         if (matched() == other.matched()) {
             return 0;
         }
-        return matched() ? -1 : 1;
+        return matched() ? 1 : -1;
     }
 
     /**
