@@ -3,6 +3,7 @@ package org.tudalgo.algoutils.tutor.general.assertions;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -15,6 +16,7 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.text;
@@ -44,16 +46,24 @@ public class Assertions4 {
         Context context,
         PreCommentSupplier<? super ResultOfObject<CtStatement>> comment
     ) {
-        if (!(statement instanceof CtBlock<?> block)) {
+        List<CtStatement> statements;
+        if (statement instanceof CtComment) {
+            statements = List.of();
+        } else if (statement instanceof CtBlock<?> block) {
+            statements = block.getStatements().stream().filter(s -> !(s instanceof CtComment)).toList();
+        } else {
             return statement;
         }
         Assertions2.assertEquals(
             1,
-            block.getStatements().size(),
+            statements.size(),
             context,
             r -> "block contains more than one statement"
         );
-        return block.getLastStatement();
+        if (statements.get(0) instanceof CtBlock<?>) {
+            return assertIsOneStatement(statements.get(0), context, comment);
+        }
+        return statements.get(0);
     }
 
     public static CtStatement assertHasElseStatement(
