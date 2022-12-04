@@ -113,6 +113,9 @@ public class Assertions4 {
         Context context,
         PreCommentSupplier<? super ResultOfFail> comment
     ) {
+        if (executable == null) {
+            return;
+        }
         executable.getElements(new TypeFilter<>(CtInvocation.class)).forEach(i -> {
             var e = i.getExecutable().getDeclaration();
             if (visited.contains(e)) {
