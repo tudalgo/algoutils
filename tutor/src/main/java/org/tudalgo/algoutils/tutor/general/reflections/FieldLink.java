@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 public interface FieldLink extends Link, WithModifiers, WithName, WithType {
     /**
      * <p>Returns the object assigned to the type of this field.</p>
-     * <p>This field is required to be an class field.</p>
+     * <p>This field is required to be a class field.</p>
      *
      * @return the object
      */
