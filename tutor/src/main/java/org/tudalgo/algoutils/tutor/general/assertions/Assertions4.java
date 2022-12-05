@@ -1,5 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.assertions;
 
+import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects;
 import spoon.reflect.code.CtBlock;
@@ -82,7 +83,8 @@ public class Assertions4 {
         return ifStatement.getElseStatement();
     }
 
-    private static final Filter<CtElement> ITERATIVE_ELEMENTS_FILTER = e -> e instanceof CtFor || e instanceof CtForEach || e instanceof WhileStatement;
+    private static final Filter<CtElement> ITERATIVE_ELEMENTS_FILTER = e ->
+        e instanceof CtFor || e instanceof CtForEach || e instanceof WhileStatement || e instanceof DoStatement;
 
     public static void assertIsNotIteratively(
         CtMethod<?> method,
