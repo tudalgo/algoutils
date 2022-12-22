@@ -4,6 +4,7 @@ import org.tudalgo.algoutils.tutor.general.match.Matcher;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static org.tudalgo.algoutils.tutor.general.match.MatchingUtils.firstMatch;
 import static org.tudalgo.algoutils.tutor.general.match.MatchingUtils.matches;
@@ -13,7 +14,7 @@ import static org.tudalgo.algoutils.tutor.general.match.MatchingUtils.matches;
  *
  * @author Dustin Glaser
  */
-public interface TypeLink extends Link, WithType, WithModifiers, WithName {
+public interface TypeLink extends Link, WithType, WithModifiers, WithName, WithImports {
 
     /**
      * <p>Returns the field contained in the type linked by this type link and matched by the given matcher with the highest match score.</p>
@@ -21,6 +22,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * <p>If there is not such a field, null is returned.</p>
      *
      * @param matcher the matcher
+     *
      * @return the field or null
      */
     default FieldLink getField(Matcher<? super FieldLink> matcher) {
@@ -34,6 +36,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * <p>The list is sorted by match scores in descending order.</p>
      *
      * @param matcher the matcher
+     *
      * @return the sublist of field
      */
     default List<? extends FieldLink> getFields(Matcher<? super FieldLink> matcher) {
@@ -75,6 +78,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * <p>If there is not such a method, null is returned.</p>
      *
      * @param matcher the matcher
+     *
      * @return the method or null
      */
     default MethodLink getMethod(Matcher<? super MethodLink> matcher) {
@@ -88,6 +92,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * <p>The list is sorted by match scores in descending order.</p>
      *
      * @param matcher the matcher
+     *
      * @return the sublist of methods
      */
     default List<? extends MethodLink> getMethods(Matcher<? super MethodLink> matcher) {
@@ -114,6 +119,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * <p>If there is not such a constructor, null is returned.</p>
      *
      * @param matcher the matcher
+     *
      * @return the constructor or null
      */
     default ConstructorLink getConstructor(Matcher<? super ConstructorLink> matcher) {
@@ -127,6 +133,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * <p>The list is sorted by match scores in descending order.</p>
      *
      * @param matcher the matcher
+     *
      * @return the sublist of constructors
      */
     default List<? extends ConstructorLink> getConstructors(Matcher<? super ConstructorLink> matcher) {
@@ -140,6 +147,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * <p>The list is sorted by match scores in descending order.</p>
      *
      * @param matcher the matcher
+     *
      * @return the sublist of enum constants
      */
     default List<? extends EnumConstantLink> getEnumConstants(Matcher<? super EnumConstantLink> matcher) {
@@ -152,6 +160,7 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
      * <p>If there is not such a enum constant, null is returned.</p>
      *
      * @param matcher the matcher
+     *
      * @return the enum constant or null
      */
     default EnumConstantLink getEnumConstant(Matcher<? super EnumConstantLink> matcher) {
@@ -196,4 +205,5 @@ public interface TypeLink extends Link, WithType, WithModifiers, WithName {
     default TypeLink type() {
         return this;
     }
+
 }

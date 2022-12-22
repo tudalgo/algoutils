@@ -20,7 +20,7 @@ import static org.tudalgo.algoutils.tutor.general.match.BasicStringMatchers.iden
 /**
  * A basic implementation of a {@link TypeLink type link}.
  */
-public class BasicTypeLink implements TypeLink, WithCtElement {
+public class BasicTypeLink extends BasicLinkWithImports implements TypeLink {
 
     private static final Map<Class<?>, BasicTypeLink> INSTANCES = new HashMap<>();
 
@@ -136,4 +136,5 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
         var source = ResourceUtils.getTypeContent(type);
         return element = SpoonUtils.getCtElementForSourceCode(source, CtType.class, identical(type.getSimpleName()));
     }
+
 }

@@ -14,7 +14,7 @@ import static org.tudalgo.algoutils.tutor.general.ResourceUtils.toShortSignature
 /**
  * A basic implementation of a {@link MethodLink method link}.
  */
-public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElement {
+public class BasicMethodLink extends BasicLinkWithImports implements MethodLink {
 
     private static final Map<Method, BasicMethodLink> INSTANCES = new HashMap<>();
 
@@ -97,4 +97,5 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
         return element = (CtMethod<?>) parent.getCtElement().getElements(f -> f instanceof CtMethod<?> m &&
             m.getSignature().equals(toShortSignature(reflection()))).get(0);
     }
+
 }

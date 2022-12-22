@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
  *
  * @author Dustin Glaser
  */
-public interface MethodLink extends WithModifiers, WithName, WithType, WithTypeList, Identifiable {
+public interface MethodLink extends WithModifiers, WithName, WithType, WithTypeList, WithImports, Identifiable {
 
     /**
      * <p>Returns the return type of the method linked by this method link.</p>
@@ -24,6 +24,7 @@ public interface MethodLink extends WithModifiers, WithName, WithType, WithTypeL
      * @param instance  the instance
      * @param arguments the arguments
      * @param <T>       the type of the return value
+     *
      * @return the return value
      */
     <T> T invoke(Object instance, Object... arguments) throws Exception;
@@ -33,6 +34,7 @@ public interface MethodLink extends WithModifiers, WithName, WithType, WithTypeL
      *
      * @param arguments the arguments
      * @param <T>       the type of the return value
+     *
      * @return the return value
      */
     <T> T invokeStatic(Object... arguments) throws Exception;
@@ -59,4 +61,5 @@ public interface MethodLink extends WithModifiers, WithName, WithType, WithTypeL
     default int modifiers() {
         return reflection().getModifiers();
     }
+
 }
