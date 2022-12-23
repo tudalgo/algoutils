@@ -3,6 +3,9 @@ package org.tudalgo.algoutils.tutor.general.assertions;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects;
+import org.tudalgo.algoutils.tutor.general.reflections.BasicTypeLink;
+import org.tudalgo.algoutils.tutor.general.reflections.TypeLink;
+import org.tudalgo.algoutils.tutor.general.reflections.WithImports;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtFor;
@@ -19,6 +22,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.text;
 
@@ -34,7 +38,7 @@ public class Assertions4 {
         Context context,
         PreCommentSupplier<? super ResultOfObject<Class<? extends CtElement>>> comment
     ) {
-        Assertions2.<Class<? extends CtElement>>testOfObjectBuilder()
+        Assertions2.<Class<? extends CtElement>> testOfObjectBuilder()
             .expected(ExpectedObjects.instanceOf(expected, true)).build()
             .run(actual.getClass())
             .check(context, comment);
@@ -134,5 +138,82 @@ public class Assertions4 {
         });
         visited.add(executable);
     }
+
+
+    /**
+     * Asserts that the given link with import contains the given imports.
+     *
+     * @param link    the link to check
+     * @param imports the imports to check
+     * @param context the context information about the assertion to display if the assertion fails
+     * @param comment the comment to display if the assertion fails
+     */
+    public static void assertContainsClasses(
+        WithImports link,
+        Set<Class<?>> imports,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> comment
+    ) {
+        assertContainsTypeLinks(link, imports.stream().map(BasicTypeLink::of).collect(Collectors.toSet()), context, comment);
+    }
+
+    /**
+     * Asserts that the given link with import contains the given imports.
+     *
+     * @param link    the link to check
+     * @param imports the imports to check
+     * @param context the context information about the assertion to display if the assertion fails
+     * @param comment the comment to display if the assertion fails
+     */
+    public static void assertContainsTypeLinks(
+        WithImports link,
+        Set<TypeLink> imports,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> comment
+    ) {
+        if (link.imports().containsAll(imports)) {
+            return;
+        }
+        Assertions2.fail(context, comment);
+    }
+
+    /**
+     * Asserts that the given link with import does not contain the given imports
+     *
+     * @param link    the link to check
+     * @param imports the imports to check
+     * @param context the context information about the assertion to display if the assertion fails
+     * @param comment the comment to display if the assertion fails
+     */
+    public static void assertContainsNotClasses(
+        WithImports link,
+        Set<Class<?>> imports,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> comment
+    ) {
+        assertContainsTypeLinks(link, imports.stream().map(BasicTypeLink::of).collect(Collectors.toSet()), context, comment);
+    }
+
+    /**
+     * Asserts that the given link with import does not contain the given imports.
+     *
+     * @param link    the link to check
+     * @param imports the imports to check
+     * @param context the context information about the assertion to display if the assertion fails
+     * @param comment the comment to display if the assertion fails
+     */
+    public static void assertContainsNotTypeLinks(
+        WithImports link,
+        Set<TypeLink> imports,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> comment
+    ) {
+        if (!link.imports().containsAll(imports)) {
+            return;
+        }
+        Assertions2.fail(context, comment);
+    }
+
+
 }
 
