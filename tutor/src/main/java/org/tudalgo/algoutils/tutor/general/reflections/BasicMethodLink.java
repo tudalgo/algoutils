@@ -110,6 +110,9 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
         if (element != null) {
             return element;
         }
+        if (!parent.isResourceAvailable()) {
+            return null;
+        }
         return element = (CtMethod<?>) parent.getCtElement().getElements(f -> f instanceof CtMethod<?> m && m.getSignature().equals(toShortSignature(reflection()))).get(0);
     }
 

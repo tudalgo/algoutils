@@ -102,6 +102,9 @@ public class BasicConstructorLink extends BasicLink implements ConstructorLink, 
         if (element != null) {
             return element;
         }
+        if(!parent.isResourceAvailable()){
+            return null;
+        }
         return element = (CtConstructor<?>) parent.getCtElement()
             .getElements(e -> e instanceof CtConstructor<?> c && c.getSignature().equals(toShortSignature(reflection())))
             .get(0);
