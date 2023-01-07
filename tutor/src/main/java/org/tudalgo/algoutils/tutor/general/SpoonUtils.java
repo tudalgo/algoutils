@@ -8,6 +8,7 @@ import org.tudalgo.algoutils.tutor.general.reflections.BasicTypeLink;
 import org.tudalgo.algoutils.tutor.general.reflections.Link;
 import org.tudalgo.algoutils.tutor.general.reflections.TypeLink;
 import spoon.Launcher;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -129,16 +130,17 @@ public class SpoonUtils {
     public static Set<TypeLink> collectConstructorCallImports(CtElement element, Set<Link> visited) {
         Set<TypeLink> imports = new HashSet<>();
 
-        Set<BasicConstructorLink> constructorLinks = element.getElements(CtConstructor.class::isInstance).stream()
-            .map(CtConstructor.class::cast)
-            .map(CtConstructor::getReference)
+        Set<BasicConstructorLink> constructorLinks = element.getElements(CtConstructorCall.class::isInstance).stream()
+            .map(CtConstructorCall.class::cast)
+            .map(CtConstructorCall::getExecutable)
+            // null if the constructor is not found
+            .filter(Predicate.not(Objects::isNull))
             .map(CtExecutableReference::getActualConstructor)
             .map(BasicConstructorLink::of)
             .filter(Predicate.not(visited::contains))
             .distinct()
             .peek(visited::add)
             .collect(Collectors.toSet());
-        visited.addAll(constructorLinks);
 
         if (!constructorLinks.isEmpty()) {
             constructorLinks.stream().map(BasicConstructorLink::imports).forEach(imports::addAll);
@@ -162,6 +164,8 @@ public class SpoonUtils {
             .map(CtInvocation.class::cast)
             .map(CtInvocation::getExecutable)
             .map(CtExecutableReference::getActualMethod)
+            // null if the method is not found
+            .filter(Predicate.not(Objects::isNull))
             .map(BasicMethodLink::of)
             .filter(Predicate.not(visited::contains))
             .distinct()

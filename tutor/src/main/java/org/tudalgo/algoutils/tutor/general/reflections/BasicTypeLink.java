@@ -2,7 +2,6 @@ package org.tudalgo.algoutils.tutor.general.reflections;
 
 import org.tudalgo.algoutils.tutor.general.ResourceUtils;
 import org.tudalgo.algoutils.tutor.general.SpoonUtils;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
@@ -136,7 +135,6 @@ public class BasicTypeLink extends BasicLink implements TypeLink, WithCtElement,
         }
         return unmodifiableMethods;
     }
-
 
     private final List<BasicConstructorLink> constructors = new LinkedList<>(), unmodifiableConstructors = unmodifiableList(constructors);
 
