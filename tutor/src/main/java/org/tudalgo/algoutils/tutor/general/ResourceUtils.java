@@ -5,6 +5,7 @@ import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,9 +43,21 @@ public class ResourceUtils {
     }
 
     /**
+     * Returns {@code true} if the source code of the given class is available.
+     *
+     * @param clazz the class to check
+     *
+     * @return {@code true} if the source code of the given class is available
+     */
+    public static boolean isResourceAvailable(Class<?> clazz) {
+        return getTypeContent(clazz) != null;
+    }
+
+    /**
      * <p>Returns the source code of the given student solution class.</p>
      *
      * @param clazz the student solution class
+     *
      * @return the source code
      */
     public static String getTypeContent(Class<?> clazz) {
@@ -77,4 +90,13 @@ public class ResourceUtils {
         }
         return sj.toString();
     }
+
+    public static String toShortSignature(Constructor<?> constructor) {
+        StringJoiner sj = new StringJoiner(",", constructor.getName() + "(", ")");
+        for (Class<?> parameterType : constructor.getParameterTypes()) {
+            sj.add(parameterType.getTypeName());
+        }
+        return sj.toString();
+    }
+
 }
