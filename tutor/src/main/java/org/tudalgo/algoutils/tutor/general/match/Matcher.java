@@ -60,21 +60,42 @@ public interface Matcher<T> {
         return null;
     }
 
-    default <U extends T> Matcher<U> and(Matcher<U> other) {
-        return new Matcher<U>() {
-            @Override
-            public <ST extends U> Match<ST> match(ST object) {
-                Match<ST> match = other.match(object);
-                if (match.matched()) {
-                    return Matcher.this.match(object);
-                }
-                return match;
-            }
+    /**
+     * <p>returns a {@link Predicate} that returns {@code true} if the given object is matched by this matcher.</p>
+     *
+     * @param <U> the type of the object to match
+     * @return the predicate
+     */
+    default <U extends T> Predicate<U> predicate() {
+        return (U object) -> match(object).matched();
+    }
 
-            @Override
-            public Object object() {
-                return Matcher.this.object();
-            }
-        };
+    /**
+     * <p>returns a Matcher that matches the logical negation of this matcher.</p>
+     *
+     * @return the negated matcher
+     */
+    default Matcher<T> negate() {
+        return Matcher.of(Predicate.not(this.predicate()), this.object());
+    }
+
+    /**
+     * <p>Returns a new matcher that logically combines the current matcher with the given matcher using the logical {@code and} operator.</p>
+     *
+     * @param other the other matcher
+     * @return the new matcher
+     */
+    default Matcher<T> and(Matcher<? super T> other) {
+        return Matcher.of(this.predicate().and(other.predicate()), this.object());
+    }
+
+    /**
+     * <p>Returns a new matcher that logically combines the current matcher with the given matcher using the logical {@code or} operator.</p>
+     *
+     * @param other the other matcher
+     * @return the new matcher
+     */
+    default Matcher<T> or(Matcher<T> other) {
+        return Matcher.of(this.predicate().or(other.predicate()), this.object());
     }
 }
