@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.stream;
-import static org.tudalgo.algoutils.tutor.general.ResourceUtils.toShortSignature;
 
 /**
  * A basic implementation of a {@link MethodLink method link}.
@@ -25,6 +24,7 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
     private final List<BasicTypeLink> parameterTypeLinks;
 
     private final BasicTypeLink parent;
+    private CtMethod<?> element;
 
     private BasicMethodLink(Method method) {
         method.setAccessible(true);
@@ -87,14 +87,21 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
         return returnTypeLink;
     }
 
-    private CtMethod<?> element;
-
     @Override
     public CtMethod<?> getCtElement() {
         if (element != null) {
             return element;
         }
-        return element = (CtMethod<?>) parent.getCtElement().getElements(f -> f instanceof CtMethod<?> m &&
-            m.getSignature().equals(toShortSignature(reflection()))).get(0);
+        var parentElement = parent.getCtElement();
+        if (parentElement == null) {
+            return null;
+        }
+        element = (CtMethod<?>) parentElement.getDirectChildren().stream()
+            .filter(e ->
+                e instanceof CtMethod<?> m &&
+                    reflection().getName().equals(m.getSimpleName()) &&
+                    reflection().getReturnType().getSimpleName().equals(m.getType().getSimpleName())
+            ).findFirst().orElse(null);
+        return element;
     }
 }
