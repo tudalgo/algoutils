@@ -1,21 +1,13 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
-import org.tudalgo.algoutils.tutor.general.ResourceUtils;
-import org.tudalgo.algoutils.tutor.general.SpoonUtils;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
-import static org.tudalgo.algoutils.tutor.general.match.BasicStringMatchers.identical;
+import static org.tudalgo.algoutils.tutor.general.SpoonUtils.getCtModel;
 
 /**
  * A basic implementation of a {@link TypeLink type link}.
@@ -25,7 +17,7 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
     private static final Map<Class<?>, BasicTypeLink> INSTANCES = new HashMap<>();
 
     private final Class<?> type;
-
+    private CtType<?> element;
 
     private BasicTypeLink(Class<?> type) {
         this.type = type;
@@ -46,9 +38,7 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
     @Override
     public TypeLink superType() {
         return of(type.getSuperclass());
-    }
-
-    private final List<BasicFieldLink> fields = new LinkedList<>(), unmodifiableFields = unmodifiableList(fields);
+    }    private final List<BasicFieldLink> fields = new LinkedList<>(), unmodifiableFields = unmodifiableList(fields);
 
     @Override
     public List<BasicFieldLink> getFields() {
@@ -79,12 +69,10 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
         return unmodifiableEnums;
     }
 
-    private final List<BasicTypeLink> interfaces = new ArrayList<>(), unmodifiableInterfaces = unmodifiableList(interfaces);
-
     @Override
     public String identifier() {
         return type.getSimpleName();
-    }
+    }    private final List<BasicTypeLink> interfaces = new ArrayList<>(), unmodifiableInterfaces = unmodifiableList(interfaces);
 
     @Override
     public Class<?> reflection() {
@@ -110,8 +98,6 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
         }
     }
 
-    private final List<BasicMethodLink> methods = new LinkedList<>(), unmodifiableMethods = unmodifiableList(methods);
-
     @Override
     public Collection<BasicMethodLink> getMethods() {
         if (methods.isEmpty()) {
@@ -120,20 +106,27 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
         return unmodifiableMethods;
     }
 
+    @Override
+    public CtElement getCtElement() {
+        if (element != null) {
+            return element;
+        }
+        element = getCtModel().getAllTypes().stream()
+            .filter(e -> e.getQualifiedName().equals(reflection().getName()))
+            .findFirst()
+            .orElse(null);
+        return element;
+    }    private final List<BasicMethodLink> methods = new LinkedList<>(), unmodifiableMethods = unmodifiableList(methods);
+
+
+
 
     private final List<BasicConstructorLink> constructors = new LinkedList<>(), unmodifiableConstructors = unmodifiableList(constructors);
 
 
     private final List<BasicEnumConstantLink> enums = new LinkedList<>(), unmodifiableEnums = unmodifiableList(enums);
 
-    private CtType<?> element;
 
-    @Override
-    public CtElement getCtElement() {
-        if (element != null) {
-            return element;
-        }
-        var source = ResourceUtils.getTypeContent(type);
-        return element = SpoonUtils.getCtElementForSourceCode(source, CtType.class, identical(type.getSimpleName()));
-    }
+
+
 }
