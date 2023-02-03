@@ -80,9 +80,14 @@ public class SpoonUtils {
         if (model != null) {
             return model;
         }
+        //noinspection UnstableApiUsage
+        var cycle = getTestCycle();
         var launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(17);
         launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+        if (cycle != null) {
+            launcher.getEnvironment().setInputClassLoader((ClassLoader) cycle.getClassLoader());
+        }
         launcher.addInputResource(getSubmissionFiles());
         return model = launcher.buildModel();
     }
