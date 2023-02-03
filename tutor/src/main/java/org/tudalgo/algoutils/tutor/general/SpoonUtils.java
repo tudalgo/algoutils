@@ -7,9 +7,19 @@ import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.support.compiler.FileSystemFile;
+import spoon.support.compiler.VirtualFile;
+import spoon.support.compiler.VirtualFolder;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static org.sourcegrade.jagr.api.testing.extension.TestCycleResolver.getTestCycle;
 
 /**
  * A collection of utilities for working with spoon.
@@ -70,11 +80,52 @@ public class SpoonUtils {
             return model;
         }
         var launcher = new Launcher();
-        //noinspection UnstableApiUsage
-        var cycle = TestCycleResolver.getTestCycle();
-        if (cycle != null) {
-            launcher.getEnvironment().setInputClassLoader((ClassLoader) cycle.getClassLoader());
-        }
+        launcher.getEnvironment().setComplianceLevel(17);
+        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+        launcher.addInputResource(getSubmissionFiles());
         return model = launcher.buildModel();
+    }
+
+    private static final List<String> EXCLUDED_DIRECTORIES = List.of("graderPrivate", "graderPublic");
+
+    private static VirtualFolder getSubmissionFiles() {
+        // virtual folder for submission files
+        var folder = new VirtualFolder();
+        //noinspection UnstableApiUsage
+        var cycle = getTestCycle();
+        if (cycle != null) {
+            // current test run is a grader run
+            var submission = cycle.getSubmission();
+            for (var name : cycle.getClassLoader().getClassNames()) {
+                var path = name.replace('.', '/') + ".java";
+                var sourceFile = submission.getSourceFile(path);
+                if (sourceFile != null) {
+                    var content = fixContent(sourceFile.getContent());
+                    folder.addFile(new VirtualFile(content, name));
+                }
+            }
+        } else {
+            // current test run is a local run
+            try (var pathStream = Files.walk(Path.of("src"))) {
+                var pathIterator = pathStream.iterator();
+                while (pathIterator.hasNext()) {
+                    var path = pathIterator.next();
+                    var pathName = path.toString();
+                    if (!pathName.endsWith(".java") || EXCLUDED_DIRECTORIES.contains(pathName.split("/")[1])) {
+                        // current file is not a java file or not a submission file
+                        continue;
+                    }
+                    // add file to virtual folder
+                    folder.addFile(new FileSystemFile(path.toFile()));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot read submission files.", e);
+            }
+        }
+        return folder;
+    }
+
+    private static String fixContent(String content) {
+        return new String(content.getBytes(), US_ASCII) + "\n";
     }
 }
