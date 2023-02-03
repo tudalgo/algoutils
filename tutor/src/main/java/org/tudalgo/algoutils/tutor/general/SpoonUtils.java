@@ -35,6 +35,7 @@ public class SpoonUtils {
     /**
      * @deprecated use {@link #getCtModel()} instead
      */
+    @Deprecated
     public static <T, U extends CtType<?>> T getCtElementForSourceCode(
         String ignoredSourceCode,
         Class<U> ignoredKind,
