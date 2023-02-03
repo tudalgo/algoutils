@@ -13,4 +13,12 @@ public interface WithCtElement extends Link {
      * @return the {@linkplain CtElement}
      */
     CtElement getCtElement();
+
+    /**
+     * Returns if an {@linkplain CtElement} is available for the element behind this link.
+     * In general, this is the case for all solution's elements.
+     *
+     * @return if an {@linkplain CtElement} is available
+     */
+    boolean isCtElementAvailable();
 }
