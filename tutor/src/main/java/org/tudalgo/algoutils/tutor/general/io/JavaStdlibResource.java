@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -97,6 +98,22 @@ public class JavaStdlibResource implements JavaResource {
     @Override
     public int size() {
         return getEntries().size();
+    }
+
+    @Override
+    public Map<String, String> contents() {
+        // Do not use get() here because it will open a new ZipFile for each entry
+        try (ZipFile file = new ZipFile(source.toFile())) {
+            return getEntries().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+                try {
+                    return new String(file.getInputStream(entry.getValue()).readAllBytes());
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
+            }));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override
