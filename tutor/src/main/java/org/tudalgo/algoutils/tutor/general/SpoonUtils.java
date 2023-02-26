@@ -72,6 +72,9 @@ public class SpoonUtils {
      * locally from the file system.
      */
     private static void initLauncher() {
+        if (launcher != null) {
+            return;
+        }
         launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(17);
         launcher.getEnvironment().setIgnoreSyntaxErrors(true);
