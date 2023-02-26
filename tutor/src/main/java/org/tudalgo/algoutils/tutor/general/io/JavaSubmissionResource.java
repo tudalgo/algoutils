@@ -18,13 +18,28 @@ import java.util.stream.Stream;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.sourcegrade.jagr.api.testing.extension.TestCycleResolver.getTestCycle;
 
+/**
+ * A Java submission resource which can access the source code of the submission.
+ *
+ * @author Nhan Huynh
+ */
 public class JavaSubmissionResource implements JavaResource {
 
+    /**
+     * The local source of this resource.
+     */
     private static final Path LOCAL_SOURCE = Path.of("tutor/src");
+
+    /**
+     * The directories to ignore..
+     */
     private static final List<Path> EXCLUDED_DIRECTORIES = Stream.of("graderPrivate", "graderPublic")
         .map(LOCAL_SOURCE::resolve)
         .toList();
 
+    /**
+     * The content source of the classes in this resource.
+     */
     private @Nullable Map<String, String> contents = null;
 
     @Override
@@ -37,6 +52,13 @@ public class JavaSubmissionResource implements JavaResource {
         return contents().size();
     }
 
+    /**
+     * Fixes the content of the given string.
+     *
+     * @param content the content to fix
+     *
+     * @return the fixed content
+     */
     private static String fixContent(String content) {
         return new String(content.getBytes(), US_ASCII) + "\n";
     }

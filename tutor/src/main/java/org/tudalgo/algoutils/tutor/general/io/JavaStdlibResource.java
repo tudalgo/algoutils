@@ -14,20 +14,47 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * The Java standard library resource which can access the source code of the standard library.
+ *
+ * @author Nhan Huynh
+ */
 public class JavaStdlibResource implements JavaResource {
 
+    /**
+     * The source of this resource.
+     */
     private final Path source;
 
+    /**
+     * The content source of the classes in this resource.
+     */
+
     private @Nullable Map<String, ZipEntry> entries;
+
+    /**
+     * Contracts a new resource from the given source.
+     *
+     * @param source the source of this resource
+     */
 
     public JavaStdlibResource(Path source) {
         this.source = source;
     }
 
+    /**
+     * Contracts a new resource from the default java home source.
+     */
     public JavaStdlibResource() {
         this(getJavaHome());
     }
 
+    /**
+     * Returns the path of the source code of the java standard library. The default location is the src.zip file in
+     * the java home directory.
+     *
+     * @return the path of the source code of the java standard library
+     */
     public static Path getJavaHome() {
         try (Stream<Path> stream = Files.walk(Path.of(System.getProperty("java.home")))) {
             return stream.filter(path -> path.endsWith("src.zip")).findFirst().orElseThrow();
@@ -36,6 +63,11 @@ public class JavaStdlibResource implements JavaResource {
         }
     }
 
+    /**
+     * Returns the entries of this resource which contains the source of the classes.
+     *
+     * @return the entries of this resource which contains the source of the classes
+     */
     private Map<String, ZipEntry> getEntries() {
         if (entries != null) return entries;
         entries = new HashMap<>();
