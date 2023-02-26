@@ -46,7 +46,7 @@ public class JavaStdlibResource implements JavaResource {
      * Contracts a new resource from the default java home source.
      */
     public JavaStdlibResource() {
-        this(getJavaHome());
+        this(getDefaultSourceLocation());
     }
 
     /**
@@ -55,11 +55,11 @@ public class JavaStdlibResource implements JavaResource {
      *
      * @return the path of the source code of the java standard library
      */
-    public static Path getJavaHome() {
+    public static Path getDefaultSourceLocation() {
         try (Stream<Path> stream = Files.walk(Path.of(System.getProperty("java.home")))) {
             return stream.filter(path -> path.endsWith("src.zip")).findFirst().orElseThrow();
         } catch (IOException e) {
-            throw new IllegalStateException("could not find java home");
+            throw new IllegalStateException("Could not find java home");
         }
     }
 
@@ -84,7 +84,7 @@ public class JavaStdlibResource implements JavaResource {
 
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
         return entries;
     }
@@ -108,7 +108,7 @@ public class JavaStdlibResource implements JavaResource {
         try (ZipFile file = new ZipFile(source.toFile())) {
             return new String(file.getInputStream(entry).readAllBytes());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
