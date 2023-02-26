@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
-import static org.tudalgo.algoutils.tutor.general.SpoonUtils.getCtModel;
+import static org.tudalgo.algoutils.tutor.general.SpoonUtils.getType;
 
 /**
  * A basic implementation of a {@link TypeLink type link}.
@@ -129,10 +129,8 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
         if (element != null) {
             return true;
         }
-        element = getCtModel().getAllTypes().stream()
-            .filter(e -> e.getQualifiedName().equals(reflection().getName()))
-            .findFirst()
-            .orElse(null);
+        String className = reflection().getName();
+        element = getType(type -> type.getQualifiedName().equals(className), className);
         return element != null;
     }
 
@@ -141,4 +139,5 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
     private final List<BasicConstructorLink> constructors = new LinkedList<>(), unmodifiableConstructors = unmodifiableList(constructors);
 
     private final List<BasicEnumConstantLink> enums = new LinkedList<>(), unmodifiableEnums = unmodifiableList(enums);
+
 }

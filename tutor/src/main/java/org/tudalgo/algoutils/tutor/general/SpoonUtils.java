@@ -1,24 +1,23 @@
 package org.tudalgo.algoutils.tutor.general;
 
-import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
+import org.sourcegrade.jagr.api.testing.TestCycle;
+import org.tudalgo.algoutils.tutor.general.io.JavaResource;
+import org.tudalgo.algoutils.tutor.general.io.JavaStdlibResource;
+import org.tudalgo.algoutils.tutor.general.io.JavaSubmissionResource;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
 import org.tudalgo.algoutils.tutor.general.match.Stringifiable;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
-import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.VirtualFolder;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.sourcegrade.jagr.api.testing.extension.TestCycleResolver.getTestCycle;
 
 /**
@@ -27,20 +26,18 @@ import static org.sourcegrade.jagr.api.testing.extension.TestCycleResolver.getTe
 public class SpoonUtils {
 
     private static final Pattern SPOON_NAME_PATTERN = Pattern.compile("((?!Ct|Impl)[A-Z][a-z]*)");
+    private static final JavaResource STDLIB = new JavaStdlibResource();
+    private static Launcher launcher = null;
     private static CtModel model = null;
 
     private SpoonUtils() {
     }
 
     /**
-     * @deprecated use {@link #getCtModel()} instead
+     * @deprecated use {@link #getModel()} instead
      */
     @Deprecated
-    public static <T, U extends CtType<?>> T getCtElementForSourceCode(
-        String ignoredSourceCode,
-        Class<U> ignoredKind,
-        Matcher<Stringifiable> ignoredNameMatcher
-    ) {
+    public static <T, U extends CtType<?>> T getCtElementForSourceCode(String ignoredSourceCode, Class<U> ignoredKind, Matcher<Stringifiable> ignoredNameMatcher) {
         throw new UnsupportedOperationException("use getCtModel instead");
     }
 
@@ -48,6 +45,7 @@ public class SpoonUtils {
      * <p>Returns a human-readable name of the given element.</p>
      *
      * @param element the element
+     *
      * @return the human-readable name
      */
     public static String getNameOfCtElement(CtElement element) {
@@ -58,6 +56,7 @@ public class SpoonUtils {
      * <p>Returns a human-readable name of the given element type.</p>
      *
      * @param type the element type
+     *
      * @return the human-readable name
      */
     public static String getNameOfCtElement(Class<?> type) {
@@ -68,70 +67,75 @@ public class SpoonUtils {
     }
 
     /**
-     * <p>Returns a <code>CtModel</code> for submission.</p>
-     *
-     * <p>If the test run is a test cycle run,
-     * the class loader of the test cycle is used to load the submission.</p>
-     *
-     * @return the <code>CtModel</code>
-     * @see TestCycleResolver
+     * Initializes the spoon launcher which is used to build the spoon model.
+     * <p>The launcher with the submission files which are retrieved from the test cycle if is present or else
+     * locally from the file system.
      */
-    public static CtModel getCtModel() {
-        if (model != null) {
-            return model;
-        }
-        //noinspection UnstableApiUsage
-        var cycle = getTestCycle();
-        var launcher = new Launcher();
+    private static void initLauncher() {
+        launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(17);
         launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+
+        @SuppressWarnings("UnstableApiUsage") TestCycle cycle = getTestCycle();
         if (cycle != null) {
             launcher.getEnvironment().setInputClassLoader((ClassLoader) cycle.getClassLoader());
         }
-        launcher.addInputResource(getSubmissionFiles());
-        return model = launcher.buildModel();
+
+        VirtualFolder folder = new VirtualFolder();
+        JavaSubmissionResource resource = new JavaSubmissionResource();
+        // CLass name <-> Sourcecode
+        resource.stream().map((entry -> new VirtualFile(entry.getValue(), entry.getKey()))).forEach(folder::addFile);
+        launcher.addInputResource(folder);
     }
 
-    private static final List<String> EXCLUDED_DIRECTORIES = List.of("graderPrivate", "graderPublic");
-
-    private static VirtualFolder getSubmissionFiles() {
-        // virtual folder for submission files
-        var folder = new VirtualFolder();
-        //noinspection UnstableApiUsage
-        var cycle = getTestCycle();
-        if (cycle != null) {
-            // current test run is a grader run
-            var submission = cycle.getSubmission();
-            for (var name : cycle.getClassLoader().getClassNames()) {
-                var path = name.replace('.', '/') + ".java";
-                var sourceFile = submission.getSourceFile(path);
-                if (sourceFile != null) {
-                    var content = fixContent(sourceFile.getContent());
-                    folder.addFile(new VirtualFile(content, name));
-                }
-            }
-        } else {
-            // current test run is a local run
-            try (var pathStream = Files.walk(Path.of("src"))) {
-                var pathIterator = pathStream.iterator();
-                while (pathIterator.hasNext()) {
-                    var path = pathIterator.next();
-                    var pathName = path.toString();
-                    if (!pathName.endsWith(".java") || EXCLUDED_DIRECTORIES.contains(pathName.split("/")[1])) {
-                        // current file is not a java file or not a submission file
-                        continue;
-                    }
-                    // add file to virtual folder
-                    folder.addFile(new FileSystemFile(path.toFile()));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("Cannot read submission files.", e);
-            }
+    /**
+     * Returns the spoon model.
+     *
+     * @return the spoon model
+     */
+    public static CtModel getModel() {
+        if (launcher == null) {
+            initLauncher();
         }
-        return folder;
+        return model;
     }
 
-    private static String fixContent(String content) {
-        return new String(content.getBytes(), US_ASCII) + "\n";
+    /**
+     * Adds the given class to the spoon model.
+     *
+     * @param className the name of the class to add
+     */
+    public static void addInputResource(String className) {
+        if (launcher == null) {
+            initLauncher();
+        }
+        launcher.addInputResource(STDLIB.get(className));
+        model = launcher.buildModel();
     }
+
+    /**
+     * Returns the ct type from the spoon model which matches the given predicate.
+     * <p>
+     * If no type matches the predicate, the given class is added to the model and the method is called again.
+     *
+     * @param predicate the predicate to match
+     * @param className the name of the class to add to the model if the predicate does not match
+     * @param <T>       the type of the ct type
+     *
+     * @return the ct type from the spoon model which matches the given predicate
+     */
+    public static <T extends CtType<?>> T getType(Predicate<? super CtType<?>> predicate, String className) {
+        Optional<CtType<?>> type = getModel().getAllTypes().stream().filter(predicate).findFirst();
+        T element;
+        if (type.isEmpty()) {
+            // In case the type is not in the model yet, add it and try again
+            addInputResource(className);
+            element = getType(predicate, className);
+        } else {
+            //noinspection unchecked
+            element = (T) type.get();
+        }
+        return element;
+    }
+
 }
