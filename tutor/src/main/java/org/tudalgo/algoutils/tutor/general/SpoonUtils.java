@@ -89,6 +89,7 @@ public class SpoonUtils {
         // CLass name <-> Sourcecode
         resource.stream().map((entry -> new VirtualFile(entry.getValue(), entry.getKey()))).forEach(folder::addFile);
         launcher.addInputResource(folder);
+        model = launcher.buildModel();
     }
 
     /**
