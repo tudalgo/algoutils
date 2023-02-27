@@ -118,20 +118,11 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
 
     @Override
     public CtElement getCtElement() {
-        if (!isCtElementAvailable()) {
-            throw new IllegalStateException("There is no CtElement available for " + reflection().getName());
-        }
-        return element;
-    }
-
-    @Override
-    public boolean isCtElementAvailable() {
         if (element != null) {
-            return true;
+            return element;
         }
         String className = reflection().getName();
-        element = getType(type -> type.getQualifiedName().equals(className), className);
-        return element != null;
+        return element = getType(type -> type.getQualifiedName().equals(className), className);
     }
 
     private final List<BasicMethodLink> methods = new LinkedList<>(), unmodifiableMethods = unmodifiableList(methods);

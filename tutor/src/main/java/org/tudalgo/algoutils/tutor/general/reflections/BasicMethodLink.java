@@ -89,19 +89,8 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
 
     @Override
     public CtMethod<?> getCtElement() {
-        if (!isCtElementAvailable()) {
-            throw new IllegalStateException("There is no CtElement available for " + reflection().getName());
-        }
-        return element;
-    }
-
-    @Override
-    public boolean isCtElementAvailable() {
         if (element != null) {
-            return true;
-        }
-        if (!parent.isCtElementAvailable()) {
-            return false;
+            return element;
         }
         element = (CtMethod<?>) parent.getCtElement().getDirectChildren().stream()
             .filter(e ->
@@ -109,6 +98,6 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
                     reflection().getName().equals(m.getSimpleName()) &&
                     reflection().getReturnType().getSimpleName().equals(m.getType().getSimpleName())
             ).findFirst().orElse(null);
-        return element != null;
+        return element;
     }
 }
