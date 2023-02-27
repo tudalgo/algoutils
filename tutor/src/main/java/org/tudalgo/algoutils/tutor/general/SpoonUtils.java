@@ -85,7 +85,7 @@ public class SpoonUtils {
         }
 
         VirtualFolder folder = new VirtualFolder();
-        JavaSubmissionResource resource = new JavaSubmissionResource();
+        JavaResource resource = new JavaSubmissionResource();
         // CLass name <-> Sourcecode
         resource.stream().map((entry -> new VirtualFile(entry.getValue(), entry.getKey()))).forEach(folder::addFile);
         launcher.addInputResource(folder);

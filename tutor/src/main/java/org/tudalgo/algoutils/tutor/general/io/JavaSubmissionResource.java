@@ -28,7 +28,7 @@ public class JavaSubmissionResource implements JavaResource {
     /**
      * The local source of this resource.
      */
-    private static final Path LOCAL_SOURCE = Path.of("tutor/src");
+    private static final Path LOCAL_SOURCE = Path.of("src");
 
     /**
      * The directories to ignore..
