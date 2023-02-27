@@ -106,7 +106,7 @@ public class SpoonUtils {
                 var path = name.replace('.', '/') + ".java";
                 var sourceFile = submission.getSourceFile(path);
                 if (sourceFile != null) {
-                    var content = fixContent(sourceFile.getContent());
+                    var content = sourceFile.getContent();
                     folder.addFile(new VirtualFile(content, name));
                 }
             }
@@ -129,9 +129,5 @@ public class SpoonUtils {
             }
         }
         return folder;
-    }
-
-    private static String fixContent(String content) {
-        return new String(content.getBytes(), US_ASCII) + "\n";
     }
 }
