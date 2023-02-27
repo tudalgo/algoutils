@@ -1,7 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtClass;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +22,7 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
     private static final Map<Class<?>, BasicTypeLink> INSTANCES = new HashMap<>();
 
     private final Class<?> type;
-    private CtType<?> element;
+    private CtClass<?> element;
 
     private BasicTypeLink(Class<?> type) {
         this.type = type;
@@ -117,7 +116,7 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
     }
 
     @Override
-    public CtElement getCtElement() {
+    public CtClass<?> getCtElement() {
         if (element != null) {
             return element;
         }
