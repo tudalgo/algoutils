@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.sourcegrade.jagr.api.testing.extension.TestCycleResolver.getTestCycle;
 
 /**
@@ -92,7 +91,13 @@ public class SpoonUtils {
         return model = launcher.buildModel();
     }
 
-    private static final List<String> EXCLUDED_DIRECTORIES = List.of("graderPrivate", "graderPublic");
+    private static final List<String> EXCLUDED_DIRS = List.of(
+        "./.gradle/",
+        "./build/",
+        "./gradle/",
+        "/src/graderPrivate/",
+        "/src/graderPublic/"
+    );
 
     private static VirtualFolder getSubmissionFiles() {
         // virtual folder for submission files
@@ -112,12 +117,13 @@ public class SpoonUtils {
             }
         } else {
             // current test run is a local run
-            try (var pathStream = Files.walk(Path.of("src"))) {
+            var rootPath = Path.of(".");
+            try (var pathStream = Files.walk(rootPath)) {
                 var pathIterator = pathStream.iterator();
                 while (pathIterator.hasNext()) {
                     var path = pathIterator.next();
                     var pathName = path.toString();
-                    if (!pathName.endsWith(".java") || EXCLUDED_DIRECTORIES.contains(pathName.split("/")[1])) {
+                    if (!pathName.endsWith(".java") || EXCLUDED_DIRS.stream().anyMatch(pathName::contains)) {
                         // current file is not a java file or not a submission file
                         continue;
                     }
