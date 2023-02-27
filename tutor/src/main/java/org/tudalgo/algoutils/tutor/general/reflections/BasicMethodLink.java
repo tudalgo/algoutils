@@ -1,12 +1,14 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.path.CtRole;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.stream;
 
@@ -92,12 +94,14 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
         if (element != null) {
             return element;
         }
-        element = (CtMethod<?>) parent.getCtElement().getDirectChildren().stream()
-            .filter(e ->
-                e instanceof CtMethod<?> m &&
-                    reflection().getName().equals(m.getSimpleName()) &&
-                    reflection().getReturnType().getSimpleName().equals(m.getType().getSimpleName())
-            ).findFirst().orElse(null);
+        Set<CtMethod<?>> methods = parent.getCtElement().getValueByRole(CtRole.METHOD);
+        element = methods.stream()
+            .filter(m ->
+                method.getName().equals(m.getSimpleName()) &&
+                    method.getReturnType().getSimpleName().equals(m.getType().getTypeErasure().getSimpleName())
+            ).findFirst()
+            .orElseThrow();
         return element;
     }
+
 }
