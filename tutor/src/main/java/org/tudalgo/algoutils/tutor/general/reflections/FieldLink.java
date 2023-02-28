@@ -7,7 +7,8 @@ import java.lang.reflect.Field;
  *
  * @author Dustin Glaser
  */
-public interface FieldLink extends Link, WithModifiers, WithName, WithType {
+public interface FieldLink extends Link, WithParent, WithModifiers, WithName, WithType {
+
     /**
      * <p>Returns the object assigned to the type of this field.</p>
      * <p>This field is required to be a class field.</p>
@@ -21,6 +22,7 @@ public interface FieldLink extends Link, WithModifiers, WithName, WithType {
      * <p>This field is required to be an instance field.</p>
      *
      * @param instance the instance
+     *
      * @return the object
      */
     <T> T get(Object instance);
@@ -74,4 +76,5 @@ public interface FieldLink extends Link, WithModifiers, WithName, WithType {
     default TypeLink type() {
         return staticType();
     }
+
 }

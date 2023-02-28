@@ -1,6 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
-public interface ConstructorLink extends Link, WithType, WithTypeList, WithModifiers {
+public interface ConstructorLink extends Link, WithParent, WithType, WithTypeList, WithModifiers {
 
     @Override
     default Kind kind() {
@@ -8,4 +8,10 @@ public interface ConstructorLink extends Link, WithType, WithTypeList, WithModif
     }
 
     <T> T invoke(Object... arguments) throws Exception;
+
+    @Override
+    default TypeLink parent() {
+        return type();
+    }
+
 }

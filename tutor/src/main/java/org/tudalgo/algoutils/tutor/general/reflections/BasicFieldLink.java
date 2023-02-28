@@ -1,15 +1,31 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
+import org.apache.maven.api.annotations.Nullable;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.path.CtRole;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Set;
 
-public class BasicFieldLink extends BasicLink implements FieldLink {
+public class BasicFieldLink extends BasicLink implements FieldLink, WithCtElement {
 
     private final Field field;
+
+    /**
+     * The parent of this field.
+     */
+    private final TypeLink parent;
+
+    /**
+     * The spoon element of this link.
+     */
+    private @Nullable CtField<?> element;
 
     private BasicFieldLink(Field field) {
         field.setAccessible(true);
         this.field = field;
+        this.parent = BasicTypeLink.of(field.getDeclaringClass());
     }
 
     public static BasicFieldLink of(Field field) {
@@ -109,4 +125,18 @@ public class BasicFieldLink extends BasicLink implements FieldLink {
     public String name() {
         return field.getName();
     }
+
+    @Override
+    public TypeLink parent() {
+        return parent;
+    }
+
+    @Override
+    public CtField<?> getCtElement() {
+        if (element != null) return element;
+        Set<CtField<?>> fields = ((BasicTypeLink) parent).getCtElement().getValueByRole(CtRole.FIELD);
+        element = fields.stream().filter(f -> f.getSimpleName().equals(field.getName())).findFirst().orElseThrow();
+        return element;
+    }
+
 }

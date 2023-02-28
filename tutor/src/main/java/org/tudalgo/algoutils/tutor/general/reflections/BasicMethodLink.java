@@ -25,7 +25,7 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
 
     private final List<BasicTypeLink> parameterTypeLinks;
 
-    private final BasicTypeLink parent;
+    private final TypeLink parent;
     private CtMethod<?> element;
 
     private BasicMethodLink(Method method) {
@@ -94,14 +94,19 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
         if (element != null) {
             return element;
         }
-        Set<CtMethod<?>> methods = parent.getCtElement().getValueByRole(CtRole.METHOD);
+        Set<CtMethod<?>> methods = ((BasicTypeLink) parent).getCtElement().getValueByRole(CtRole.METHOD);
         element = methods.stream()
             .filter(m ->
                 method.getName().equals(m.getSimpleName()) &&
-                    method.getReturnType().getSimpleName().equals(m.getType().getTypeErasure().getSimpleName())
+                    method.getReturnType().getName().equals(m.getType().getTypeErasure().getQualifiedName())
             ).findFirst()
             .orElseThrow();
         return element;
+    }
+
+    @Override
+    public TypeLink parent() {
+        return parent;
     }
 
 }
