@@ -11,9 +11,9 @@ import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.support.compiler.VirtualFile;
-import spoon.support.compiler.VirtualFolder;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -26,15 +26,16 @@ import static org.sourcegrade.jagr.api.testing.extension.TestCycleResolver.getTe
 public class SpoonUtils {
 
     private static final Pattern SPOON_NAME_PATTERN = Pattern.compile("((?!Ct|Impl)[A-Z][a-z]*)");
-    private static final JavaResource STDLIB = new JavaStdlibResource();
-    private static Launcher launcher = null;
-    private static CtModel model = null;
+    private static final List<JavaResource> RESOURCES = List.of(
+        new JavaSubmissionResource(),
+        new JavaStdlibResource()
+    );
 
     private SpoonUtils() {
     }
 
     /**
-     * @deprecated use {@link #getModel()} instead
+     * @deprecated use {@link #getType(Predicate, String)} instead
      */
     @Deprecated
     public static <T, U extends CtType<?>> T getCtElementForSourceCode(String ignoredSourceCode, Class<U> ignoredKind, Matcher<Stringifiable> ignoredNameMatcher) {
@@ -67,79 +68,37 @@ public class SpoonUtils {
     }
 
     /**
-     * Initializes the spoon launcher which is used to build the spoon model.
-     * <p>The launcher with the submission files which are retrieved from the test cycle if is present or else
-     * locally from the file system.
-     */
-    private static void initLauncher() {
-        if (launcher != null) {
-            return;
-        }
-        launcher = new Launcher();
-        launcher.getEnvironment().setComplianceLevel(17);
-        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
-
-        @SuppressWarnings("UnstableApiUsage") TestCycle cycle = getTestCycle();
-        if (cycle != null) {
-            launcher.getEnvironment().setInputClassLoader((ClassLoader) cycle.getClassLoader());
-        }
-
-        VirtualFolder folder = new VirtualFolder();
-        JavaResource resource = new JavaSubmissionResource();
-        // CLass name <-> Sourcecode
-        resource.stream().map((entry -> new VirtualFile(entry.getValue(), entry.getKey()))).forEach(folder::addFile);
-        launcher.addInputResource(folder);
-        model = launcher.buildModel();
-    }
-
-    /**
-     * Returns the spoon model.
-     *
-     * @return the spoon model
-     */
-    public static CtModel getModel() {
-        if (launcher == null) {
-            initLauncher();
-        }
-        return model;
-    }
-
-    /**
-     * Adds the given class to the spoon model.
-     *
-     * @param className the name of the class to add
-     */
-    public static void addInputResource(String className) {
-        if (launcher == null) {
-            initLauncher();
-        }
-        launcher.addInputResource(STDLIB.get(className));
-        model = launcher.buildModel();
-    }
-
-    /**
      * Returns the ct type from the spoon model which matches the given predicate.
-     * <p>
-     * If no type matches the predicate, the given class is added to the model and the method is called again.
      *
      * @param predicate the predicate to match
      * @param className the name of the class to add to the model if the predicate does not match
      * @param <T>       the type of the ct type
      *
      * @return the ct type from the spoon model which matches the given predicate
+     *
+     * @throws NoSuchElementException if no element matches the given predicate
      */
     public static <T extends CtType<?>> T getType(Predicate<? super CtType<?>> predicate, String className) {
-        Optional<CtType<?>> type = getModel().getAllTypes().stream().filter(predicate).findFirst();
-        T element;
-        if (type.isEmpty()) {
-            // In case the type is not in the model yet, add it and try again
-            addInputResource(className);
-            element = getType(predicate, className);
-        } else {
-            //noinspection unchecked
-            element = (T) type.get();
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(17);
+        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+
+        String content = RESOURCES.stream()
+            .filter(resource -> resource.contains(className))
+            .findFirst()
+            .orElseThrow()
+            .get(className);
+        VirtualFile file = new VirtualFile(content, className);
+
+        @SuppressWarnings("UnstableApiUsage") TestCycle cycle = getTestCycle();
+        if (cycle != null) {
+            launcher.getEnvironment().setInputClassLoader((ClassLoader) cycle.getClassLoader());
         }
-        return element;
+
+        launcher.addInputResource(file);
+        CtModel model = launcher.buildModel();
+        //noinspection unchecked
+        return (T) model.getAllTypes().stream().filter(predicate).findFirst().orElseThrow();
     }
 
 }
