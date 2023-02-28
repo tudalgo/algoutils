@@ -28,7 +28,7 @@ public class JavaSubmissionResource implements JavaResource {
     /**
      * The local source of this resource.
      */
-    private static final Path LOCAL_SOURCE = Path.of("src");
+    private static final Path LOCAL_SOURCE = Path.of("tutor/src");
 
     /**
      * The directories to ignore..
@@ -44,7 +44,7 @@ public class JavaSubmissionResource implements JavaResource {
 
     @Override
     public Set<String> classNames() {
-        return contents.keySet();
+        return contents().keySet();
     }
 
     @Override
