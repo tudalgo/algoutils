@@ -6,6 +6,7 @@ import org.tudalgo.algoutils.tutor.general.assertions.Assertions2;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,8 @@ public class JsonParameterSet {
      * The custom converters that are used to convert the json nodes to java objects.
      */
     private final Map<String, Function<JsonNode, ?>> customConverters;
+
+    private final Map<String, Object> instanceCache = new HashMap<>();
 
     /**
      * Creates a new {@link JsonParameterSet}.
@@ -80,18 +83,24 @@ public class JsonParameterSet {
      * @return the value of the given key from the json file converted to the given type.
      * @throws IllegalArgumentException if the given key does not exist in the json file.
      */
+    @SuppressWarnings("unchecked")
     public <T> T get(final String key, final Class<T> type) {
+        if (instanceCache.containsKey(key)) {
+            return (T) instanceCache.get(key);
+        }
         final var jsonNode = getRootNode().get(key);
         if (jsonNode == null) {
             throw new IllegalArgumentException("The given key does not exist in the json node. The Key: " + key);
         }
-        return JsonConverters.convert(
+        final var result = JsonConverters.convert(
             jsonNode,
             key,
             type,
             getObjectMapper(),
             Objects.requireNonNullElse(customConverters, JsonConverters.DEFAULT_CONVERTERS)
         );
+        instanceCache.put(key, result);
+        return result;
     }
 
     /**
