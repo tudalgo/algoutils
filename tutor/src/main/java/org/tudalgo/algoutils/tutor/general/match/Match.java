@@ -76,6 +76,15 @@ public interface Match<T> extends Comparable<Match<T>> {
     }
 
     /**
+     * <p>Returns the opposite match.</p>
+     *
+     * @return the opposite match
+     */
+    default Match<T> negate() {
+        return match(object(), !matched());
+    }
+
+    /**
      * <p>Returns the matched object.</p>
      *
      * @return the matched object
