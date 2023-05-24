@@ -1,15 +1,20 @@
 package org.tudalgo.algoutils.student.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * This annotation is used to mark methods from the standard library,
  * that are forbidden to be used by the student in order to implement the annotated method.
  *
- * @example The following example shows how to use this annotation:
+ * <p>The following example shows how to use this annotation:</p>
  *
- *         <pre>
- *             &#64;Forbidden("java.lang.Math.max")
+ * <pre>{@code
+ *             @Forbidden("java.lang.Math.max")
  *             public static int max(int a, int b) {
  *                 if (a &gt; b) {
  *                     return a;
@@ -17,25 +22,29 @@ import java.lang.annotation.*;
  *                     return b;
  *                 }
  *             }
- *         </pre>
- *         <p>
- * @example Alternatively the entire class or package can be forbidden:
+ *         }</pre>
+ * <p>Alternatively the entire class or package can be forbidden:</p>
  *
- *         <pre>
- *             &#64;Forbidden("java.lang.Math")
+ * <pre>{@code
+ *             @Forbidden("java.lang.Math")
  *             public static int max(int a, int b) {
-     *             if (a &gt; b) {
-     *                  return a;
-     *             } else {
-     *                 return b;
-     *             }
+ *                 if (a &gt; b) {
+ *                      return a;
+ *                 } else {
+ *                     return b;
+ *                 }
  *             }
- *        </pre>
+ *        }</pre>
  */
 @Documented
 @Inherited
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD})
 public @interface Forbidden {
-    String[] value() default {};
+    /**
+     * The forbidden methods.
+     *
+     * @return the forbidden methods
+     */
+    String[] value() default { };
 }
