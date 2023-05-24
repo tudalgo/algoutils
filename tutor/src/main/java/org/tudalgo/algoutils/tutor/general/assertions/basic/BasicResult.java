@@ -55,7 +55,11 @@ public abstract class BasicResult<RT extends Result<RT, AT, TT, ET>, AT extends 
     public RT check(Context context, PreCommentSupplier<? super RT> preCommentSupplier) {
         if (!successful())
             //noinspection unchecked
-            throw new AssertionFailedError(environment.getCommentFactory().comment((RT) this, context, preCommentSupplier));
+            throw new AssertionFailedError(
+                environment.getCommentFactory().comment((RT) this, context, preCommentSupplier),
+                expected().behavior(),
+                actual().behavior()
+            );
         //noinspection unchecked
         return (RT) this;
     }
