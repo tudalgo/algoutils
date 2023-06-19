@@ -1,9 +1,11 @@
 package org.tudalgo.algoutils.tutor.general.basic;
 
 import org.tudalgo.algoutils.tutor.general.Environment;
+import org.tudalgo.algoutils.tutor.general.Utils;
 import org.tudalgo.algoutils.tutor.general.assertions.CommentFactory;
 import org.tudalgo.algoutils.tutor.general.assertions.Result;
 import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicCommentFactory;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.JunitCommentFactory;
 import org.tudalgo.algoutils.tutor.general.stringify.Stringifier;
 import org.tudalgo.algoutils.tutor.general.stringify.basic.ReflectionStringifier;
 
@@ -11,7 +13,8 @@ import java.util.Objects;
 
 public class BasicEnvironment implements Environment {
 
-    private final CommentFactory<Result<?, ?, ?, ?>> commentFactory = new BasicCommentFactory(this);
+    private final CommentFactory<Result<?, ?, ?, ?>> commentFactory =
+        Utils.isJagrRun() ? new BasicCommentFactory(this) : new JunitCommentFactory(this);
 
     private Stringifier stringifier = ReflectionStringifier.getInstance();
 
