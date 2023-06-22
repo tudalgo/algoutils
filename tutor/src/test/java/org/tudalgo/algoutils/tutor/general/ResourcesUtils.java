@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,5 +75,19 @@ public final class ResourcesUtils {
             }
         }
         return classes;
+    }
+
+    /**
+     * Deletes the directory at the given path with all its contents.
+     *
+     * @param path the path of the directory to delete
+     * @throws IOException if an I/O error occurs
+     */
+    public static void deleteDirectory(Path path) throws IOException {
+        try (Stream<Path> paths = Files.walk(path)) {
+            for (Path p : paths.sorted(Comparator.reverseOrder()).toList()) {
+                Files.delete(p);
+            }
+        }
     }
 }

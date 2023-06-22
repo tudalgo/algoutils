@@ -10,16 +10,14 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.tudalgo.algoutils.tutor.general.ResourcesUtils.FILE_NAMES;
 import static org.tudalgo.algoutils.tutor.general.ResourcesUtils.ROOT_PATH;
+import static org.tudalgo.algoutils.tutor.general.ResourcesUtils.deleteDirectory;
 import static org.tudalgo.algoutils.tutor.general.ResourcesUtils.loadClasses;
 
 /**
@@ -55,11 +53,7 @@ public class JavaSubmissionResourceTest {
 
     @AfterAll
     public void globalTearDown() throws IOException {
-        try (Stream<Path> paths = Files.walk(sharedTempDir)) {
-            for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
-                Files.delete(path);
-            }
-        }
+        deleteDirectory(sharedTempDir);
     }
 
     @BeforeEach
@@ -146,6 +140,4 @@ public class JavaSubmissionResourceTest {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         Assertions.assertEquals(expected, actual);
     }
-
-
 }

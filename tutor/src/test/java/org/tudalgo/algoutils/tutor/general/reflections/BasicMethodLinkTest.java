@@ -10,15 +10,12 @@ import org.junit.jupiter.api.io.TempDir;
 import spoon.reflect.declaration.CtMethod;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.tudalgo.algoutils.tutor.general.ResourcesUtils.FILE_NAMES;
 import static org.tudalgo.algoutils.tutor.general.ResourcesUtils.ROOT_PATH;
+import static org.tudalgo.algoutils.tutor.general.ResourcesUtils.deleteDirectory;
 import static org.tudalgo.algoutils.tutor.general.ResourcesUtils.loadClasses;
 
 /**
@@ -47,7 +44,7 @@ public class BasicMethodLinkTest {
     private BasicMethodLink method;
 
     @BeforeAll
-    private void setUp() throws IOException, ClassNotFoundException {
+    public void setUp() throws IOException, ClassNotFoundException {
         Path path = ROOT_PATH.resolve(FILE_NAMES.get(0));
         clazz = loadClasses(sharedTempDir, path).get(path);
         method = BasicMethodLink.of(clazz.getKey().getMethods()[0]);
@@ -55,11 +52,7 @@ public class BasicMethodLinkTest {
 
     @AfterAll
     public void tearDown() throws IOException {
-        try (Stream<Path> paths = Files.walk(sharedTempDir)) {
-            for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
-                Files.delete(path);
-            }
-        }
+        deleteDirectory(sharedTempDir);
     }
 
     @DisplayName("getCtElement")
