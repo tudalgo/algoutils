@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -129,7 +128,13 @@ public class JavaSubmissionResourceTest {
     public void testIterator() {
         Map<String, String> expected = classes.values().stream()
             .collect(Collectors.toMap(it -> it.getKey().getName(), Map.Entry::getValue));
-        Assertions.assertIterableEquals(expected.entrySet(), resource);
+        Map<String, String> actual = new HashMap<>();
+
+        for (Map.Entry<String, String> entry : resource) {
+            actual.put(entry.getKey(), entry.getValue());
+        }
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @DisplayName("stream()")
@@ -137,12 +142,9 @@ public class JavaSubmissionResourceTest {
     public void testStream() {
         Map<String, String> expected = classes.values().stream()
             .collect(Collectors.toMap(it -> it.getKey().getName(), Map.Entry::getValue));
-        Iterator<Map.Entry<String, String>> it = expected.entrySet().iterator();
-        Iterator<Map.Entry<String, String>> actual = resource.stream().iterator();
-        while (it.hasNext()) {
-            Assertions.assertEquals(it.next(), actual.next());
-        }
-        Assertions.assertFalse(actual.hasNext());
+        Map<String, String> actual = resource.stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Assertions.assertEquals(expected, actual);
     }
 
 
