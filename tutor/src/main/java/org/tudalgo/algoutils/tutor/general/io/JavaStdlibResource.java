@@ -2,6 +2,7 @@ package org.tudalgo.algoutils.tutor.general.io;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -105,7 +106,7 @@ public class JavaStdlibResource implements JavaResource {
         try (ZipFile file = new ZipFile(source.toFile())) {
             return getEntries().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
                 try {
-                    return new String(file.getInputStream(entry.getValue()).readAllBytes());
+                    return new String(file.getInputStream(entry.getValue()).readAllBytes(), Charset.defaultCharset());
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
