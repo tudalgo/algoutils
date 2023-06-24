@@ -47,6 +47,26 @@ public interface JavaResource extends Iterable<Map.Entry<String, String>> {
     }
 
     /**
+     * Returns {@code true} if the given path is a Java file.
+     *
+     * @param path the path to check
+     * @return {@code true} if the given path is a Java file
+     */
+    static boolean isJavaFile(String path) {
+        return path.endsWith(EXTENSION);
+    }
+
+    /**
+     * Returns {@code true} if the given path is a Java file.
+     *
+     * @param path the path to check
+     * @return {@code true} if the given path is a Java file
+     */
+    static boolean isJavaFile(Path path) {
+        return isJavaFile(path.toString());
+    }
+
+    /**
      * Returns the names of all classes in this resource.
      *
      * @return the names of all classes in this resource

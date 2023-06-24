@@ -13,7 +13,6 @@ import spoon.support.compiler.VirtualFile;
 
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -32,14 +31,14 @@ public class SpoonUtils {
     private static final Set<JavaResource> RESOURCES = Set.of(
         new JavaSubmissionResource()
         // https://github.com/INRIA/spoon/issues/5290
-        //  new JavaStdlibResource()
+        //new JavaStdlibResource()
     );
 
     private SpoonUtils() {
     }
 
     /**
-     * @deprecated use {@link #getType(Predicate, String)} instead
+     * @deprecated use {@link #getType(String)} instead
      */
     public static <T, U extends CtType<?>> T getCtElementForSourceCode(
         String ignoredSourceCode,
@@ -52,24 +51,23 @@ public class SpoonUtils {
     /**
      * Returns the ct type from the spoon model which matches the given predicate.
      *
-     * @param predicate the predicate to match
-     * @param className the name of the class to add to the model if the predicate does not match
+     * @param className the qualified name of the class to add to the model
      * @param <T>       the type of the ct type
      * @return the ct type from the spoon model which matches the given predicate
      * @throws NoSuchElementException if no element matches the given predicate
      */
-    public static <T extends CtType<?>> T getType(Predicate<? super CtType<?>> predicate, String className) {
+    public static <T extends CtType<?>> T getType(String className) {
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(17);
         launcher.getEnvironment().setIgnoreSyntaxErrors(true);
 
-        String content = RESOURCES.stream()
+        String sourceCode = RESOURCES.stream()
             .filter(resource -> resource.contains(className))
             .findFirst()
             .orElseThrow()
             .getContent(className);
 
-        VirtualFile file = new VirtualFile(content, className);
+        VirtualFile file = new VirtualFile(sourceCode, className);
 
         @SuppressWarnings("UnstableApiUsage") TestCycle cycle = getTestCycle();
         if (cycle != null) {
@@ -78,8 +76,8 @@ public class SpoonUtils {
 
         launcher.addInputResource(file);
         CtModel model = launcher.buildModel();
-//noinspection unchecked
-        return (T) model.getAllTypes().stream().filter(predicate).findFirst().orElseThrow();
+        //noinspection unchecked
+        return (T) model.getAllTypes().stream().filter(it -> it.getQualifiedName().equals(className)).findFirst().orElseThrow();
     }
 
     /**
@@ -106,7 +104,7 @@ public class SpoonUtils {
     }
 
     /**
-     * @deprecated use {@link #getType(Predicate, String)} instead
+     * @deprecated use {@link #getType(String)} instead
      */
     public static CtModel getCtModel() {
         throw new UnsupportedOperationException("use getType instead");

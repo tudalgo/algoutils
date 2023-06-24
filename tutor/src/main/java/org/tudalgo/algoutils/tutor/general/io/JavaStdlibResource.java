@@ -15,6 +15,8 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static org.tudalgo.algoutils.tutor.general.io.ResourceUtils.getQualifiedClassName;
+
 /**
  * The Java standard library resource which can access the source code of the standard library.
  *
@@ -78,14 +80,18 @@ public class JavaStdlibResource implements JavaResource {
                 ZipEntry entry = it.next();
                 String name = entry.getName();
                 // Skip info files
-                if (name.endsWith("package-info.java") || name.endsWith("module-info.java")) {
+                if (!JavaResource.isJavaFile(name)
+                    || name.endsWith("package-info.java")
+                    || name.endsWith("module-info.java")) {
                     continue;
                 }
-                Path path = Path.of(name);
-                entries.put(JavaResource.toClassName(path.subpath(1, path.getNameCount())), entry);
+
+                String sourceCode = new String(file.getInputStream(entry).readAllBytes(), Charset.defaultCharset());
+                String className = getQualifiedClassName(sourceCode);
+                entries.put(className, entry);
             }
         } catch (IOException e) {
-            throw new IllegalStateException(e);
+            throw new RuntimeException(e);
         }
         return entries;
     }
@@ -104,15 +110,15 @@ public class JavaStdlibResource implements JavaResource {
     public Map<String, String> contents() {
         // Do not use get() here because it will open a new ZipFile for each entry
         try (ZipFile file = new ZipFile(source.toFile())) {
-            return getEntries().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            return getEntries().entrySet().stream().parallel().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
                 try {
                     return new String(file.getInputStream(entry.getValue()).readAllBytes(), Charset.defaultCharset());
                 } catch (IOException e) {
-                    throw new IllegalStateException(e);
+                    throw new RuntimeException(e);
                 }
             }));
         } catch (IOException e) {
-            throw new IllegalStateException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -125,7 +131,7 @@ public class JavaStdlibResource implements JavaResource {
         try (ZipFile file = new ZipFile(source.toFile())) {
             return new String(file.getInputStream(entry).readAllBytes());
         } catch (IOException e) {
-            throw new IllegalStateException(e);
+            throw new RuntimeException(e);
         }
     }
 }

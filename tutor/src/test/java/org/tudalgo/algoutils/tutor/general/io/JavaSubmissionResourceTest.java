@@ -25,8 +25,8 @@ import static org.tudalgo.algoutils.tutor.general.ResourcesUtils.loadClasses;
  *
  * @author Nhan Huynh
  */
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("JavaSubmissionResource")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class JavaSubmissionResourceTest {
 
     /**

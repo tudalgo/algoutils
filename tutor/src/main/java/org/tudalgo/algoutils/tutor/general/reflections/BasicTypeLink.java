@@ -1,6 +1,5 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
 import java.util.ArrayList;
@@ -122,7 +121,7 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
             return element;
         }
         String className = reflection().getName();
-        return element = getType(it -> it.getQualifiedName().equals(className), className);
+        return element = getType(className);
     }
 
     private final List<BasicMethodLink> methods = new LinkedList<>(), unmodifiableMethods = unmodifiableList(methods);

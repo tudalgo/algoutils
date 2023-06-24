@@ -15,7 +15,15 @@ import java.util.Map;
  */
 @DisplayName("JavaStdlibResource")
 public class JavaStdlibResourceTest {
+
+    /**
+     * An example class name.
+     */
     private static final String EXAMPLE_CLASS = Object.class.getName();
+
+    /**
+     * The resource to test.
+     */
     private JavaResource resource;
 
     @BeforeEach
