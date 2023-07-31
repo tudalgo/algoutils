@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.tudalgo.algoutils.tutor.general.io.parser.JavaSourceCodeParser;
 
 /**
  * Defines unit tests for {@link JavaSourceCodeParser}.

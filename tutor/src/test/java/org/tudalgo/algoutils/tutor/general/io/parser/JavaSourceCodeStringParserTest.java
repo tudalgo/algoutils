@@ -6,8 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junitpioneer.jupiter.json.JsonClasspathSource;
 import org.junitpioneer.jupiter.json.Property;
-import org.tudalgo.algoutils.tutor.general.io.parser.JavaSourceCodeParser;
-import org.tudalgo.algoutils.tutor.general.io.parser.JavaSourceCodeStringParser;
 
 import java.io.IOException;
 import java.io.InputStream;
