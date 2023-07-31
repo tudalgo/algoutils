@@ -1,8 +1,5 @@
 package org.tudalgo.algoutils.student.test;
 
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 /**
  * The result of a {@link StudentTest}.
  *
@@ -83,7 +80,7 @@ public record StudentTestResult<T>(
         /**
          * The {@link StudentTest} that generated the result.
          */
-        private StudentTest<T> test;
+        private final StudentTest<T> test;
 
         /**
          * Creates a new {@link Builder} for the given {@code test}.
