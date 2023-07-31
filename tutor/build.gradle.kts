@@ -4,7 +4,7 @@ dependencies {
     api(libs.jagr)
     api(libs.mockito)
     api(libs.asm)
-    testImplementation(libs.junit)
+    testImplementation(libs.bundles.junit)
 }
 
 tasks {
