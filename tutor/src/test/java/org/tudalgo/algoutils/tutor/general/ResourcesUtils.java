@@ -1,13 +1,8 @@
 package org.tudalgo.algoutils.tutor.general;
 
-import org.tudalgo.algoutils.tutor.general.io.JavaResource;
-
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -69,7 +64,7 @@ public final class ResourcesUtils {
                     Path tmp = location.resolve(path.getFileName());
                     Files.write(tmp, content.getBytes());
                     compiler.run(null, null, null, tmp.toString());
-                    String className = JavaResource.toClassName(path);
+                    String className = path.toString().replace(File.separator, ".").replace(".java", "");
                     classes.put(path, Map.entry(Class.forName(className), content));
                 }
             }

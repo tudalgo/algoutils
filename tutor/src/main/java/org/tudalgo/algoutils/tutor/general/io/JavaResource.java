@@ -1,6 +1,5 @@
 package org.tudalgo.algoutils.tutor.general.io;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,30 +20,6 @@ public interface JavaResource extends Iterable<Map.Entry<String, String>> {
      * The extension of a Java file.
      */
     String EXTENSION = ".java";
-
-    /**
-     * Converts a path to a Java file into a Java class name.
-     *
-     * @param path the path to convert
-     * @return the converted path to a Java file to a Java class name
-     */
-
-    static String toClassName(Path path) {
-        if (!path.toString().endsWith(EXTENSION)) {
-            throw new IllegalArgumentException("Path %s must be a Java file".formatted(path));
-        }
-        return path.toString().replace(File.separator, ".").replace(".java", "");
-    }
-
-    /**
-     * Converts a Java class name into a path to a Java file.
-     *
-     * @param className the path to convert
-     * @return the converted Java class name into a path to a Java file
-     */
-    static String toPathName(String className) {
-        return className.replace(".", File.separator) + EXTENSION;
-    }
 
     /**
      * Returns {@code true} if the given path is a Java file.
@@ -71,14 +46,19 @@ public interface JavaResource extends Iterable<Map.Entry<String, String>> {
      *
      * @return the names of all classes in this resource
      */
-    Set<String> classNames();
+    default Set<String> classNames() {
+        return contents().keySet();
+    }
 
     /**
      * Returns the number of classes in this resource.
      *
      * @return the number of classes in this resource
      */
-    int size();
+    default int size() {
+        return contents().size();
+    }
+
 
     /**
      * Returns {@code true} if this resource is empty.
@@ -95,7 +75,7 @@ public interface JavaResource extends Iterable<Map.Entry<String, String>> {
      * @return the contents of all classes in this resource
      */
     default Map<String, String> contents() {
-        return classNames().stream().collect(Collectors.toMap(Function.identity(), this::getContent));
+        return classNames().stream().collect(Collectors.toMap(Function.identity(), this::get));
     }
 
     /**
@@ -105,7 +85,7 @@ public interface JavaResource extends Iterable<Map.Entry<String, String>> {
      * @return the content of the class with the given name
      * @throws NoSuchElementException if the class with the given name does not exist
      */
-    String getContent(String className) throws NoSuchElementException;
+    String get(String className) throws NoSuchElementException;
 
     /**
      * Returns {@code true} if this resource contains a class with the given name.

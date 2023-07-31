@@ -1,72 +1,122 @@
 package org.tudalgo.algoutils.tutor.general.io;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Defines unit tests for {@link JavaStdlibResource}.
  *
  * @author Nhan Huynh
  */
-@DisplayName("JavaStdlibResource")
 public class JavaStdlibResourceTest {
-
-    /**
-     * An example class name.
-     */
-    private static final String EXAMPLE_CLASS = Object.class.getName();
 
     /**
      * The resource to test.
      */
     private JavaResource resource;
 
+    /**
+     * Sets up the resource to test.
+     */
     @BeforeEach
     public void setUp() {
         resource = new JavaStdlibResource();
     }
 
-    @DisplayName("classNames()")
+    /**
+     * Tests {@link JavaStdlibResource#classNames()}.
+     */
+    @DisplayName("classNames")
     @Test
     public void testClassNames() {
         Assertions.assertFalse(resource.classNames().isEmpty());
     }
 
+    /**
+     * Tests {@link JavaStdlibResource#size()}.
+     */
     @DisplayName("size()")
     @Test
     public void testSize() {
         Assertions.assertTrue(resource.size() > 0);
     }
 
+    /**
+     * Tests {@link JavaStdlibResource#isEmpty()}.
+     */
     @DisplayName("isEmpty()")
     @Test
     public void testIsEmpty() {
         Assertions.assertFalse(resource.isEmpty());
     }
 
+    /**
+     * Tests {@link JavaStdlibResource#contents()}.
+     */
     @DisplayName("contents()")
     @Test
     public void testContents() {
         Assertions.assertTrue(resource.contents().size() > 0);
     }
 
-    @DisplayName("getContent(String)")
-    @Test
-    public void testGet() {
-        Assertions.assertNotNull(resource.getContent(EXAMPLE_CLASS));
+    /**
+     * Defines unit tests for {@link JavaStdlibResource#get(String)}.
+     */
+    @DisplayName("get(String)")
+    @Nested
+    public class GetContentTest {
+
+        /**
+         * Tests with a class that exists.
+         */
+        @DisplayName("Class exists")
+        @Test
+        public void testNormalBehaviour() {
+            Assertions.assertNotNull(resource.get(Object.class.getName()));
+        }
+
+        /**
+         * Tests with a class that does not exist.
+         */
+        @DisplayName("Class does not exist")
+        @Test
+        public void testExceptionalBehaviour() {
+            Assertions.assertThrows(NoSuchElementException.class, () -> resource.get("myPackage.MyClass"));
+        }
     }
 
+    /**
+     * Defines unit tests for {@link JavaStdlibResource#contains(String)}.
+     */
     @DisplayName("contains(String)")
-    @Test
-    public void testContains() {
-        Assertions.assertTrue(resource.contains(EXAMPLE_CLASS));
+    @Nested
+    public class ContainsTest {
+
+        /**
+         * Tests with a class that exists.
+         */
+        @DisplayName("Class exists")
+        @Test
+        public void testExists() {
+            Assertions.assertTrue(resource.contains(Object.class.getName()));
+        }
+
+        /**
+         * Tests with a class that does not exist.
+         */
+        @DisplayName("Class does not exist")
+        @Test
+        public void testDoesNotExist() {
+            Assertions.assertFalse(resource.contains("myPackage.MyClass"));
+        }
     }
 
+    /**
+     * Tests {@link JavaStdlibResource#iterator()}.
+     */
     @DisplayName("iterator()")
     @Test
     public void testIterator() {
@@ -74,17 +124,20 @@ public class JavaStdlibResourceTest {
         Assertions.assertTrue(it.hasNext());
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
-            if (entry.getKey().equals(EXAMPLE_CLASS)) {
+            if (entry.getKey().equals(Object.class.getName())) {
                 return;
             }
         }
-        Assertions.fail("Iterator did not contain " + EXAMPLE_CLASS);
+        Assertions.fail("Iterator did not contain " + Object.class.getName());
     }
 
+    /**
+     * Tests {@link JavaStdlibResource#stream()}.
+     */
     @DisplayName("stream()")
     @Test
     public void testStream() {
         Assertions.assertTrue(resource.stream().findAny().isPresent());
-        Assertions.assertTrue(resource.stream().anyMatch(entry -> entry.getKey().equals(EXAMPLE_CLASS)));
+        Assertions.assertTrue(resource.stream().anyMatch(entry -> entry.getKey().equals(Object.class.getName())));
     }
 }

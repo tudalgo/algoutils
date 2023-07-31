@@ -2,6 +2,7 @@ package org.tudalgo.algoutils.tutor.general;
 
 import org.sourcegrade.jagr.api.testing.TestCycle;
 import org.tudalgo.algoutils.tutor.general.io.JavaResource;
+import org.tudalgo.algoutils.tutor.general.io.JavaStdlibResource;
 import org.tudalgo.algoutils.tutor.general.io.JavaSubmissionResource;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
 import org.tudalgo.algoutils.tutor.general.match.Stringifiable;
@@ -29,9 +30,8 @@ public class SpoonUtils {
      * The resources to access the source code.
      */
     private static final Set<JavaResource> RESOURCES = Set.of(
-        new JavaSubmissionResource()
-        // https://github.com/INRIA/spoon/issues/5290
-        //new JavaStdlibResource()
+        new JavaSubmissionResource(),
+        new JavaStdlibResource()
     );
 
     private SpoonUtils() {
@@ -65,7 +65,7 @@ public class SpoonUtils {
             .filter(resource -> resource.contains(className))
             .findFirst()
             .orElseThrow()
-            .getContent(className);
+            .get(className);
 
         VirtualFile file = new VirtualFile(sourceCode, className);
 

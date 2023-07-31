@@ -1,10 +1,14 @@
 package org.tudalgo.algoutils.tutor.general.io;
 
+
 import org.sourcegrade.jagr.api.testing.SourceFile;
 import org.sourcegrade.jagr.api.testing.Submission;
 import org.sourcegrade.jagr.api.testing.TestCycle;
+import org.tudalgo.algoutils.tutor.general.io.parser.JavaSourceCodeParser;
+import org.tudalgo.algoutils.tutor.general.io.parser.JavaSourceCodeStringParser;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +21,6 @@ import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.sourcegrade.jagr.api.testing.extension.TestCycleResolver.getTestCycle;
-import static org.tudalgo.algoutils.tutor.general.io.ResourceUtils.getQualifiedClassName;
 
 /**
  * A Java submission resource which can access the source code of the submission.
@@ -25,7 +28,6 @@ import static org.tudalgo.algoutils.tutor.general.io.ResourceUtils.getQualifiedC
  * @author Nhan Huynh
  */
 public class JavaSubmissionResource implements JavaResource {
-
 
     /**
      * The default source of this resource.
@@ -41,7 +43,7 @@ public class JavaSubmissionResource implements JavaResource {
         .collect(Collectors.toUnmodifiableSet());
 
     /**
-     * The source of this resource.
+     * The path to the source file.
      */
     private final Path source;
 
@@ -49,7 +51,6 @@ public class JavaSubmissionResource implements JavaResource {
      * The content source of the classes in this resource.
      */
     private @Nullable Map<String, String> contents = null;
-
 
     /**
      * Constructs a new Java submission resource with the given source.
@@ -67,16 +68,6 @@ public class JavaSubmissionResource implements JavaResource {
         this(DEFAULT_SRC);
     }
 
-    @Override
-    public Set<String> classNames() {
-        return contents().keySet();
-    }
-
-    @Override
-    public int size() {
-        return contents().size();
-    }
-
     /**
      * Fixes the content of the given string.
      *
@@ -85,6 +76,17 @@ public class JavaSubmissionResource implements JavaResource {
      */
     private static String fixContent(String content) {
         return new String(content.getBytes(), US_ASCII) + "\n";
+    }
+
+
+    /**
+     * Converts a Java class name into a path to a Java file.
+     *
+     * @param className the path to convert
+     * @return the converted Java class name into a path to a Java file
+     */
+    protected static String toPathName(String className) {
+        return className.replace(".", File.separator) + EXTENSION;
     }
 
     @Override
@@ -96,7 +98,7 @@ public class JavaSubmissionResource implements JavaResource {
         if (cycle != null) {
             Submission submission = cycle.getSubmission();
             for (String className : cycle.getClassLoader().getClassNames()) {
-                String path = JavaResource.toPathName(className);
+                String path = toPathName(className);
                 @Nullable SourceFile sourceFile = submission.getSourceFile(path);
                 if (sourceFile != null) {
                     String content = fixContent(sourceFile.getContent());
@@ -104,21 +106,22 @@ public class JavaSubmissionResource implements JavaResource {
                 }
             }
         } else {
+            // Current test run is a local run
             Set<Path> excluded = EXCLUDED_DIRECTORIES.stream()
                 .map(source::resolve)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toSet());
 
-            // Current test run is a local run
             try (Stream<Path> paths = Files.walk(source)) {
-                for (Path path : paths.filter(it -> it.toString().endsWith(JavaResource.EXTENSION)
-                    && excluded.stream().noneMatch(it::startsWith)).toList()) {
+                for (Path path : paths.filter(p -> JavaResource.isJavaFile(p)
+                    && excluded.stream().noneMatch(p::startsWith)).toList()) {
                     if (!JavaResource.isJavaFile(path)) {
                         continue;
                     }
                     try {
-                        String content = Files.readString(path);
-                        String className = getQualifiedClassName(content);
-                        contents.put(className, Files.readString(path));
+                        String sourceCode = Files.readString(path);
+                        try (JavaSourceCodeParser parser = new JavaSourceCodeStringParser(sourceCode)) {
+                            contents.put(parser.getQualifiedName(), Files.readString(path));
+                        }
                     } catch (IOException e) {
                         throw new RuntimeException("Cannot read submission file " + path, e);
                     }
@@ -131,7 +134,7 @@ public class JavaSubmissionResource implements JavaResource {
     }
 
     @Override
-    public String getContent(String className) throws NoSuchElementException {
+    public String get(String className) throws NoSuchElementException {
         if (!contains(className)) {
             throw new NoSuchElementException(className);
         }

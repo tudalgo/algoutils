@@ -1,21 +1,18 @@
 package org.tudalgo.algoutils.tutor.general.io;
 
+import org.tudalgo.algoutils.tutor.general.io.parser.JavaSourceCodeParser;
+import org.tudalgo.algoutils.tutor.general.io.parser.JavaSourceCodeStringParser;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import static org.tudalgo.algoutils.tutor.general.io.ResourceUtils.getQualifiedClassName;
 
 /**
  * The Java standard library resource which can access the source code of the standard library.
@@ -25,15 +22,25 @@ import static org.tudalgo.algoutils.tutor.general.io.ResourceUtils.getQualifiedC
 public class JavaStdlibResource implements JavaResource {
 
     /**
+     * The default source file name of the java standard library.
+     */
+    private static final String SRC_FILE_NAME = "src.zip";
+
+    /**
      * The source of this resource.
      */
     private final Path source;
 
     /**
-     * The content source of the classes in this resource.
+     * The content source of the classes in this resource. (Class name -> Zip entry
      */
 
     private @Nullable Map<String, ZipEntry> entries;
+
+    /**
+     * The content of the classes in this resource. (Class name -> source code)
+     */
+    private @Nullable Map<String, String> content;
 
     /**
      * Constructs a new Java stdlib resource with the given source.
@@ -51,7 +58,6 @@ public class JavaStdlibResource implements JavaResource {
         this(getStdlibSource());
     }
 
-
     /**
      * Returns the path of the source code of the java standard library. The default location is the src.zip file in
      * the java home directory.
@@ -60,18 +66,13 @@ public class JavaStdlibResource implements JavaResource {
      */
     public static Path getStdlibSource() {
         try (Stream<Path> stream = Files.walk(Path.of(System.getProperty("java.home")))) {
-            return stream.filter(path -> path.endsWith("src.zip")).findFirst().orElseThrow();
+            return stream.filter(path -> path.endsWith(SRC_FILE_NAME)).findFirst().orElseThrow();
         } catch (IOException e) {
             throw new NoSuchElementException("Could not find java home", e);
         }
     }
 
-    /**
-     * Returns the entries of this resource which contains the source of the classes.
-     *
-     * @return the entries of this resource which contains the source of the classes
-     */
-    private Map<String, ZipEntry> getEntries() {
+    protected Map<String, ZipEntry> getEntries() {
         if (entries != null) return entries;
         entries = new HashMap<>();
         try (ZipFile file = new ZipFile(source.toFile())) {
@@ -86,9 +87,13 @@ public class JavaStdlibResource implements JavaResource {
                     continue;
                 }
 
+                if (name.contains("Object.java")) {
+                    System.out.println("Object: " + name);
+                }
                 String sourceCode = new String(file.getInputStream(entry).readAllBytes(), Charset.defaultCharset());
-                String className = getQualifiedClassName(sourceCode);
-                entries.put(className, entry);
+                try (JavaSourceCodeParser parser = new JavaSourceCodeStringParser(sourceCode)) {
+                    entries.put(parser.getQualifiedName(), entry);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -108,9 +113,10 @@ public class JavaStdlibResource implements JavaResource {
 
     @Override
     public Map<String, String> contents() {
+        if (content != null) return content;
         // Do not use get() here because it will open a new ZipFile for each entry
         try (ZipFile file = new ZipFile(source.toFile())) {
-            return getEntries().entrySet().stream().parallel().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            content = getEntries().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
                 try {
                     return new String(file.getInputStream(entry.getValue()).readAllBytes(), Charset.defaultCharset());
                 } catch (IOException e) {
@@ -120,10 +126,11 @@ public class JavaStdlibResource implements JavaResource {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return content;
     }
 
     @Override
-    public String getContent(String className) {
+    public String get(String className) {
         if (!contains(className)) {
             throw new NoSuchElementException(className);
         }
@@ -134,4 +141,9 @@ public class JavaStdlibResource implements JavaResource {
             throw new RuntimeException(e);
         }
     }
+
+    public boolean contains(String className) {
+        return getEntries().containsKey(className);
+    }
+
 }
