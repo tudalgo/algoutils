@@ -1,4 +1,4 @@
-package org.tudalgo.algoutils.tutor.general.io;
+package org.tudalgo.algoutils.tutor.general.io.parser;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
