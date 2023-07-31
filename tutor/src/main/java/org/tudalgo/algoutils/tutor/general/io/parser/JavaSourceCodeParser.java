@@ -1,5 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.io.parser;
 
+import java.io.IOException;
+
 /**
  * Parses a Java source code file and extracts information about the Java file.
  *
@@ -87,4 +89,7 @@ public interface JavaSourceCodeParser extends AutoCloseable {
         String className = getClassName();
         return packageName.isEmpty() ? className : packageName + "." + className;
     }
+
+    @Override
+    void close() throws IOException;
 }
