@@ -1,6 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.io.parser;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Parses a Java source code file and extracts information about the Java file.
@@ -69,8 +70,8 @@ public interface JavaSourceCodeParser extends AutoCloseable {
      *
      * @return the keywords for identifying class declaration
      */
-    static String[] classKeywords() {
-        return new String[]{CLASS_KEYWORD, INTERFACE_KEYWORD, ENUM_KEYWORD, RECORD_KEYWORD, ANNOTATION_KEYWORD};
+    static List<String> classKeywords() {
+        return List.of(CLASS_KEYWORD, INTERFACE_KEYWORD, ENUM_KEYWORD, RECORD_KEYWORD, ANNOTATION_KEYWORD);
     }
 
     /**

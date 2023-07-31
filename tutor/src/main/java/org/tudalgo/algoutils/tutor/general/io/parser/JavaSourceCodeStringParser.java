@@ -3,6 +3,7 @@ package org.tudalgo.algoutils.tutor.general.io.parser;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Parses a Java source code file as String and extracts information about the Java file.
@@ -38,16 +39,6 @@ public class JavaSourceCodeStringParser implements JavaSourceCodeParser {
      */
     public JavaSourceCodeStringParser(String sourceCode) {
         this.sourceCode = sourceCode;
-    }
-
-    /**
-     * Accepts all white space characters and moves the current index to the next non-white space character.
-     */
-    private void acceptWhiteSpace() {
-        int size = sourceCode.length();
-        while (current < size && Character.isWhitespace(sourceCode.charAt(current))) {
-            current++;
-        }
     }
 
     /**
@@ -90,11 +81,11 @@ public class JavaSourceCodeStringParser implements JavaSourceCodeParser {
      */
     private void visitPackageName() {
         skipComment();
-        String[] classKeywords = JavaSourceCodeParser.classKeywords();
+        List<String> classKeywords = JavaSourceCodeParser.classKeywords();
         int size = sourceCode.length();
         for (; current < size; current++) {
             // Default package
-            if (Arrays.stream(classKeywords).anyMatch(keyword -> sourceCode.startsWith(keyword, current))) {
+            if (classKeywords.stream().anyMatch(keyword -> sourceCode.startsWith(keyword, current))) {
                 packageName = "";
                 break;
             }
@@ -131,15 +122,15 @@ public class JavaSourceCodeStringParser implements JavaSourceCodeParser {
     private void visitClassName() {
         skipComment();
         int size = sourceCode.length();
-        String[] classKeywords = JavaSourceCodeParser.classKeywords();
+        List<String> classKeywords = JavaSourceCodeParser.classKeywords();
         for (; current < size; current++) {
             skipComment();
 
-            if (Arrays.stream(classKeywords).noneMatch(keyword -> sourceCode.startsWith(keyword, current))) {
+            if (classKeywords.stream().noneMatch(keyword -> sourceCode.startsWith(keyword, current))) {
                 continue;
             }
 
-            String keyword = Arrays.stream(classKeywords)
+            String keyword = classKeywords.stream()
                 .filter(k -> sourceCode.startsWith(k, current))
                 .findFirst()
                 .orElseThrow();
