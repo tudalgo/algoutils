@@ -59,16 +59,16 @@ public class StudentTestUtils {
      *              return a > b ? a : b;
      *            }
      *            public static void main(String[] args) {
-     *              check_expect(3, max(2, 3));
-     *              check_expect(3, max(3, 2));
-     *              check_expect(3, max(3, 3));
+     *              testEquals(3, max(2, 3));
+     *              testEquals(3, max(3, 2));
+     *              testEquals(3, max(3, 3));
      *            }
      *      }</pre>
      *
      * @param expected the expected value
      * @param actual   the actual value
      */
-    public static void check_expect(Object expected, Object actual) {
+    public static void testEquals(Object expected, Object actual) {
         simpleStudentTest(
             actual,
             a -> a.equals(expected),
@@ -77,7 +77,7 @@ public class StudentTestUtils {
     }
 
     /**
-     * Checks that the given {@code actual} number is in the given {@code range} (inclusive).
+     * Checks that the given {@code actual} value is in the range {@code [min, max]}. The range is inclusive.
      * If the value is not in the range, an error message is printed to {@link #S_TEST_ERR}.
      *
      * <p>This method is intended to be used in the context of a test case from the student.
@@ -85,10 +85,10 @@ public class StudentTestUtils {
      * <p>Example:
      * <pre>{@code
      *           public static void main(String[] args) {
-     *               check_range(0, 10, 5);
-     *               check_range(0, 10, 0);
-     *               check_range(0, 10, 10);
-     *               check_range(0, 10, -1); // will print an error message
+     *               testWithinRange(0, 10, 5);
+     *               testWithinRange(0, 10, 0);
+     *               testWithinRange(0, 10, 10);
+     *               testWithinRange(0, 10, -1); // will print an error message
      *           }
      *     }</pre>
      *
@@ -96,12 +96,36 @@ public class StudentTestUtils {
      * @param max    the maximum value of the range
      * @param actual the actual value
      */
-    public static void check_range(double min, double max, double actual) {
+    public static <T extends Comparable<T>> void testWithinRange(T min, T max, T actual) {
         simpleStudentTest(
             actual,
-            a -> min <= actual && actual <= max,
+            a -> a.compareTo(min) >= 0 && a.compareTo(max) <= 0,
             r -> String.format("Expected: <%s> to be in range <%s, %s>, but was not", actual, min, max)
         );
+    }
+
+    /**
+     * Checks that the given {@code actual} value is in the range {@code [min, max]}. The range is inclusive.
+     * If the value is not in the range, an error message is printed to {@link #S_TEST_ERR}.
+     *
+     * <p>This method is intended to be used in the context of a test case from the student.
+     *
+     * <p>Example:
+     * <pre>{@code
+     *          public static void main(String[] args) {
+     *              testWithinRange(0, 10, 5);
+     *              testWithinRange(0, 10, 0);
+     *              testWithinRange(0, 10, 10);
+     *              testWithinRange(0, 10, -1); // will print an error message
+     *          }
+     *      }</pre>
+     *
+     * @param min    the minimum value of the range
+     * @param max    the maximum value of the range
+     * @param actual the actual value
+     */
+    public static void testWithinRange(double min, double max, double actual) {
+        testWithinRange(Double.valueOf(min), Double.valueOf(max), Double.valueOf(actual));
     }
 
     /**
@@ -116,20 +140,19 @@ public class StudentTestUtils {
         final var failedByAssertion = testResults.stream().filter(StudentTestResult::hasFailedByAssertion).count();
         final var failedWithException = testResults.stream().filter(StudentTestResult::hasFailedWithException).count();
         final var failed = failedByAssertion + failedWithException;
-        String message = "";
+        final StringBuilder messageBuilder = new StringBuilder();
         if (failed == 0) {
-            message = String.format("All %s test(s) passed!%n", passed);
+            messageBuilder.append(String.format("All %s test(s) passed!%n", passed));
         } else {
-            final StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%s of %s total test(s) passed!%n", passed, testResults.size()));
+            messageBuilder.append(String.format("%s of %s total test(s) passed!%n", passed, testResults.size()));
             if (failedByAssertion > 0) {
-                sb.append(String.format(" %s test(s) were executed, but failed by assertion.%n", failedByAssertion));
+                messageBuilder.append(String.format(" %s test(s) were executed, but failed by assertion.%n", failedByAssertion));
             }
             if (failedWithException > 0) {
-                sb.append(String.format(" %s test(s) threw an exception during execution.%n", failedWithException));
+                messageBuilder.append(String.format(" %s test(s) threw an exception during execution.%n", failedWithException));
             }
-            message = sb.toString();
         }
+        final var message = messageBuilder.toString();
         // get length of longest line
         final var longestLine = message.lines().mapToInt(String::length).max().orElse("Test results summary".length());
         // print header
