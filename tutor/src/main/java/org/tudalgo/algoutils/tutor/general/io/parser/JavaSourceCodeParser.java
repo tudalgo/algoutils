@@ -20,6 +20,26 @@ public interface JavaSourceCodeParser extends AutoCloseable {
     String CLASS_KEYWORD = "class";
 
     /**
+     * The tokens for identifying interface declaration.
+     */
+    String INTERFACE_KEYWORD = "interface";
+
+    /**
+     * The tokens for identifying enum declaration.
+     */
+    String ENUM_KEYWORD = "enum";
+
+    /**
+     * The tokens for identifying record declaration.
+     */
+    String RECORD_KEYWORD = "record";
+
+    /**
+     * The tokens for identifying annotation declaration.
+     */
+    String ANNOTATION_KEYWORD = "@interface";
+
+    /**
      * The starting tokens for identifying JavaDoc.
      */
     String JAVA_DOC_START = "/**";
@@ -43,6 +63,15 @@ public interface JavaSourceCodeParser extends AutoCloseable {
      * The ending tokens for identifying multi line comment.
      */
     String COMMENT_MULTI_LINE_END = "*/";
+
+    /**
+     * Returns the keywords for identifying class declaration.
+     *
+     * @return the keywords for identifying class declaration
+     */
+    static String[] classKeywords() {
+        return new String[]{CLASS_KEYWORD, INTERFACE_KEYWORD, ENUM_KEYWORD, RECORD_KEYWORD, ANNOTATION_KEYWORD};
+    }
 
     /**
      * Returns {@code true} if the specified token is a valid token for a package name.

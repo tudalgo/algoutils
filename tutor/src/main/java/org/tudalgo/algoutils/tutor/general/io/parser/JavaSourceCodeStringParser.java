@@ -2,6 +2,8 @@ package org.tudalgo.algoutils.tutor.general.io.parser;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 /**
  * Parses a Java source code file as String and extracts information about the Java file.
  *
@@ -88,10 +90,11 @@ public class JavaSourceCodeStringParser implements JavaSourceCodeParser {
      */
     private void visitPackageName() {
         skipComment();
+        String[] classKeywords = JavaSourceCodeParser.classKeywords();
         int size = sourceCode.length();
         for (; current < size; current++) {
             // Default package
-            if (sourceCode.startsWith(CLASS_KEYWORD, current)) {
+            if (Arrays.stream(classKeywords).anyMatch(keyword -> sourceCode.startsWith(keyword, current))) {
                 packageName = "";
                 break;
             }
@@ -128,14 +131,21 @@ public class JavaSourceCodeStringParser implements JavaSourceCodeParser {
     private void visitClassName() {
         skipComment();
         int size = sourceCode.length();
+        String[] classKeywords = JavaSourceCodeParser.classKeywords();
         for (; current < size; current++) {
             skipComment();
-            if (!sourceCode.startsWith(CLASS_KEYWORD, current)) {
+
+            if (Arrays.stream(classKeywords).noneMatch(keyword -> sourceCode.startsWith(keyword, current))) {
                 continue;
             }
 
+            String keyword = Arrays.stream(classKeywords)
+                .filter(k -> sourceCode.startsWith(k, current))
+                .findFirst()
+                .orElseThrow();
+
             // Valid class name
-            current += CLASS_KEYWORD.length();
+            current += keyword.length();
             skipComment();
             for (StringBuilder builder = new StringBuilder(); current < size; current++) {
                 char token = sourceCode.charAt(current);
@@ -151,7 +161,7 @@ public class JavaSourceCodeStringParser implements JavaSourceCodeParser {
     @Override
     public String getClassName() {
         if (className != null) return className;
-        visitPackageName();
+        getPackageName();
         visitClassName();
         return className;
     }

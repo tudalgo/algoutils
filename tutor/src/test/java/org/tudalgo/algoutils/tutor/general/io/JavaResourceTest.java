@@ -17,11 +17,6 @@ import java.nio.file.Path;
 @DisplayName("JavaResource")
 public class JavaResourceTest {
 
-    @BeforeEach
-    public void setup() {
-        System.out.println("setup");
-    }
-
     /**
      * Defines unit tests for {@link JavaResource#isJavaFile(Path)} and {@link JavaResource#isJavaFile(String)}.
      */

@@ -87,9 +87,6 @@ public class JavaStdlibResource implements JavaResource {
                     continue;
                 }
 
-                if (name.contains("Object.java")) {
-                    System.out.println("Object: " + name);
-                }
                 String sourceCode = new String(file.getInputStream(entry).readAllBytes(), Charset.defaultCharset());
                 try (JavaSourceCodeParser parser = new JavaSourceCodeStringParser(sourceCode)) {
                     entries.put(parser.getQualifiedName(), entry);
