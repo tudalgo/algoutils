@@ -1,5 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
+import org.tudalgo.algoutils.tutor.general.SpoonUtils;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
@@ -7,7 +8,6 @@ import java.util.*;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
-import static org.tudalgo.algoutils.tutor.general.SpoonUtils.getCtModel;
 
 /**
  * A basic implementation of a {@link TypeLink type link}.
@@ -38,7 +38,9 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
     @Override
     public TypeLink superType() {
         return of(type.getSuperclass());
-    }    private final List<BasicFieldLink> fields = new LinkedList<>(), unmodifiableFields = unmodifiableList(fields);
+    }
+
+    private final List<BasicFieldLink> fields = new LinkedList<>(), unmodifiableFields = unmodifiableList(fields);
 
     @Override
     public List<BasicFieldLink> getFields() {
@@ -72,7 +74,9 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
     @Override
     public String identifier() {
         return type.getSimpleName();
-    }    private final List<BasicTypeLink> interfaces = new ArrayList<>(), unmodifiableInterfaces = unmodifiableList(interfaces);
+    }
+
+    private final List<BasicTypeLink> interfaces = new ArrayList<>(), unmodifiableInterfaces = unmodifiableList(interfaces);
 
     @Override
     public Class<?> reflection() {
@@ -111,22 +115,22 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
         if (element != null) {
             return element;
         }
-        element = getCtModel().getAllTypes().stream()
-            .filter(e -> e.getQualifiedName().equals(reflection().getName()))
-            .findFirst()
-            .orElse(null);
+        element = SpoonUtils.getType(reflection().getName());
         return element;
-    }    private final List<BasicMethodLink> methods = new LinkedList<>(), unmodifiableMethods = unmodifiableList(methods);
+    }
 
+    public static void main(String[] args) {
+        var type = BasicTypeLink.of(BasicTypeLink.class);
+        System.out.println( type.getCtElement());
+    }
 
+    private final List<BasicMethodLink> methods = new LinkedList<>(), unmodifiableMethods = unmodifiableList(methods);
 
 
     private final List<BasicConstructorLink> constructors = new LinkedList<>(), unmodifiableConstructors = unmodifiableList(constructors);
 
 
     private final List<BasicEnumConstantLink> enums = new LinkedList<>(), unmodifiableEnums = unmodifiableList(enums);
-
-
 
 
 }

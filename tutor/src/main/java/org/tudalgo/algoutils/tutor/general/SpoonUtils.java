@@ -1,5 +1,6 @@
 package org.tudalgo.algoutils.tutor.general;
 
+import org.sourcegrade.jagr.api.testing.TestCycle;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
 import org.tudalgo.algoutils.tutor.general.match.Stringifiable;
@@ -7,9 +8,12 @@ import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.support.compiler.VirtualFile;
 
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static org.sourcegrade.jagr.api.testing.extension.TestCycleResolver.getTestCycle;
 
 /**
  * A collection of utilities for working with spoon.
@@ -23,7 +27,7 @@ public class SpoonUtils {
     }
 
     /**
-     * @deprecated use {@link #getCtModel()} instead
+     * @deprecated use {@link #getType(String, Class)} instead
      */
     public static <T, U extends CtType<?>> T getCtElementForSourceCode(
         String ignoredSourceCode,
@@ -64,6 +68,7 @@ public class SpoonUtils {
      *
      * @return the <code>CtModel</code>
      * @see TestCycleResolver
+     * @deprecated use {@link #getType(String, Class)} instead
      */
     public static CtModel getCtModel() {
         if (model != null) {
@@ -71,10 +76,51 @@ public class SpoonUtils {
         }
         var launcher = new Launcher();
         //noinspection UnstableApiUsage
-        var cycle = TestCycleResolver.getTestCycle();
+        var cycle = getTestCycle();
         if (cycle != null) {
             launcher.getEnvironment().setInputClassLoader((ClassLoader) cycle.getClassLoader());
         }
         return model = launcher.buildModel();
+    }
+
+    /**
+     * Returns the corresponding {@link CtType} in the spoon world for the given class.
+     *
+     * @param className the class to get the spoon type for
+     * @return the corresponding {@link CtType} in the spoon world for the given class
+     */
+    public static CtType<?> getType(String className) {
+        return getType(className, CtType.class);
+    }
+
+    /**
+     * Returns the corresponding {@link CtType} in the spoon world for the given class.
+     *
+     * @param className the class to get the spoon type for
+     * @param type      the type of the spoon type to return
+     * @param <T>       the type of the spoon type to return
+     * @return the corresponding {@link CtType} in the spoon world for the given class
+     */
+    public static <T extends CtType<?>> T getType(String className, Class<T> type) {
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(17);
+        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+
+        String sourceCode = ResourceUtils.getTypeContent(className);
+        VirtualFile file = new VirtualFile(sourceCode, className);
+
+        @SuppressWarnings("UnstableApiUsage") TestCycle cycle = getTestCycle();
+        if (cycle != null) {
+            launcher.getEnvironment().setInputClassLoader((ClassLoader) cycle.getClassLoader());
+        }
+
+        launcher.addInputResource(file);
+        CtModel model = launcher.buildModel();
+        return model.getAllTypes().stream()
+            .filter(type::isInstance)
+            .filter(it -> it.getQualifiedName().equals(className))
+            .map(type::cast)
+            .findFirst()
+            .orElseThrow();
     }
 }

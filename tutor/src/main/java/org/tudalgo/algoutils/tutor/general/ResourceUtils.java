@@ -1,10 +1,9 @@
 package org.tudalgo.algoutils.tutor.general;
 
+import org.sourcegrade.jagr.api.testing.TestCycle;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,6 +40,27 @@ public class ResourceUtils {
         return sources.stream().filter(p -> p.endsWith(path)).findFirst().orElse(null);
     }
 
+    public static String getTypeContent(String className) {
+        String pathString = toPathString(className);
+
+        //noinspection UnstableApiUsage
+        TestCycle testCycle = TestCycleResolver.getTestCycle();
+        if (testCycle != null) {
+            return requireNonNull(testCycle.getSubmission().getSourceFile(pathString)).getContent();
+        }
+        Path path = findSource(pathString);
+        if (path == null) {
+            return null;
+        }
+        File file = path.toFile();
+
+        try (var reader = new BufferedReader(new FileReader(file))) {
+            return reader.lines().collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+            throw new UncheckedIOException("An error occurred while reading the source file %s".formatted(file), e);
+        }
+    }
+
     /**
      * <p>Returns the source code of the given student solution class.</p>
      *
@@ -48,26 +68,27 @@ public class ResourceUtils {
      * @return the source code
      */
     public static String getTypeContent(Class<?> clazz) {
-        var pathString = toPathString(clazz);
-        //noinspection UnstableApiUsage
-        var testCycle = TestCycleResolver.getTestCycle();
-        if (testCycle != null) {
-            return requireNonNull(testCycle.getSubmission().getSourceFile(pathString)).getContent();
-        }
-        var path = findSource(pathString);
-        if (path == null) {
-            return null;
-        }
-        var file = path.toFile();
-        try (var reader = new BufferedReader(new FileReader(file))) {
-            return reader.lines().collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            throw new RuntimeException("an error occurred while reading a source file", e);
-        }
+        return getTypeContent(clazz.getName());
     }
 
+    /**
+     * Returns the class name as a path string.
+     *
+     * @param className the class name to convert
+     * @return the class name as a path string
+     */
+    private static String toPathString(String className) {
+        return className.replace('.', '/') + ".java";
+    }
+
+    /**
+     * Returns the class name as a path string.
+     *
+     * @param clazz the class to convert
+     * @return the class name as a path string
+     */
     private static String toPathString(Class<?> clazz) {
-        return clazz.getName().replace('.', '/') + ".java";
+        return toPathString(clazz.getName());
     }
 
     public static String toShortSignature(Method method) {
