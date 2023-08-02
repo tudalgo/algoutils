@@ -2,6 +2,9 @@ package org.tudalgo.algoutils.tutor.general;
 
 import org.sourcegrade.jagr.api.testing.TestCycle;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
+import org.tudalgo.algoutils.tutor.general.io.JavaResource;
+import org.tudalgo.algoutils.tutor.general.io.StdlibJavaResource;
+import org.tudalgo.algoutils.tutor.general.io.SubmissionJavaResource;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
 import org.tudalgo.algoutils.tutor.general.match.Stringifiable;
 import spoon.Launcher;
@@ -10,6 +13,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.support.compiler.VirtualFile;
 
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -21,6 +25,15 @@ import static org.sourcegrade.jagr.api.testing.extension.TestCycleResolver.getTe
 public class SpoonUtils {
 
     private static final Pattern SPOON_NAME_PATTERN = Pattern.compile("((?!Ct|Impl)[A-Z][a-z]*)");
+
+    /**
+     * The resources to be used to access the source code.
+     */
+    private static final Set<JavaResource> RESOURCES = Set.of(
+        new SubmissionJavaResource(),
+        new StdlibJavaResource()
+    );
+
     private static CtModel model = null;
 
     private SpoonUtils() {
@@ -106,7 +119,8 @@ public class SpoonUtils {
         launcher.getEnvironment().setComplianceLevel(17);
         launcher.getEnvironment().setIgnoreSyntaxErrors(true);
 
-        String sourceCode = ResourceUtils.getTypeContent(className);
+        JavaResource resource = RESOURCES.stream().filter(r -> r.contains(className)).findFirst().orElseThrow();
+        String sourceCode = resource.get(className);
         VirtualFile file = new VirtualFile(sourceCode, className);
 
         @SuppressWarnings("UnstableApiUsage") TestCycle cycle = getTestCycle();
