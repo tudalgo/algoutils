@@ -1,3 +1,4 @@
+import org.jetbrains.dokka.DokkaConfiguration.Visibility
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import java.net.URL
@@ -33,6 +34,10 @@ tasks {
                 localDirectory.set(projectDir.resolve("src"))
                 remoteUrl.set(URL("https://github.com/tudalgo/algoutils/tree/master/tutor/src"))
                 remoteLineSuffix.set("#L")
+            }
+            perPackageOption {
+                reportUndocumented.set(true)
+                documentedVisibilities.set(setOf(Visibility.PUBLIC, Visibility.PROTECTED))
             }
         }
     }

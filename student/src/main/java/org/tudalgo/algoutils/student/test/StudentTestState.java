@@ -3,7 +3,7 @@ package org.tudalgo.algoutils.student.test;
 /**
  * The state of a {@link StudentTest}.
  */
-enum StudentTestState {
+public enum StudentTestState {
     /**
      * The test has not been started yet.
      */
