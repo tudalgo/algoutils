@@ -12,7 +12,12 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Retention(RetentionPolicy.CLASS)
-@Target({ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE, ElementType.TYPE, ElementType.CONSTRUCTOR})
 public @interface DoNotTouch {
+    /**
+     * An optional reason why the annotated element should not be altered.
+     *
+     * @return the reason why the annotated element should not be altered
+     */
     String value() default "";
 }

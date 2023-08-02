@@ -16,5 +16,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 public @interface StudentImplementationRequired {
+    /**
+     * An optional reason why the annotated element is only present in the solution.
+     *
+     * @return the reason why the annotated element is only present in the solution
+     */
     String value() default "";
 }
