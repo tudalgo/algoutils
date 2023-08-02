@@ -4,6 +4,7 @@ import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import org.sourcegrade.jagr.api.testing.RuntimeClassLoader;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
+import org.tudalgo.algoutils.tutor.general.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -16,9 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * A utility class used for JUnit tests which provides reflective access to some properties and
  * assertions.
+ * This class is deprecated and will be removed in a future release.
+ * Use the new API located in the {@link org.tudalgo.algoutils.tutor.general.reflections} package instead.
  *
  * @author Ruben Deisenroth
  */
+@Deprecated(since = "0.7.0", forRemoval = true)
 public final class TestUtils {
 
     /**
@@ -183,9 +187,12 @@ public final class TestUtils {
 
     /**
      * Returns {@code true} if {@link TestCycleResolver#getTestCycle} does not return {@code null}.
+     * This method is deprecated and will be removed in a future release.
+     * Use {@link Utils#isJagrRun()} instead.
      *
      * @return {@code true} if {@link TestCycleResolver#getTestCycle} does not return {@code null}
      */
+    @Deprecated(since = "0.7.0", forRemoval = true)
     public static boolean isAutograderRun() {
         return TestCycleResolver.getTestCycle() != null;
     }

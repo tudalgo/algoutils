@@ -1,8 +1,6 @@
 package org.tudalgo.algoutils.reflect;
 
 import net.bytebuddy.ByteBuddy;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.mockito.MockingDetails;
 import org.sourcegrade.jagr.api.testing.SourceFile;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
@@ -22,9 +20,12 @@ import static org.mockito.Mockito.*;
 
 /**
  * A class tester which tests properties of a class.
+ * This class is deprecated and will be removed in a future release.
+ * Use the new API located in the {@link org.tudalgo.algoutils.tutor.general.reflections} package instead.
  *
  * @author Ruben Deisenroth
  */
+@Deprecated(since = "0.7.0", forRemoval = true)
 public class ClassTester<T> {
     /**
      * The class identifier containing the name of the class and the similarity to accept

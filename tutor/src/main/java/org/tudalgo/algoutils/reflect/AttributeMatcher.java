@@ -2,10 +2,13 @@ package org.tudalgo.algoutils.reflect;
 
 /**
  * An attribute Matcher based on {@link IdentifierMatcher}.
+ * This class is deprecated and will be removed in a future release.
+ * Use the new API located in the {@link org.tudalgo.algoutils.tutor.general.reflections} package instead.
  *
  * @author Ruben Deisenroth
  * @see IdentifierMatcher
  */
+@Deprecated(since = "0.7.0", forRemoval = true)
 public class AttributeMatcher extends IdentifierMatcher {
 
     /**
