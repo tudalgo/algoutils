@@ -40,6 +40,13 @@ public class ResourceUtils {
         return sources.stream().filter(p -> p.endsWith(path)).findFirst().orElse(null);
     }
 
+    /**
+     * Returns the source code of the given student solution class.
+     *
+     * @param className the class name of the student solution class
+     * @return the source code or null if the source code could not be found
+     * @deprecated use {@link org.tudalgo.algoutils.tutor.general.io.SubmissionJavaResource} instead
+     */
     public static String getTypeContent(String className) {
         String pathString = toPathString(className);
 
@@ -66,6 +73,7 @@ public class ResourceUtils {
      *
      * @param clazz the student solution class
      * @return the source code
+     * @deprecated use {@link org.tudalgo.algoutils.tutor.general.io.SubmissionJavaResource} instead
      */
     public static String getTypeContent(Class<?> clazz) {
         return getTypeContent(clazz.getName());
