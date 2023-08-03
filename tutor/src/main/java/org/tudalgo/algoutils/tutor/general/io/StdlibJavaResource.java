@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,6 +24,12 @@ import java.util.stream.Stream;
  * @author Nhan Huynh
  */
 public class StdlibJavaResource extends AbstractJavaResource {
+
+    /**
+     * The default capacity for the stored entries. This number reflects approximately the number of classes in the
+     * java standard library.
+     */
+    private static final int DEFAULT_CAPACITY = 14580;
 
     /**
      * The default source file name of the java standard library.
@@ -37,7 +44,7 @@ public class StdlibJavaResource extends AbstractJavaResource {
     /**
      * The content source of the classes in this resource.
      */
-    private final Map<String, String> contents = new HashMap<>();
+    private final Map<String, String> contents = new ConcurrentHashMap<>(DEFAULT_CAPACITY);
 
     /**
      * Constructs a new Java stdlib resource with the given source.
@@ -88,16 +95,21 @@ public class StdlibJavaResource extends AbstractJavaResource {
      */
     private Map<String, ZipArchiveEntry> getCache() {
         if (cache != null) return cache;
-        cache = new HashMap<>();
+        cache = new HashMap<>(DEFAULT_CAPACITY);
         try (ZipFile file = new ZipFile(source.toFile())) {
-            cache = Streams.stream(file.getEntries().asIterator(), true)
+            cache = Streams.stream(file.getEntries().asIterator())
                 .filter(entry -> {
                     String fileName = entry.getName();
                     return JavaResource.isJavaFile(fileName)
                         && !fileName.endsWith("package-info.java")
                         && !fileName.endsWith("module-info.java");
                 })
-                .collect(Collectors.toMap(entry -> getClassName(Path.of(entry.getName())), Function.identity()));
+                .collect(Collectors.toMap(
+                    entry -> getClassName(Path.of(entry.getName())),
+                    Function.identity(),
+                    (a, b) -> a,
+                    () -> new HashMap<>(DEFAULT_CAPACITY)
+                ));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -116,8 +128,10 @@ public class StdlibJavaResource extends AbstractJavaResource {
         // Do not use get(String) since it will create a new ZipFile for each entry
         try (ZipFile file = new ZipFile(source.toFile())) {
             cache.entrySet().parallelStream().forEach(entry -> {
+                String className = entry.getKey();
+                ZipArchiveEntry zipEntry = entry.getValue();
                 try {
-                    contents.put(entry.getKey(), new String(file.getInputStream(entry.getValue()).readAllBytes()));
+                    contents.put(className, new String(file.getInputStream(zipEntry).readAllBytes()));
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
