@@ -8,6 +8,7 @@ import org.tudalgo.algoutils.tutor.general.Streams;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -69,8 +70,8 @@ public class StdlibJavaResource extends AbstractJavaResource {
      * @return the path of the source code of the java standard library
      */
     public static Path getStdlibSource() {
-        try (Stream<Path> stream = Files.walk(Path.of(System.getProperty("java.home"))).parallel()) {
-            return stream.filter(path -> path.endsWith(SRC_FILE_NAME)).findFirst().orElseThrow();
+        try (Stream<Path> paths = Files.walk(Path.of(System.getProperty("java.home")))) {
+            return paths.parallel().filter(path -> path.endsWith(SRC_FILE_NAME)).findFirst().orElseThrow();
         } catch (IOException e) {
             throw new NoSuchElementException("Could not find java home", e);
         }
@@ -131,7 +132,10 @@ public class StdlibJavaResource extends AbstractJavaResource {
                 String className = entry.getKey();
                 ZipArchiveEntry zipEntry = entry.getValue();
                 try {
-                    contents.put(className, new String(file.getInputStream(zipEntry).readAllBytes()));
+                    contents.put(
+                        className,
+                        new String(file.getInputStream(zipEntry).readAllBytes(), StandardCharsets.UTF_8)
+                    );
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }

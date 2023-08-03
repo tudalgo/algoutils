@@ -81,8 +81,8 @@ public class SubmissionJavaResource extends AbstractJavaResource {
             .map(source::resolve)
             .collect(Collectors.toSet());
 
-        try (Stream<Path> paths = Files.walk(source).parallel()) {
-            return paths.filter(path -> JavaResource.isJavaFile(path) && excluded.stream().noneMatch(path::startsWith))
+        try (Stream<Path> paths = Files.walk(source)) {
+            return paths.parallel().filter(path -> JavaResource.isJavaFile(path) && excluded.stream().noneMatch(path::startsWith))
                 .map(path -> {
                     try {
                         String sourceCode = Files.readString(path);
