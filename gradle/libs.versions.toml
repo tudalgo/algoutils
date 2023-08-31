@@ -1,5 +1,5 @@
 [libraries]
-spoon = "fr.inria.gforge.spoon:spoon-core:10.4.0"
+spoon = "fr.inria.gforge.spoon:spoon-core:10.4.1"
 jagr = "org.sourcegrade:jagr-launcher:0.9.0"
 mockito = "org.mockito:mockito-core:5.4.0"
 junit = "org.junit.jupiter:junit-jupiter:5.10.0"
