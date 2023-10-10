@@ -25,8 +25,9 @@ public interface MethodLink extends WithModifiers, WithName, WithType, WithTypeL
      * @param arguments the arguments
      * @param <T>       the type of the return value
      * @return the return value
+     * @throws Throwable if the method throws an exception
      */
-    <T> T invoke(Object instance, Object... arguments) throws Exception;
+    <T> T invoke(Object instance, Object... arguments) throws Throwable;
 
     /**
      * <p>Invokes the method linked by this method link with the given arguments.</p>
@@ -34,8 +35,9 @@ public interface MethodLink extends WithModifiers, WithName, WithType, WithTypeL
      * @param arguments the arguments
      * @param <T>       the type of the return value
      * @return the return value
+     * @throws Throwable if the method throws an exception
      */
-    <T> T invokeStatic(Object... arguments) throws Exception;
+    <T> T invokeStatic(Object... arguments) throws Throwable;
 
 
     @Override

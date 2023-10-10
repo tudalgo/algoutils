@@ -54,26 +54,26 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
     }
 
     @Override
-    public <T> T invokeStatic(Object... args) throws Exception {
+    public <T> T invokeStatic(Object... args) throws Throwable {
         try {
             //noinspection unchecked
             return (T) method.invoke(null, args);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e); // TODO
         } catch (InvocationTargetException e) {
-            throw (Exception) e.getCause();
+            throw e.getCause();
         }
     }
 
     @Override
-    public <T> T invoke(Object instance, Object... args) throws Exception {
+    public <T> T invoke(Object instance, Object... args) throws Throwable {
         try {
             //noinspection unchecked
             return (T) method.invoke(instance, args);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e); // TODO
         } catch (InvocationTargetException e) {
-            throw (Exception) e.getCause();
+            throw e.getCause();
         }
     }
 
@@ -98,9 +98,9 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
         }
         element = (CtMethod<?>) parentElement.getDirectChildren().stream()
             .filter(e ->
-                e instanceof CtMethod<?> m &&
-                    reflection().getName().equals(m.getSimpleName()) &&
-                    reflection().getReturnType().getSimpleName().equals(m.getType().getSimpleName())
+                e instanceof CtMethod<?> m
+                    && reflection().getName().equals(m.getSimpleName())
+                    && reflection().getReturnType().getSimpleName().equals(m.getType().getSimpleName())
             ).findFirst().orElse(null);
         return element;
     }
