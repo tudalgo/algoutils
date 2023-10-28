@@ -43,7 +43,7 @@ public class BasicConstructorLink extends BasicLink implements ConstructorLink {
     }
 
     @Override
-    public <T> T invoke(Object... arguments) throws Exception {
+    public <T> T invoke(Object... arguments) throws Throwable {
         try {
             //noinspection unchecked
             return (T) reflection().newInstance(arguments);
@@ -51,7 +51,7 @@ public class BasicConstructorLink extends BasicLink implements ConstructorLink {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
             //noinspection unchecked
-            throw (Exception) e.getCause();
+            throw e.getCause();
         }
     }
 

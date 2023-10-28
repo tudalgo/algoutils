@@ -30,7 +30,7 @@ public class BasicTestOfObject<T> extends BasicTest<TestOfObject<T>, ExpectedObj
         try {
             var object = callable.call();
             builder.object(object, expected().test(object));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             builder.exception(e);
         }
         return builder.build();

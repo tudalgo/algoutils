@@ -7,7 +7,7 @@ import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 
 public class BasicResultOfCall extends BasicResult<ResultOfCall, Nothing, TestOfCall, Nothing> implements ResultOfCall {
 
-    protected BasicResultOfCall(Environment environment, TestOfCall test, Nothing actual, Exception exception) {
+    protected BasicResultOfCall(Environment environment, TestOfCall test, Nothing actual, Throwable exception) {
         super(environment, test, actual, exception);
     }
 

@@ -20,7 +20,7 @@ public class BasicTestOfCall extends BasicTest<TestOfCall, Nothing, ResultOfCall
         try {
             callable.call();
             return new BasicResultOfCall.Builder(environment()).actual(successBehavior()).test(this).build();
-        } catch (Exception throwable) {
+        } catch (Throwable throwable) {
             return new BasicResultOfCall.Builder(environment()).actual(text()).test(this).exception(throwable).build();
         }
     }

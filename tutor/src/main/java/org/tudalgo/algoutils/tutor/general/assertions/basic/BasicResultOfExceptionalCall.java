@@ -8,7 +8,7 @@ import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedException
 
 public class BasicResultOfExceptionalCall<T extends Exception> extends BasicResult<ResultOfExceptionalCall<T>, ActualException<T>, TestOfExceptionalCall<T>, ExpectedException<T>> implements ResultOfExceptionalCall<T> {
 
-    public BasicResultOfExceptionalCall(Environment environment, TestOfExceptionalCall<T> test, ActualException<T> actual, Exception exception, boolean successful) {
+    public BasicResultOfExceptionalCall(Environment environment, TestOfExceptionalCall<T> test, ActualException<T> actual, Throwable exception, boolean successful) {
         super(environment, test, actual, exception);
     }
 

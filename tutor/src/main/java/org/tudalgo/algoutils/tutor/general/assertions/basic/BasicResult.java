@@ -24,7 +24,7 @@ public abstract class BasicResult<RT extends Result<RT, AT, TT, ET>, AT extends 
 
     protected final TT test;
     protected final AT actual;
-    protected final Exception exception;
+    protected final Throwable exception;
 
     /**
      * Constructs a new result with the given environment, test, actual behavior, exception and state if the test was successful.
@@ -34,7 +34,7 @@ public abstract class BasicResult<RT extends Result<RT, AT, TT, ET>, AT extends 
      * @param actual      the actual behavior
      * @param exception   the exception
      */
-    protected BasicResult(Environment environment, TT test, AT actual, Exception exception) {
+    protected BasicResult(Environment environment, TT test, AT actual, Throwable exception) {
         this.environment = environment;
         this.test = test;
         this.actual = actual;
@@ -47,7 +47,7 @@ public abstract class BasicResult<RT extends Result<RT, AT, TT, ET>, AT extends 
     }
 
     @Override
-    public Exception cause() {
+    public Throwable cause() {
         return exception;
     }
 
@@ -74,7 +74,7 @@ public abstract class BasicResult<RT extends Result<RT, AT, TT, ET>, AT extends 
         protected final Environment environment;
         protected TT test;
         protected AT actual;
-        protected Exception exception;
+        protected Throwable exception;
         protected boolean successful;
 
         protected Builder(Environment environment) {
@@ -89,7 +89,7 @@ public abstract class BasicResult<RT extends Result<RT, AT, TT, ET>, AT extends 
         }
 
         @Override
-        public BT exception(Exception exception) {
+        public BT exception(Throwable exception) {
             this.exception = exception;
             //noinspection unchecked
             return (BT) this;
