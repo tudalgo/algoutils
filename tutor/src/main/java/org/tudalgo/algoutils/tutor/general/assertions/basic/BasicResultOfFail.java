@@ -19,7 +19,7 @@ public class BasicResultOfFail extends BasicResult<ResultOfFail, Actual, Fail, E
      *
      * @param test the test
      */
-    public BasicResultOfFail(Environment environment, Fail test, Actual actual, Exception exception) {
+    public BasicResultOfFail(Environment environment, Fail test, Actual actual, Throwable exception) {
         super(environment, test, actual, exception);
     }
 

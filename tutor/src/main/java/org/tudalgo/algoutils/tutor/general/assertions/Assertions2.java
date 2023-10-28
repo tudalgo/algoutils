@@ -325,7 +325,7 @@ public final class Assertions2 {
      * @param <T>                the return type (for convenience reasons)
      * @return nothing
      */
-    public static <T> T fail(Exception cause, Context context, PreCommentSupplier<? super ResultOfFail> preCommentSupplier) {
+    public static <T> T fail(Throwable cause, Context context, PreCommentSupplier<? super ResultOfFail> preCommentSupplier) {
         failBuilder().expected(nothing()).build().run(nothing(), cause).check(context, preCommentSupplier);
         return null;
     }

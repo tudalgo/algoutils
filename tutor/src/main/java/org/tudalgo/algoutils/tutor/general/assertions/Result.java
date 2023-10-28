@@ -25,7 +25,7 @@ public interface Result<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT
      *
      * @return the exception or null
      */
-    Exception cause();
+    Throwable cause();
 
     /**
      * <p>If this result is not {@linkplain #successful() successful},
@@ -92,12 +92,12 @@ public interface Result<RT extends Result<RT, AT, TT, ET>, AT extends Actual, TT
         RT build();
 
         /**
-         * <p>Sets the {@linkplain Exception exception} of the result.</p>
+         * <p>Sets the {@linkplain Throwable exception} of the result.</p>
          *
          * @param exception the exception
          * @return this builder
          */
-        BT exception(Exception exception);
+        BT exception(Throwable exception);
 
         /**
          * <p>Sets the {@linkplain Test test} of the result.</p>

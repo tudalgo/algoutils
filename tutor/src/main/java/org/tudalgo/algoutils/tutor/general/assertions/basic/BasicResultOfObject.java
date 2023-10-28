@@ -24,7 +24,7 @@ public class BasicResultOfObject<T> extends BasicResult<ResultOfObject<T>, Actua
      * @param exception   the exception
      * @param successful  the state if the test was successful
      */
-    public BasicResultOfObject(Environment environment, TestOfObject<T> test, ActualObject<T> actual, Exception exception, boolean successful) {
+    public BasicResultOfObject(Environment environment, TestOfObject<T> test, ActualObject<T> actual, Throwable exception, boolean successful) {
         super(environment, test, actual, exception);
     }
 

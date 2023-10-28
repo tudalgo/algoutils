@@ -7,5 +7,5 @@ public interface ConstructorLink extends Link, WithType, WithTypeList, WithModif
         return Kind.CONSTRUCTOR;
     }
 
-    <T> T invoke(Object... arguments) throws Exception;
+    <T> T invoke(Object... arguments) throws Throwable;
 }

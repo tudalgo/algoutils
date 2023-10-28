@@ -33,7 +33,7 @@ public class BasicTestOfExceptionalCall<T extends Exception> extends BasicTest<T
         try {
             callable.call();
             builder.actual(noException());
-        } catch (Exception throwable) {
+        } catch (Throwable throwable) {
             //noinspection unchecked
             if (expected().test((Class<T>) throwable.getClass())) {
                 //noinspection unchecked

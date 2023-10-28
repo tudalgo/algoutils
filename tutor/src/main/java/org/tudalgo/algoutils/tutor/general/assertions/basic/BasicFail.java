@@ -24,7 +24,7 @@ public class BasicFail extends BasicTest<Fail, Expected, ResultOfFail, Actual> i
     }
 
     @Override
-    public ResultOfFail run(Actual actual, Exception cause) {
+    public ResultOfFail run(Actual actual, Throwable cause) {
         return new BasicResultOfFail.Builder(environment()).test(this).actual(actual).exception(cause).build();
     }
 
