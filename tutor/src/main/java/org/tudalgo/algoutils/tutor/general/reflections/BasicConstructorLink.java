@@ -1,5 +1,8 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -8,7 +11,7 @@ import java.util.Map;
 
 import static java.util.Arrays.stream;
 
-public class BasicConstructorLink extends BasicLink implements ConstructorLink {
+public class BasicConstructorLink extends BasicLink implements ConstructorLink, WithCtElement {
 
     private static final Map<Constructor<?>, BasicConstructorLink> INSTANCES = new HashMap<>();
 
@@ -16,10 +19,16 @@ public class BasicConstructorLink extends BasicLink implements ConstructorLink {
     private final TypeLink typeLink;
     private final List<BasicTypeLink> parameterTypeLinks;
 
+    private final BasicTypeLink parent;
+
+    private CtConstructor<?> element;
+
     private BasicConstructorLink(Constructor<?> constructor) {
+        constructor.setAccessible(true);
         this.constructor = constructor;
         this.typeLink = BasicTypeLink.of(constructor.getDeclaringClass());
         this.parameterTypeLinks = stream(constructor.getParameterTypes()).map(BasicTypeLink::of).toList();
+        this.parent = BasicTypeLink.of(constructor.getDeclaringClass());
     }
 
     /**
@@ -63,5 +72,22 @@ public class BasicConstructorLink extends BasicLink implements ConstructorLink {
     @Override
     public TypeLink type() {
         return typeLink;
+    }
+
+    @Override
+    public CtElement getCtElement() {
+        if (element != null) {
+            return element;
+        }
+        var parentElement = parent.getCtElement();
+        if (parentElement == null) {
+            return null;
+        }
+        element = (CtConstructor<?>) parentElement.getDirectChildren().stream()
+            .filter(e ->
+                e instanceof CtConstructor<?>
+                    && stream(reflection().getParameterTypes()).map(BasicTypeLink::of).toList().equals(parameterTypeLinks)
+            ).findFirst().orElse(null);
+        return element;
     }
 }
