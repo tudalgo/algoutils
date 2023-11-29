@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.tudalgo.algoutils.tutor.general.ResourceUtils.toPathString;
 
 /**
  * A utility class used for JUnit tests which provides reflective access to some properties and
@@ -176,7 +177,9 @@ public final class TestUtils {
             // Autograder Run
             return classLoader.getClassNames().stream()
                 .filter(name -> name.startsWith(packageName))
+                .filter(name -> cycle.getSubmission().getSourceFile(toPathString(name)) != null)
                 .map(classLoader::loadClass)
+                .filter(c -> !c.getName().contains("$") || c.getDeclaringClass() != null)
                 .toArray(Class<?>[]::new);
         } else {
             // Regular Junit Run
