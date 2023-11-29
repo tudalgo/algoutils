@@ -96,12 +96,17 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
         if (parentElement == null) {
             return null;
         }
-        element = (CtMethod<?>) parentElement.getDirectChildren().stream()
-            .filter(e ->
-                e instanceof CtMethod<?> m
-                    && reflection().getName().equals(m.getSimpleName())
-                    && reflection().getReturnType().getSimpleName().equals(m.getType().getSimpleName())
-            ).findFirst().orElse(null);
+        element = parentElement.getDirectChildren().stream()
+            // filter methods
+            .filter(e -> e instanceof CtMethod<?>)
+            // map to methods
+            .map(e -> (CtMethod<?>) e)
+            // filter fitting methods
+            .filter(m -> reflection().getName().equals(m.getSimpleName()))
+            // filter fitting method
+            .filter(m -> listOfCtParametersToTypeLinks(m.getParameters()).equals(parameterTypeLinks))
+            // get fitting method
+            .findFirst().orElse(null);
         return element;
     }
 }
