@@ -115,7 +115,12 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
         if (element != null) {
             return element;
         }
-        element = SpoonUtils.getType(reflection().getName());
+        // retrieve root element if class is nested class
+        var root = reflection();
+        while (root.getDeclaringClass() != null) {
+            root = root.getDeclaringClass();
+        }
+        element = SpoonUtils.getType(root.getName());
         return element;
     }
 
