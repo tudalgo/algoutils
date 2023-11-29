@@ -5,11 +5,13 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
@@ -20,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.text;
 
 @SuppressWarnings("unused")
@@ -133,6 +136,32 @@ public class Assertions4 {
             assertDoesNotCall(e, calledMethod, visited, context, comment);
         });
         visited.add(executable);
+    }
+
+    private static final Filter<CtElement> CONDITIONAL_ELEMENT_FILTER = e ->
+        e instanceof CtIf || e instanceof CtConditional<?> || e instanceof CtFor || e instanceof CtWhile;
+
+
+    /**
+     * Asserts that the given method does not contain conditional statements.
+     *
+     * @param method  the method
+     * @param context the context of this test
+     */
+    public static void assertNotConditional(
+        CtMethod<?> method,
+        Context context
+    ) {
+        if (method.getElements(CONDITIONAL_ELEMENT_FILTER).isEmpty()) {
+            return;
+        }
+        Assertions2.fail(
+            contextBuilder()
+                .subject(method)
+                .add(context)
+                .build(),
+            r -> "method contains conditional elements"
+        );
     }
 }
 
