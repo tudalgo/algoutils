@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.stream;
+import static org.tudalgo.algoutils.tutor.general.Utils.listOfCtParametersToTypeLinks;
 
 /**
  * A basic implementation of a {@link MethodLink method link}.
@@ -96,12 +97,17 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
         if (parentElement == null) {
             return null;
         }
-        element = (CtMethod<?>) parentElement.getDirectChildren().stream()
-            .filter(e ->
-                e instanceof CtMethod<?> m
-                    && reflection().getName().equals(m.getSimpleName())
-                    && reflection().getReturnType().getSimpleName().equals(m.getType().getSimpleName())
-            ).findFirst().orElse(null);
+        element = parentElement.getDirectChildren().stream()
+            // filter methods
+            .filter(e -> e instanceof CtMethod<?>)
+            // map to methods
+            .map(e -> (CtMethod<?>) e)
+            // filter fitting methods
+            .filter(m -> reflection().getName().equals(m.getSimpleName()))
+            // filter fitting method
+            .filter(m -> listOfCtParametersToTypeLinks(m.getParameters()).equals(parameterTypeLinks))
+            // get fitting method
+            .findFirst().orElse(null);
         return element;
     }
 }
