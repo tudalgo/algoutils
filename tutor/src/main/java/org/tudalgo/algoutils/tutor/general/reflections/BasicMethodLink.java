@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.stream;
+import static org.tudalgo.algoutils.tutor.general.Utils.listOfCtParametersToTypeLinks;
 
 /**
  * A basic implementation of a {@link MethodLink method link}.
