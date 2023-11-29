@@ -86,7 +86,7 @@ public interface Matcher<T> {
      * @return the new matcher
      */
     default Matcher<T> and(Matcher<? super T> other) {
-        return Matcher.of(this.predicate().and(other.predicate()), this.object());
+        return Matcher.of(this.predicate().and(other.predicate()), this.object() == null ? other.object() : this.object());
     }
 
     /**
