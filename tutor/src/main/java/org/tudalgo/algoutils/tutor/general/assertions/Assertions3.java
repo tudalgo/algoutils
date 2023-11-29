@@ -1,22 +1,32 @@
 package org.tudalgo.algoutils.tutor.general.assertions;
 
+import java.util.List;
+
+import static java.lang.String.format;
+import static java.util.Arrays.stream;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.emptyContext;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.fail;
+import static org.tudalgo.algoutils.tutor.general.assertions.actual.Actual.unexpected;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.Expected.of;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.items;
+import static org.tudalgo.algoutils.tutor.general.stringify.HTML.tt;
+
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
 import org.tudalgo.algoutils.tutor.general.match.Stringifiable;
-import org.tudalgo.algoutils.tutor.general.reflections.*;
+import org.tudalgo.algoutils.tutor.general.reflections.ConstructorLink;
+import org.tudalgo.algoutils.tutor.general.reflections.EnumConstantLink;
+import org.tudalgo.algoutils.tutor.general.reflections.FieldLink;
+import org.tudalgo.algoutils.tutor.general.reflections.MethodLink;
+import org.tudalgo.algoutils.tutor.general.reflections.Modifier;
+import org.tudalgo.algoutils.tutor.general.reflections.PackageLink;
+import org.tudalgo.algoutils.tutor.general.reflections.TypeLink;
+import org.tudalgo.algoutils.tutor.general.reflections.WithModifiers;
+import org.tudalgo.algoutils.tutor.general.reflections.WithTypeList;
 import org.tudalgo.algoutils.tutor.general.stringify.HTML;
-
-import java.util.List;
-
-import static java.lang.String.format;
-import static java.util.Arrays.stream;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
-import static org.tudalgo.algoutils.tutor.general.assertions.actual.Actual.unexpected;
-import static org.tudalgo.algoutils.tutor.general.assertions.expected.Expected.of;
-import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.items;
-import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.text;
 
 @SuppressWarnings("unused")
 public class Assertions3 {
@@ -33,10 +43,8 @@ public class Assertions3 {
         }
         var typeName = ENVIRONMENT.getStringifier().stringify(matcher);
         return fail(
-            text("exists"),
-            text("does not exist"),
             emptyContext(),
-            e -> format("type %s does not exist with expected characteristics", typeName)
+            e -> format("type %s does not exist with expected characteristics", tt(typeName))
         );
     }
 
@@ -44,19 +52,20 @@ public class Assertions3 {
         T link,
         Modifier... attributes
     ) {
-        var missingModifiers = stream(attributes).filter(e -> e.isNot(link.modifiers())).map(Modifier::name).map(HTML::tt).toList();
+        var missingModifiers =
+            stream(attributes).filter(e -> e.isNot(link.modifiers())).map(Modifier::keyword).map(HTML::tt).toList();
         if (missingModifiers.isEmpty()) {
             return link;
         }
         var typeName = ENVIRONMENT.getStringifier().stringify(link);
-        var expectedModifiers = stream(attributes).map(Modifier::name).map(HTML::tt).toList();
+        var expectedModifiers = stream(attributes).map(Modifier::keyword).map(HTML::tt).toList();
         var expected = items(expectedModifiers);
         var actual = items("not", missingModifiers);
         return fail(
             expected,
             actual,
             contextBuilder().subject(link).build(),
-            e -> format("modifiers of %s are not correct", typeName)
+            e -> "modifiers are not correct"
         );
     }
 
@@ -69,7 +78,7 @@ public class Assertions3 {
             Expected.of(matcher),
             unexpected(link.returnType()),
             contextBuilder().subject(link).build(),
-            e -> format("return type of method %s is not correct", typeName)
+            e -> "return type is not correct"
         );
     }
 
@@ -80,10 +89,8 @@ public class Assertions3 {
         }
         var constantName = ENVIRONMENT.getStringifier().stringify(matcher);
         return fail(
-            text("exists"),
-            text("does not exist"),
             contextBuilder().subject(link).build(),
-            e -> format("enum constant %s does not exist", constantName)
+            e -> format("enum constant %s does not exist", tt(constantName))
         );
     }
 
@@ -100,7 +107,7 @@ public class Assertions3 {
                     Expected.of(List.of(matchers)),
                     unexpected(List.of(actual)),
                     contextBuilder().subject(withParameters).build(),
-                    e -> "%s does not have correct parameters".formatted(name)
+                    e -> "parameters are not correct"
                 );
             }
         }
@@ -114,10 +121,8 @@ public class Assertions3 {
         }
         var methodName = ENVIRONMENT.getStringifier().stringify(matcher);
         return fail(
-            text("exists"),
-            text("does not exist"),
             contextBuilder().subject(link).build(),
-            e -> format("there is no method %s with expected characteristics", methodName)
+            e -> format("there is no method %s with expected characteristics", tt(methodName))
         );
     }
 
@@ -128,10 +133,8 @@ public class Assertions3 {
         }
         var nameOfType = ENVIRONMENT.getStringifier().stringify(link);
         return fail(
-            text("exists"),
-            text("does not exist"),
             contextBuilder().subject(link).build(),
-            e -> "there is no constructor of %s with expected characteristics".formatted(nameOfType)
+            e -> "there is no constructor of class %s with expected characteristics".formatted(tt(nameOfType))
         );
     }
 
@@ -142,10 +145,8 @@ public class Assertions3 {
         }
         var fieldName = ENVIRONMENT.getStringifier().stringify(matcher);
         return fail(
-            text("exists"),
-            text("does not exist"),
             contextBuilder().subject(link).build(),
-            e -> format("there is no field %s with expected characteristics", fieldName)
+            e -> format("there is no field %s with expected characteristics", tt(fieldName))
         );
     }
 
@@ -158,7 +159,7 @@ public class Assertions3 {
             of(matcher),
             unexpected(link),
             contextBuilder().subject(link).build(),
-            e -> format("static type of %s is not correct", typeName)
+            e -> format("static type of %s is not correct", tt(typeName))
         );
     }
 
