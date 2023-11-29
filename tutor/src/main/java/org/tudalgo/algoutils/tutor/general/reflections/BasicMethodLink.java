@@ -1,7 +1,5 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
-import spoon.reflect.declaration.CtMethod;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -10,6 +8,9 @@ import java.util.Map;
 
 import static java.util.Arrays.stream;
 import static org.tudalgo.algoutils.tutor.general.Utils.listOfCtParametersToTypeLinks;
+
+import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
+import spoon.reflect.declaration.CtMethod;
 
 /**
  * A basic implementation of a {@link MethodLink method link}.
@@ -37,6 +38,20 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
 
     public static BasicMethodLink of(Method method) {
         return INSTANCES.computeIfAbsent(method, BasicMethodLink::new);
+    }
+
+    /**
+     * Returns a type link for the method retrieved by the given callable.
+     *
+     * @param callable the method to retrieve the method form
+     * @return the type link
+     */
+    public static BasicMethodLink of(ObjectCallable<Method> callable) {
+        try {
+            return of(callable.call());
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
+        }
     }
 
     @Override
