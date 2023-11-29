@@ -124,11 +124,6 @@ public class BasicTypeLink implements TypeLink, WithCtElement {
         return element;
     }
 
-    public static void main(String[] args) {
-        var type = BasicTypeLink.of(BasicTypeLink.class);
-        System.out.println( type.getCtElement());
-    }
-
     private final List<BasicMethodLink> methods = new LinkedList<>(), unmodifiableMethods = unmodifiableList(methods);
 
 
