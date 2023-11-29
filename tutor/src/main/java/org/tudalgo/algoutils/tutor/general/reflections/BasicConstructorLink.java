@@ -1,8 +1,5 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -10,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.stream;
+import static org.tudalgo.algoutils.tutor.general.Utils.listOfCtParametersToTypeLinks;
+
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 
 public class BasicConstructorLink extends BasicLink implements ConstructorLink, WithCtElement {
 
@@ -83,11 +84,15 @@ public class BasicConstructorLink extends BasicLink implements ConstructorLink, 
         if (parentElement == null) {
             return null;
         }
-        element = (CtConstructor<?>) parentElement.getDirectChildren().stream()
-            .filter(e ->
-                e instanceof CtConstructor<?>
-                    && stream(reflection().getParameterTypes()).map(BasicTypeLink::of).toList().equals(parameterTypeLinks)
-            ).findFirst().orElse(null);
+        element = parentElement.getDirectChildren().stream()
+            // filter constructors
+            .filter(e -> e instanceof CtConstructor<?>)
+            // map to constructors
+            .map(e -> (CtConstructor<?>) e)
+            // filter fitting constructor
+            .filter(c -> listOfCtParametersToTypeLinks(c.getParameters()).equals(parameterTypeLinks))
+            // get constructor
+            .findFirst().orElseThrow();
         return element;
     }
 }
