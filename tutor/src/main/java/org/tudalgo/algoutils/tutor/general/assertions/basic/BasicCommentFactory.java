@@ -77,7 +77,7 @@ public final class BasicCommentFactory implements CommentFactory<Result<?, ?, ?,
             builder.append("\\<br\\>");
         }
         // actual
-        if (result.actual() != null && result.actual().display()) {
+        if (result.actual() != null && result.actual().display() && trace == null) {
             builder.append(nobr(format("%s %s", e("actual"), result.actual().string(stringifier))));
             builder.append("\\<br\\>");
         }
