@@ -53,7 +53,6 @@ public class ResourceUtils {
             return null;
         }
         File file = path.toFile();
-
         try (var reader = new BufferedReader(new FileReader(file))) {
             return reader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
@@ -77,7 +76,7 @@ public class ResourceUtils {
      * @param className the class name to convert
      * @return the class name as a path string
      */
-    private static String toPathString(String className) {
+    public static String toPathString(String className) {
         return className.replace('.', '/') + ".java";
     }
 
