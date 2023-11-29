@@ -7,8 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.stream;
+import static org.tudalgo.algoutils.tutor.general.Utils.listOfCtParametersToTypeLinks;
 
-public class BasicConstructorLink extends BasicLink implements ConstructorLink {
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+
+public class BasicConstructorLink extends BasicLink implements ConstructorLink, WithCtElement {
 
     private static final Map<Constructor<?>, BasicConstructorLink> INSTANCES = new HashMap<>();
 
@@ -16,10 +20,16 @@ public class BasicConstructorLink extends BasicLink implements ConstructorLink {
     private final TypeLink typeLink;
     private final List<BasicTypeLink> parameterTypeLinks;
 
+    private final BasicTypeLink parent;
+
+    private CtConstructor<?> element;
+
     private BasicConstructorLink(Constructor<?> constructor) {
+        constructor.setAccessible(true);
         this.constructor = constructor;
         this.typeLink = BasicTypeLink.of(constructor.getDeclaringClass());
         this.parameterTypeLinks = stream(constructor.getParameterTypes()).map(BasicTypeLink::of).toList();
+        this.parent = BasicTypeLink.of(constructor.getDeclaringClass());
     }
 
     /**
@@ -63,5 +73,26 @@ public class BasicConstructorLink extends BasicLink implements ConstructorLink {
     @Override
     public TypeLink type() {
         return typeLink;
+    }
+
+    @Override
+    public CtElement getCtElement() {
+        if (element != null) {
+            return element;
+        }
+        var parentElement = parent.getCtElement();
+        if (parentElement == null) {
+            return null;
+        }
+        element = parentElement.getDirectChildren().stream()
+            // filter constructors
+            .filter(e -> e instanceof CtConstructor<?>)
+            // map to constructors
+            .map(e -> (CtConstructor<?>) e)
+            // filter fitting constructor
+            .filter(c -> listOfCtParametersToTypeLinks(c.getParameters()).equals(parameterTypeLinks))
+            // get constructor
+            .findFirst().orElseThrow();
+        return element;
     }
 }
