@@ -5,9 +5,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Arrays.stream;
-import static org.tudalgo.algoutils.tutor.general.Utils.listOfCtParametersToTypeLinks;
+import static org.tudalgo.algoutils.tutor.general.Utils.listOfCtParametersToTypeNames;
+import static org.tudalgo.algoutils.tutor.general.Utils.listOfTypeLinksToTypeNames;
 
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 import spoon.reflect.declaration.CtMethod;
@@ -112,17 +114,33 @@ public class BasicMethodLink extends BasicLink implements MethodLink, WithCtElem
         if (parentElement == null) {
             return null;
         }
-        element = parentElement.getDirectChildren().stream()
+        var elements = parentElement.getDirectChildren().stream()
             // filter methods
             .filter(e -> e instanceof CtMethod<?>)
             // map to methods
             .map(e -> (CtMethod<?>) e)
-            // filter fitting methods
+            // filter fitting methods by name
             .filter(m -> reflection().getName().equals(m.getSimpleName()))
-            // filter fitting method
-            .filter(m -> listOfCtParametersToTypeLinks(m.getParameters()).equals(parameterTypeLinks))
-            // get fitting method
-            .findFirst().orElse(null);
+            // filter fitting methods by count of parameters
+            .filter(c -> Objects.equals(
+                c.getParameters().size(),
+                parameterTypeLinks.size()
+            ))
+            // get fitting methods
+            .toList();
+        if (elements.size() > 1) {
+            // Due to a bug in spoon, this filter does not work in all cases so there are two upstream filters!
+            element = elements.stream()
+                // filter fitting method
+                .filter(m -> Objects.equals(
+                    listOfCtParametersToTypeNames(m.getParameters()),
+                    listOfTypeLinksToTypeNames(parameterTypeLinks)
+                ))
+                // get fitting method
+                .findFirst().orElseThrow();
+        } else {
+            element = elements.get(0);
+        }
         return element;
     }
 }
