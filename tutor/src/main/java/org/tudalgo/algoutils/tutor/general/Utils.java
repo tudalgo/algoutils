@@ -2,10 +2,7 @@ package org.tudalgo.algoutils.tutor.general;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
-
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
-import org.tudalgo.algoutils.tutor.general.reflections.BasicTypeLink;
 import org.tudalgo.algoutils.tutor.general.reflections.TypeLink;
 import spoon.reflect.declaration.CtParameter;
 
@@ -28,12 +25,22 @@ public class Utils {
     }
 
     /**
-     * Transforms the list of {@link CtParameter}s into a list of corresponding {@link TypeLink}s.
+     * Transforms the list of {@link CtParameter}s into a list of names of the corresponding types.
      *
      * @param list the list of {@link CtParameter}s
-     * @return the list of {@link TypeLink}s
+     * @return the list of names
      */
-    public static List<TypeLink> listOfCtParametersToTypeLinks(List<CtParameter<?>> list) {
-        return list.stream().map(e -> BasicTypeLink.of(e.getType().getActualClass())).collect(toUnmodifiableList());
+    public static List<String> listOfCtParametersToTypeNames(List<? extends CtParameter<?>> list) {
+        return list.stream().map(e -> e.getType().getSimpleName()).toList();
+    }
+
+    /**
+     * Transforms the list of {@link TypeLink}s into a list of names of the corresponding types.
+     *
+     * @param list the list of {@link TypeLink}s
+     * @return the list of names
+     */
+    public static List<String> listOfTypeLinksToTypeNames(List<? extends TypeLink> list) {
+        return list.stream().map(TypeLink::name).toList();
     }
 }
