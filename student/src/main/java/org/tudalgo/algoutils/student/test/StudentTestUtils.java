@@ -128,6 +128,32 @@ public class StudentTestUtils {
         testWithinRange(Double.valueOf(min), Double.valueOf(max), Double.valueOf(actual));
     }
 
+    public static <T extends Throwable> void testError(Class<?> expectedType, Task task) {
+        var test = new StudentTest<>(result -> {
+            try {
+                task.execute();
+                // If no exception was thrown, it's an error
+                return false;
+            } catch (Throwable throwable) {
+                // Check if the thrown error matches the expected type
+                if (expectedType.isInstance(throwable)) {
+                    return true;
+                } else {
+                    throw new IllegalStateException(throwable);
+                }
+            }
+        }, result -> "Expected exception %s to be thrown, but got %s".formatted(
+            expectedType.getName(),
+            result.hasFailedWithException() ? result.throwable().getCause().getClass().getName() : "none"));
+
+        final var result = test.test(null);
+        testResults.add(result);
+        if (result.hasFailed()) {
+            S_TEST_ERR.println(result.message());
+            result.throwable().printStackTrace(S_TEST_ERR);
+        }
+    }
+
     /**
      * Prints a summary of the test results to {@link #S_TEST_OUT}.
      * The summary contains the number of passed and failed tests.
