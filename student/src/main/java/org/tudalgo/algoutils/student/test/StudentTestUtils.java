@@ -128,6 +128,13 @@ public class StudentTestUtils {
         testWithinRange(Double.valueOf(min), Double.valueOf(max), Double.valueOf(actual));
     }
 
+    /**
+     * Checks if the given task throws an exception of the given type.
+     *
+     * @param expectedType the expected type of the exception
+     * @param task         the task to execute
+     * @param <T>          the type of the exception to check
+     */
     public static <T extends Throwable> void testError(Class<?> expectedType, Task task) {
         var test = new StudentTest<>(result -> {
             try {
