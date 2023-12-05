@@ -1,7 +1,8 @@
 package org.tudalgo.algoutils.student.test;
 
 /**
- * Task is a functional interface that can be used to execute code that potentially throws a {@link Throwable}.
+ * This is a functional interface that can be used to execute a block of code that potentially throws a
+ * {@link Throwable}.
  */
 @FunctionalInterface
 public interface Task {
@@ -9,7 +10,7 @@ public interface Task {
     /**
      * Executes the task.
      *
-     * @throws Throwable the {@link Throwable} that was thrown during the execution
+     * @throws Throwable the potential throwable that is thrown by the task
      */
     void execute() throws Throwable;
 }
