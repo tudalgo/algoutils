@@ -139,7 +139,7 @@ public class StudentTestUtils {
      * @param task         the task to execute
      * @param <T>          the type of the exception to check
      */
-    public static <T extends Throwable> void testError(Class<?> expectedType, Task task) {
+    public static <T extends Throwable> void testThrows(Class<?> expectedType, Task task) {
         simpleStudentTest(null, r -> {
             try {
                 task.execute();
