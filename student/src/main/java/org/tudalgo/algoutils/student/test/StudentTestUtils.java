@@ -129,6 +129,35 @@ public class StudentTestUtils {
     }
 
     /**
+     * Checks if the given task throws an exception.
+     * If no exception is thrown or the task throws an exception to the wrong type, an error message is printed to
+     * {@link #S_TEST_ERR}.
+     *
+     * <p>This method is intended to be used in the context of a test case from the student.
+     *
+     * @param expectedType the expected type of the exception
+     * @param task         the task to execute
+     * @param <T>          the type of the exception to check
+     */
+    public static <T extends Throwable> void testThrows(Class<?> expectedType, Task task) {
+        simpleStudentTest(null, r -> {
+            try {
+                task.execute();
+                // If no exception was thrown, it's an error
+                return false;
+            } catch (Throwable throwable) {
+                // Check if the thrown error matches the expected type
+                if (expectedType.isInstance(throwable)) {
+                    return true;
+                } else {
+                    throw new IllegalStateException(throwable);
+                }
+            }
+        }, result -> "Expected exception %s to be thrown, but got %s".formatted(expectedType.getName(),
+            result.hasFailedWithException() ? result.throwable().getCause().getClass().getName() : "none"));
+    }
+
+    /**
      * Prints a summary of the test results to {@link #S_TEST_OUT}.
      * The summary contains the number of passed and failed tests.
      *
