@@ -77,7 +77,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.no
  *    assertions2.assertEquals(expectedEndY, robot.getY(), context, r -> "The final y coordinate.");
  * }
  * }</pre>
- * In this example the student gets way more information about the test failure than in the Junit5 example while also
+ * <p>In this example the student gets way more information about the test failure than in the Junit5 example while also
  * providing a more readable test method.
  * </p>
  *

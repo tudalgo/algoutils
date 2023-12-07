@@ -198,26 +198,6 @@ public class Assertions3 {
     }
 
     /**
-     * Assert that the parameters of the given {@link WithTypeList} are correctly declared.
-     *
-     * @param withParameters the {@link WithTypeList} to check
-     * @param types          the {@link Class}es to match the parameters against
-     * @param <T>            the type of the {@link WithTypeList}
-     * @return the {@link WithTypeList} if the parameters are correct
-     */
-    @SuppressWarnings("unchecked")
-    public static <T extends WithTypeList> T assertCorrectParameters(
-        T withParameters,
-        Class<?>... types
-    ) {
-        return assertCorrectParameters(withParameters, stream(types)
-            .map(BasicTypeLink::of)
-            .map(BasicReflectionMatchers::sameType)
-            .toArray(Matcher[]::new)
-        );
-    }
-
-    /**
      * Assert that a method with the given characteristics exists in the given {@link TypeLink}.
      *
      * @param link    the {@link TypeLink} to search in
