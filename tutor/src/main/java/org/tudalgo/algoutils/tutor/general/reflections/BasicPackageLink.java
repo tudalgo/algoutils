@@ -1,7 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
 import org.opentest4j.AssertionFailedError;
-import org.tudalgo.algoutils.reflect.TestUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,7 +20,7 @@ public class BasicPackageLink extends BasicLink implements PackageLink {
     public static BasicPackageLink of(String name) {
         List<Class<?>> classes;
         try {
-            classes = Arrays.stream(TestUtils.getClasses(name)).toList();
+            classes = Arrays.stream(ReflectUtils.getClasses(name)).toList();
         } catch (IOException e) {
             throw new AssertionFailedError("internal error in class BasicPackageLink");
         }

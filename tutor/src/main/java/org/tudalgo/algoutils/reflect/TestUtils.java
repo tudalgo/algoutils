@@ -1,19 +1,14 @@
 package org.tudalgo.algoutils.reflect;
 
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
-import org.sourcegrade.jagr.api.testing.RuntimeClassLoader;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
 import org.tudalgo.algoutils.tutor.general.Utils;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.ResourceUtils.toPathString;
 
 /**
  * A utility class used for JUnit tests which provides reflective access to some properties and
@@ -95,97 +90,6 @@ public final class TestUtils {
     public static void assertModifier(final int expected, final Field attribut) {
         assertModifier(expected, attribut.getModifiers(),
             "Attribut " + attribut.getDeclaringClass() + "." + attribut.getName());
-    }
-
-    /**
-     * Calculates the similarity (a number within 0 and 1) between two strings.
-     *
-     * @param s1 the first string used for the calculation of the similarity
-     * @param s2 the second string used for the calculation  of the similarity
-     * @return the similarity
-     */
-    public static double similarity(final String s1, final String s2) {
-        String longer = s1;
-        String shorter = s2;
-        if (s1.length() < s2.length()) {
-            longer = s2;
-            shorter = s1;
-        }
-        final int longerLength = longer.length();
-        if (longerLength == 0) {
-            return 1.0;
-            /* both strings are zero length */
-        }
-        /*
-         * // If you have Apache Commons Text, you can use it to calculate the edit
-         * distance: LevenshteinDistance levenshteinDistance = new
-         * LevenshteinDistance(); return (longerLength -
-         * levenshteinDistance.apply(longer, shorter)) / (double) longerLength;
-         */
-        return (longerLength - editDistance(longer, shorter)) / (double) longerLength;
-    }
-
-    /**
-     * Calculates the similarity (a number within 0 and 1) between two strings.
-     *
-     * @param s1 the first string used for the calculation of the similarity
-     * @param s2 the second string used for the calculation  of the similarity
-     * @return the calculated similarity (a number within 0 and 1) between two strings.
-     * @see <a href="http://rosettacode.org/wiki/Levenshtein_distance#Java">Levenshtein distance -
-     * Java</a>
-     */
-    public static int editDistance(String s1, String s2) {
-        s1 = s1.toLowerCase();
-        s2 = s2.toLowerCase();
-
-        final int[] costs = new int[s2.length() + 1];
-        for (int i = 0; i <= s1.length(); i++) {
-            int lastValue = i;
-            for (int j = 0; j <= s2.length(); j++) {
-                if (i == 0) {
-                    costs[j] = j;
-                } else {
-                    if (j > 0) {
-                        int newValue = costs[j - 1];
-                        if (s1.charAt(i - 1) != s2.charAt(j - 1)) {
-                            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-                        }
-                        costs[j - 1] = lastValue;
-                        lastValue = newValue;
-                    }
-                }
-            }
-            if (i > 0) {
-                costs[s2.length()] = lastValue;
-            }
-        }
-        return costs[s2.length()];
-    }
-
-    /**
-     * Scans all classes accessible from the context class loader which belong to the given package
-     * and subpackages.
-     *
-     * @param packageName The base package name
-     * @return the found classes
-     * @throws IOException if an I/O Exception occurs
-     */
-    public static Class<?>[] getClasses(final String packageName) throws IOException {
-        final var cycle = TestCycleResolver.getTestCycle();
-        if (cycle != null) {
-            RuntimeClassLoader classLoader = cycle.getClassLoader();
-            // Autograder Run
-            return classLoader.getClassNames().stream()
-                .filter(name -> name.startsWith(packageName))
-                .filter(name -> cycle.getSubmission().getSourceFile(toPathString(name)) != null)
-                .map(classLoader::loadClass)
-                .filter(c -> !c.getName().contains("$") || c.getDeclaringClass() != null)
-                .toArray(Class<?>[]::new);
-        } else {
-            // Regular Junit Run
-            final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            return ClassPath.from(loader).getTopLevelClasses(packageName).stream().map(ClassInfo::load).toArray(Class<?>[]::new);
-        }
     }
 
     /**

@@ -4,6 +4,8 @@ import net.bytebuddy.ByteBuddy;
 import org.mockito.MockingDetails;
 import org.sourcegrade.jagr.api.testing.SourceFile;
 import org.sourcegrade.jagr.api.testing.extension.TestCycleResolver;
+import org.tudalgo.algoutils.tutor.general.match.MatchingUtils;
+import org.tudalgo.algoutils.tutor.general.reflections.ReflectUtils;
 import spoon.Launcher;
 
 import java.lang.reflect.Constructor;
@@ -648,9 +650,9 @@ public class ClassTester<T> {
         assertClassResolved();
         final List<Field> fields = matcher.allowSuperClass ? getAllFields(this.theClass)
             : new ArrayList<>(Arrays.asList(this.theClass.getDeclaredFields()));
-        final Field bestMatch = fields.stream().min((x, y) -> Double.compare(TestUtils.similarity(y.getName(), matcher.identifierName), TestUtils.similarity(x.getName(), matcher.identifierName))).orElse(null);
+        final Field bestMatch = fields.stream().min((x, y) -> Double.compare(MatchingUtils.similarity(y.getName(), matcher.identifierName), MatchingUtils.similarity(x.getName(), matcher.identifierName))).orElse(null);
         assertNotNull(bestMatch, String.format("Attribut %s existiert nicht.", matcher.identifierName));
-        final var sim = TestUtils.similarity(bestMatch.getName(), matcher.identifierName);
+        final var sim = MatchingUtils.similarity(bestMatch.getName(), matcher.identifierName);
         assertTrue(sim >= matcher.similarity,
             String.format("Attribut %s existiert nicht. Ähnlichstes Attribut: %s mit Ähnlichkeit: %s",
                 matcher.identifierName, bestMatch, sim));
@@ -736,11 +738,12 @@ public class ClassTester<T> {
             for (final IdentifierMatcher matcher : implementsInterfaces) {
                 assertFalse(interfaces.isEmpty(), getInterfaceNotImplementedMessage(matcher.identifierName));
                 final var bestMatch = interfaces.stream()
-                    .min((x, y) -> Double.compare(TestUtils.similarity(matcher.identifierName, y.getSimpleName()),
-                        TestUtils.similarity(matcher.identifierName, x.getSimpleName())))
+                    .min((x, y) -> Double.compare(
+                        MatchingUtils.similarity(matcher.identifierName, y.getSimpleName()),
+                        MatchingUtils.similarity(matcher.identifierName, x.getSimpleName())))
                     .orElse(null);
                 assertNotNull(bestMatch, getInterfaceNotImplementedMessage(matcher.identifierName));
-                final var sim = TestUtils.similarity(bestMatch.getSimpleName(), matcher.identifierName);
+                final var sim = MatchingUtils.similarity(bestMatch.getSimpleName(), matcher.identifierName);
                 assertTrue(sim >= matcher.similarity, getInterfaceNotImplementedMessage(matcher.identifierName)
                     + "Ähnlichstes Interface:" + bestMatch.getSimpleName() + " with " + sim + " similarity.");
                 interfaces.remove(bestMatch);
@@ -1021,13 +1024,14 @@ public class ClassTester<T> {
         // () -> Class.forName(String.format("%s.%s", packageName, className)),
         // getClassNotFoundMessage(className));
         // }
-        final var classes = assertDoesNotThrow(() -> TestUtils.getClasses(packageName));
+        final var classes = assertDoesNotThrow(() -> ReflectUtils.getClasses(packageName));
         final var bestMatch = Arrays.stream(classes)
-            .min((x, y) -> Double.compare(TestUtils.similarity(className, y.getSimpleName()),
-                TestUtils.similarity(className, x.getSimpleName())))
+            .min((x, y) -> Double.compare(
+                MatchingUtils.similarity(className, y.getSimpleName()),
+                MatchingUtils.similarity(className, x.getSimpleName())))
             .orElse(null);
         assertNotNull(bestMatch, getClassNotFoundMessage());
-        final var sim = TestUtils.similarity(bestMatch.getSimpleName(), className);
+        final var sim = MatchingUtils.similarity(bestMatch.getSimpleName(), className);
         assertTrue(sim >= similarity, getClassNotFoundMessage() + "Ähnlichster Klassenname:" + bestMatch.getSimpleName()
             + " with " + sim + " similarity.");
         return this.theClass = (Class<T>) bestMatch;
@@ -1209,11 +1213,12 @@ public class ClassTester<T> {
     public static <T> Enum<?> getEnumValue(final Class<Enum<?>> enumClass, final String expectedName, final double similarity) {
         final var enumConstants = enumClass.getEnumConstants();
         final var bestMatch = Arrays.stream(enumConstants)
-            .min((x, y) -> Double.compare(TestUtils.similarity(expectedName, y.name()),
-                TestUtils.similarity(expectedName, x.name())))
+            .min((x, y) -> Double.compare(
+                MatchingUtils.similarity(expectedName, y.name()),
+                MatchingUtils.similarity(expectedName, x.name())))
             .orElse(null);
         assertNotNull(bestMatch, "Enum-Wert" + expectedName + " existiert nicht.");
-        final var sim = TestUtils.similarity(expectedName, bestMatch.name());
+        final var sim = MatchingUtils.similarity(expectedName, bestMatch.name());
         assertTrue(sim >= similarity,
             "Enum-Wert" + expectedName + " existiert nicht. Ähnliche Konstante:" + bestMatch.name());
         return bestMatch;

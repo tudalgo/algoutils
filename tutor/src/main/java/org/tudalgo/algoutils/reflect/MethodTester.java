@@ -2,6 +2,7 @@ package org.tudalgo.algoutils.reflect;
 
 import org.junit.jupiter.api.Assertions;
 import org.mockito.invocation.Invocation;
+import org.tudalgo.algoutils.tutor.general.match.MatchingUtils;
 import spoon.Launcher;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtMethod;
@@ -218,7 +219,7 @@ public class MethodTester {
                 continue;
             }
             if (!ignoreNames && matcher.identifierName != null && matcher.similarity > 0) {
-                if (TestUtils.similarity(matcher.identifierName, param.getName()) < matcher.similarity) {
+                if (MatchingUtils.similarity(matcher.identifierName, param.getName()) < matcher.similarity) {
                     continue;
                 }
             }
@@ -271,7 +272,8 @@ public class MethodTester {
                     assertSame(matcher.parameterType, param.getType(), "Falscher Parametertyp an Index " + "i.");
                 }
                 if (!ignoreNames && param.isNamePresent() && matcher.identifierName != null && matcher.similarity > 0) {
-                    assertTrue(TestUtils.similarity(matcher.identifierName, param.getName()) >= matcher.similarity,
+                    assertTrue(
+                        MatchingUtils.similarity(matcher.identifierName, param.getName()) >= matcher.similarity,
                         "Falscher Parametername. Erwartet: " + matcher.identifierName + ", Erhalten: "
                             + param.getName());
                 }
@@ -775,7 +777,7 @@ public class MethodTester {
      * @param parameters      the expected parameters
      * @param allowSuperClass the indicator whether to search in super classes as well
      * @return the resolved method
-     * @see TestUtils#similarity(String, String)
+     * @see MatchingUtils#similarity(String, String)
      * @see #countMatchingParameters(Method, String, List, boolean)
      */
     public Method resolveMethod(final Class<?> theClass, final String methodName, double similarity,
@@ -783,15 +785,16 @@ public class MethodTester {
         similarity = Math.max(0, Math.min(similarity, 1));
         ClassTester.assertClassNotNull(theClass, "zu Methode " + methodName);
         final List<Method> methods = allowSuperClass ? getAllMethods(theClass) : Arrays.asList(theClass.getDeclaredMethods());
-        var bestMatch = methods.stream().min((x, y) -> Double.compare(TestUtils.similarity(methodName, y.getName()),
-            TestUtils.similarity(methodName, x.getName()))).orElse(null);
+        var bestMatch = methods.stream().min((x, y) -> Double.compare(
+            MatchingUtils.similarity(methodName, y.getName()),
+            MatchingUtils.similarity(methodName, x.getName()))).orElse(null);
         assertMethodNotNull(bestMatch, methodName);
-        final var sim = TestUtils.similarity(bestMatch.getName(), methodName);
+        final var sim = MatchingUtils.similarity(bestMatch.getName(), methodName);
         assertTrue(sim >= similarity, getMethodNotFoundMessage() + "Ähnlichster Methodenname:" + bestMatch.getName()
             + " with " + sim + " similarity.");
         if (parameters != null) {
             // Account for overloads
-            final var matches = methods.stream().filter(x -> TestUtils.similarity(methodName, x.getName()) == sim)
+            final var matches = methods.stream().filter(x -> MatchingUtils.similarity(methodName, x.getName()) == sim)
                 .collect(Collectors.toCollection(ArrayList::new));
             if (matches.size() > 1) {
                 // Find best match according to parameter options
@@ -814,7 +817,7 @@ public class MethodTester {
      * @param similarity the minimum required similarity
      * @param parameters the expected parameters
      * @return the resolved method
-     * @see TestUtils#similarity(String, String)
+     * @see MatchingUtils#similarity(String, String)
      * @see #countMatchingParameters(Method, String, List, boolean)
      */
     public Method resolveMethod(final Class<?> theClass, final String methodName, final double similarity,
@@ -829,7 +832,7 @@ public class MethodTester {
      *
      * @param similarity the minimum required similarity
      * @return the resolved method
-     * @see TestUtils#similarity(String, String)
+     * @see MatchingUtils#similarity(String, String)
      * @see #countMatchingParameters(Method, String, List, boolean)
      */
     public Method resolveMethod(final double similarity) {
@@ -842,7 +845,7 @@ public class MethodTester {
      * according to {@link  #countMatchingParameters(Method, String, List, boolean)} is chosen.
      *
      * @return the resolved method
-     * @see TestUtils#similarity(String, String)
+     * @see MatchingUtils#similarity(String, String)
      * @see #countMatchingParameters(Method, String, List, boolean)
      */
     public Method resolveMethod() {
