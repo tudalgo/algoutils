@@ -1,5 +1,7 @@
 package org.tudalgo.algoutils.tutor.general.reflections;
 
+import java.lang.reflect.Constructor;
+
 public interface ConstructorLink extends Link, WithType, WithTypeList, WithModifiers {
 
     @Override
@@ -8,4 +10,7 @@ public interface ConstructorLink extends Link, WithType, WithTypeList, WithModif
     }
 
     <T> T invoke(Object... arguments) throws Throwable;
+
+    @Override
+    Constructor<?> reflection();
 }

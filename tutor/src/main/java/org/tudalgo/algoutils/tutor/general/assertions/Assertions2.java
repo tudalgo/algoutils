@@ -3,18 +3,31 @@ package org.tudalgo.algoutils.tutor.general.assertions;
 import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.Actual;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.*;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicFail;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfCall;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfExceptionalCall;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfObject;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedExceptional;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject;
-import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 
 import java.lang.reflect.InvocationTargetException;
 
-import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.*;
+import static org.tudalgo.algoutils.tutor.general.assertions.actual.Actual.unexpected;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.Expected.of;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.equalTo;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.equalsFalse;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.equalsNull;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.equalsTrue;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.notEqualsNull;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.notEqualsTo;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.notSameAs;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.sameAs;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.something;
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.nothing;
 
 /**
@@ -22,9 +35,9 @@ import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.no
  * the option to pass along a {@link Context}.</p>
  *
  * <p><b>Note:</b> some methods do not provice a 1:1 mapping to the org.junit.jupiter.api.Assertions class. For example,
- *  * instead of using {@link org.junit.jupiter.api.Assertions#assertDoesNotThrow(ThrowingSupplier)} you should use
- *  * {@link Assertions2#call(Callable, Context, PreCommentSupplier)} or if you need the result of the call you should use
- *  * {@link Assertions2#callObject(ObjectCallable, Context, PreCommentSupplier)}.</p>
+ * * instead of using {@link org.junit.jupiter.api.Assertions#assertDoesNotThrow(ThrowingSupplier)} you should use
+ * * {@link Assertions2#call(Callable, Context, PreCommentSupplier)} or if you need the result of the call you should use
+ * * {@link Assertions2#callObject(ObjectCallable, Context, PreCommentSupplier)}.</p>
  *
  * <p>Here is an example of how to convert Junit5 assertions to Assertions2 assertions:
  *
@@ -453,5 +466,42 @@ public final class Assertions2 {
             }
         }
         return cb.build();
+    }
+
+    /**
+     * <p>Asserts that two arrays are equal.</p>
+     *
+     * @param expected           the expected array
+     * @param actual             the actual array
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     */
+    public void assertArrayEquals(
+        Object[] expected,
+        Object[] actual,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> preCommentSupplier
+    ) {
+        // size check
+        if (expected.length != actual.length) {
+            Assertions2.fail(
+                of(expected.length),
+                unexpected(actual.length),
+                context,
+                r -> preCommentSupplier.getPreComment(r) + "Array lengths differ."
+            );
+        }
+        // element check
+        for (int i = 0; i < expected.length; i++) {
+            if (!expected[i].equals(actual[i])) {
+                final int finalI = i;
+                Assertions2.fail(
+                    of(expected[i]),
+                    unexpected(actual[i]),
+                    context,
+                    r -> preCommentSupplier.getPreComment(r) + "Array elements differ at index " + finalI + "."
+                );
+            }
+        }
     }
 }
