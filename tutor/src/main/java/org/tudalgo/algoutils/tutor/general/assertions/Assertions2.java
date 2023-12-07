@@ -14,6 +14,7 @@ import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
+import org.tudalgo.algoutils.tutor.general.reflections.MethodLink;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -345,8 +346,56 @@ public final class Assertions2 {
         Assertions2.testOfCallBuilder().expected(nothing()).build().run(callable).check(context, preCommentSupplier);
     }
 
+    /**
+     * <p>Asserts that the given callable does not throw an exception.</p>
+     *
+     * @param methodLink         the method to call
+     * @param instance           the instance to call the method on
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     * @param args               the arguments to pass to the method
+     */
+    public static void call(
+        MethodLink methodLink,
+        Object instance,
+        Context context,
+        PreCommentSupplier<? super ResultOfCall> preCommentSupplier,
+        Object... args
+    ) {
+        Assertions2.testOfCallBuilder()
+            .expected(nothing())
+            .build()
+            .run(() -> methodLink.invoke(instance, args))
+            .check(context, preCommentSupplier);
+    }
+
     public static <T> T callObject(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(something()).build().run(callable).check(context, preCommentSupplier).object();
+    }
+
+    /**
+     * <p>Asserts that the given callable does not throw an exception and returns the object returned by the callable.</p>
+     *
+     * @param methodLink         the method to call
+     * @param instance           the instance to call the method on
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     * @param args               the arguments to pass to the method
+     * @param <T>                the return type of the method
+     * @return the object returned by the method
+     */
+    public static <T> T callObject(
+        MethodLink methodLink,
+        Object instance,
+        Context context,
+        PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier,
+        Object... args
+    ) {
+        return Assertions2.<T>testOfObjectBuilder()
+            .expected(something())
+            .build()
+            .run(() -> methodLink.invoke(instance, args))
+            .check(context, preCommentSupplier).object();
     }
 
     /**

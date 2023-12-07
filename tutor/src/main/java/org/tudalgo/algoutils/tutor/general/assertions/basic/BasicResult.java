@@ -58,7 +58,8 @@ public abstract class BasicResult<RT extends Result<RT, AT, TT, ET>, AT extends 
             throw new AssertionFailedError(
                 environment.getCommentFactory().comment((RT) this, context, preCommentSupplier),
                 expected().behavior(),
-                actual().behavior()
+                actual().behavior(),
+                cause()
             );
         //noinspection unchecked
         return (RT) this;
