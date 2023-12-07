@@ -476,7 +476,7 @@ public final class Assertions2 {
      * @param context            the context of the test
      * @param preCommentSupplier the supplier of the pre-comment
      */
-    public void assertArrayEquals(
+    public static void assertArrayEquals(
         Object[] expected,
         Object[] actual,
         Context context,

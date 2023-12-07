@@ -3,6 +3,13 @@ package org.tudalgo.algoutils.tutor.general.assertions;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects;
+import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
+import org.tudalgo.algoutils.tutor.general.match.BasicReflectionMatchers;
+import org.tudalgo.algoutils.tutor.general.match.Matcher;
+import org.tudalgo.algoutils.tutor.general.reflections.BasicMethodLink;
+import org.tudalgo.algoutils.tutor.general.reflections.Link;
+import org.tudalgo.algoutils.tutor.general.reflections.MethodLink;
+import org.tudalgo.algoutils.tutor.general.stringify.HTML;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
@@ -18,6 +25,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -166,6 +175,55 @@ public class Assertions4 {
                 .build(),
             r -> "method contains conditional elements"
         );
+    }
+
+    /**
+     * Asserts that the given method does not use any of the given elements.
+     *
+     * @param method   the method
+     * @param context  the context of this test
+     * @param elements the elements that must not be used
+     */
+    @SafeVarargs
+    public static void assertElementsNotUsed(
+        CtMethod<?> method,
+        Context context,
+        Matcher<CtElement>... elements
+    ) {
+        for (var e : elements) {
+            if (method.filterChildren(c -> e.match(c).matched()).list().isEmpty()) {
+                continue;
+            }
+            Assertions2.fail(
+                context,
+                r -> "forbidden element " + HTML.tt(e.object().toString()) + " was used."
+            );
+        }
+    }
+
+
+    /**
+     * Builds a list of {@link Matcher}s for the given {@link BasicMethodLink}s.
+     *
+     * @param links the links
+     * @return the matchers
+     */
+    @SuppressWarnings("unchecked")
+    public static Matcher<CtElement>[] buildCtElementBlacklist(BasicMethodLink... links) {
+        return Arrays.stream(links).map(m -> Matcher.of(
+            ct -> ct instanceof CtInvocation<?> i && i.getExecutable().getActualMethod().equals(m.reflection()),
+            "method " + BasicEnvironment.getInstance().getStringifier().stringify(m.reflection())
+        )).toArray(Matcher[]::new);
+    }
+
+    /**
+     * Builds a list of {@link Matcher}s for the given {@link Method}s.
+     *
+     * @param links the links
+     * @return the matchers
+     */
+    public static Matcher<CtElement>[] buildCtElementBlacklist(Method... links) {
+        return buildCtElementBlacklist(Arrays.stream(links).map(BasicMethodLink::of).toArray(BasicMethodLink[]::new));
     }
 }
 

@@ -1,11 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.match;
 
-import org.tudalgo.algoutils.tutor.general.reflections.BasicTypeLink;
-import org.tudalgo.algoutils.tutor.general.reflections.Modifier;
-import org.tudalgo.algoutils.tutor.general.reflections.TypeLink;
-import org.tudalgo.algoutils.tutor.general.reflections.WithModifiers;
-import org.tudalgo.algoutils.tutor.general.reflections.WithType;
-import org.tudalgo.algoutils.tutor.general.reflections.WithTypeList;
+import org.tudalgo.algoutils.tutor.general.reflections.*;
 
 import java.lang.reflect.TypeVariable;
 import java.util.List;
