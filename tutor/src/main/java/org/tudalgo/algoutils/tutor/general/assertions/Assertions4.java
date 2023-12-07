@@ -25,6 +25,10 @@ import java.util.Set;
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.text;
 
+/**
+ * <p>The Assertions4 class provides methods for analyzing the source code of a student solution with Spoon. This includes
+ * utilities for checking for forbidden method calls, recursive method calls, and more.</p>
+ */
 @SuppressWarnings("unused")
 public class Assertions4 {
 

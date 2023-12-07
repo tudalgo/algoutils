@@ -1,5 +1,6 @@
 package org.tudalgo.algoutils.tutor.general.assertions;
 
+import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.Actual;
 import org.tudalgo.algoutils.tutor.general.assertions.basic.*;
@@ -17,7 +18,68 @@ import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedOb
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.nothing;
 
 /**
- * A collection of assertion methods.
+ * <p>The Assertions2 class roughly mimics the functionality of the org.junit.jupiter.api.Assertions class while providing
+ * the option to pass along a {@link Context}.</p>
+ *
+ * <p><b>Note:</b> some methods do not provice a 1:1 mapping to the org.junit.jupiter.api.Assertions class. For example,
+ *  * instead of using {@link org.junit.jupiter.api.Assertions#assertDoesNotThrow(ThrowingSupplier)} you should use
+ *  * {@link Assertions2#call(Callable, Context, PreCommentSupplier)} or if you need the result of the call you should use
+ *  * {@link Assertions2#callObject(ObjectCallable, Context, PreCommentSupplier)}.</p>
+ *
+ * <p>Here is an example of how to convert Junit5 assertions to Assertions2 assertions:
+ *
+ * <pre>{@code
+ * // Junit5
+ * Assertions.assertEquals(1 + 1, 2, "The result of 1 + 1 should be 2.");
+ *
+ * // Assertions2
+ * Context context = Assertions2.contextBuilder()
+ *     .add("summand1", 1)
+ *     .add("summand2", 1)
+ *     .build();
+ * Assertions2.assertEquals(2, 1 + 1, context, r -> "The result of 1 + 1 should be 2.");
+ * }</pre>
+ * Of course in this example it doesn't make much sense to use Assertions2 instead of Junit5, since the context is obvoius.
+ * Here is a more practical example:
+ * <pre>{@code
+ *  // Junit5, not using JSON parameter set Tests
+ * @Test
+ * public void testMoveToPosition() {
+ *    World.setSize(10,10);
+ *    var robot = new Robot(1,1, Direction.UP, 0);
+ *    assertions2.assertDoesNotThrow(() -> MyTestClass.moveToPosition(robot, 5, 5), "The Method threw an exception.");
+ *    assertions2.assertEquals(5, robot.getX(), "Wrong final x coordinate.");
+ *    assertions2.assertEquals(5, robot.getY(), "The final y coordinate.");
+ * }
+ *
+ * // assertions2, using JSON parameter set Tests
+ *
+ * public static final Map<String, Function<JsonNode, ?>> customConverters = Map.ofEntries(
+ *         Map.entry("worldWidth", JsonNode::asInt),
+ *         Map.entry("worldHeight", JsonNode::asInt),
+ *         Map.entry("robot", JsonConverters::toRobot),
+ *         Map.entry("expectedEndX", JsonNode::asInt),
+ *         Map.entry("expectedEndY", JsonNode::asInt)
+ *     );
+ * @ParameterizedTest
+ * @JsonParameterSetTest(value = "inputs.json", customConverters = "customConverters")
+ * public void testMovementInvalidDirection(final JsonParameterSet params) {
+ *    var worldWidth = params.getInt("worldWidth");
+ *    var worldHeight = params.getInt("worldHeight");
+ *    World.setSize(worldWidth, worldHeight);
+ *    var robot = params.<Robot>get("robot");
+ *    var expectedEndX = params.getInt("expectedEndX");
+ *    var expectedEndY = params.getInt("expectedEndY");
+ *    var context = params.toContext("expectedEndX", "expectedEndY");
+ *    assertions2.call(() -> MyTestClass.moveToPosition(robot, worldWidth, worldHeight), context, r -> "The Method threw
+ *    an exception.");
+ *    assertions2.assertEquals(expectedEndX, robot.getX(), context, r -> "Wrong final x coordinate.");
+ *    assertions2.assertEquals(expectedEndY, robot.getY(), context, r -> "The final y coordinate.");
+ * }
+ * }</pre>
+ * In this example the student gets way more information about the test failure than in the Junit5 example while also
+ * providing a more readable test method.
+ * </p>
  *
  * @author Dustin Glaser
  */
