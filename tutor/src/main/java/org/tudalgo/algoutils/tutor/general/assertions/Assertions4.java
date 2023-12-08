@@ -209,8 +209,14 @@ public class Assertions4 {
     @SuppressWarnings("unchecked")
     public static Matcher<CtElement>[] buildCtElementBlacklist(BasicMethodLink... links) {
         return Arrays.stream(links).map(m -> Matcher.of(
-            ct -> ct instanceof CtInvocation<?> i && i.getExecutable() != null && i.getExecutable().getActualMethod() != null && i.getExecutable().getActualMethod().equals(m.reflection()),
-            "method " + BasicEnvironment.getInstance().getStringifier().stringify(m.reflection())
+            ct -> ct instanceof CtInvocation<?> i
+                && i.getExecutable() != null
+                && i.getExecutable().getActualMethod() != null
+                && i.getExecutable().getActualMethod().equals(m.reflection()),
+            "method " + BasicEnvironment
+                .getInstance()
+                .getStringifier()
+                .stringify(m.reflection())
         )).toArray(Matcher[]::new);
     }
 
@@ -221,7 +227,11 @@ public class Assertions4 {
      * @return the matchers
      */
     public static Matcher<CtElement>[] buildCtElementBlacklist(Method... links) {
-        return buildCtElementBlacklist(Arrays.stream(links).map(BasicMethodLink::of).toArray(BasicMethodLink[]::new));
+        return buildCtElementBlacklist(
+            Arrays.stream(links)
+                .map(BasicMethodLink::of)
+                .toArray(BasicMethodLink[]::new)
+        );
     }
 
     /**
