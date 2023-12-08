@@ -17,6 +17,7 @@ import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 import org.tudalgo.algoutils.tutor.general.reflections.MethodLink;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 import static org.tudalgo.algoutils.tutor.general.assertions.actual.Actual.unexpected;
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Expected.of;
@@ -518,6 +519,76 @@ public final class Assertions2 {
     }
 
     /**
+     * Asserts that two {@link Iterable}s are equal.
+     *
+     * @param expected           the expected iterable
+     * @param actual             the actual iterable
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     * @param iterableName       the name of the iterable
+     */
+    public static void assertIterableEquals(
+        Iterable<?> expected,
+        Iterable<?> actual,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> preCommentSupplier,
+        String iterableName
+    ) {
+        var expectedIterator = expected.iterator();
+        var actualIterator = actual.iterator();
+        int i = 0;
+        while (expectedIterator.hasNext() && actualIterator.hasNext()) {
+            var expectedElement = expectedIterator.next();
+            var actualElement = actualIterator.next();
+            if (!expectedElement.equals(actualElement)) {
+                final int finalI = i;
+                Assertions2.fail(
+                    of(expectedElement),
+                    unexpected(actualElement),
+                    context,
+                    r -> preCommentSupplier.getPreComment(r) + iterableName + " elements differ at index " + finalI + "."
+                );
+            }
+            i++;
+        }
+        if (expectedIterator.hasNext()) {
+            Assertions2.fail(
+                of("no more elements"),
+                unexpected("end of iterable"),
+                context,
+                r -> preCommentSupplier.getPreComment(r)
+                    + String.format("Expected %s has more elements than actual %s.", iterableName, iterableName)
+            );
+        }
+        if (actualIterator.hasNext()) {
+            Assertions2.fail(
+                of("end of iterable"),
+                unexpected("no more elements"),
+                context,
+                r -> preCommentSupplier.getPreComment(r)
+                    + String.format("Actual %s has more elements than expected %s.", iterableName, iterableName)
+            );
+        }
+    }
+
+    /**
+     * Asserts that two {@link Iterable}s are equal.
+     *
+     * @param expected           the expected iterable
+     * @param actual             the actual iterable
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     */
+    public static void assertIterableEquals(
+        Iterable<?> expected,
+        Iterable<?> actual,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> preCommentSupplier
+    ) {
+        assertIterableEquals(expected, actual, context, preCommentSupplier, "Iterable");
+    }
+
+    /**
      * <p>Asserts that two arrays are equal.</p>
      *
      * @param expected           the expected array
@@ -531,26 +602,12 @@ public final class Assertions2 {
         Context context,
         PreCommentSupplier<? super ResultOfFail> preCommentSupplier
     ) {
-        // size check
-        if (expected.length != actual.length) {
-            Assertions2.fail(
-                of(expected.length),
-                unexpected(actual.length),
-                context,
-                r -> preCommentSupplier.getPreComment(r) + "Array lengths differ."
-            );
-        }
-        // element check
-        for (int i = 0; i < expected.length; i++) {
-            if (!expected[i].equals(actual[i])) {
-                final int finalI = i;
-                Assertions2.fail(
-                    of(expected[i]),
-                    unexpected(actual[i]),
-                    context,
-                    r -> preCommentSupplier.getPreComment(r) + "Array elements differ at index " + finalI + "."
-                );
-            }
-        }
+        assertIterableEquals(
+            Arrays.asList(expected),
+            Arrays.asList(actual),
+            context,
+            preCommentSupplier,
+            "Array"
+        );
     }
 }
