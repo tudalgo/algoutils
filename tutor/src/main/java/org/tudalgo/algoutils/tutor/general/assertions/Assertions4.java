@@ -4,11 +4,9 @@ import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
-import org.tudalgo.algoutils.tutor.general.match.BasicReflectionMatchers;
+import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
 import org.tudalgo.algoutils.tutor.general.reflections.BasicMethodLink;
-import org.tudalgo.algoutils.tutor.general.reflections.Link;
-import org.tudalgo.algoutils.tutor.general.reflections.MethodLink;
 import org.tudalgo.algoutils.tutor.general.stringify.HTML;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
@@ -224,6 +222,25 @@ public class Assertions4 {
      */
     public static Matcher<CtElement>[] buildCtElementBlacklist(Method... links) {
         return buildCtElementBlacklist(Arrays.stream(links).map(BasicMethodLink::of).toArray(BasicMethodLink[]::new));
+    }
+
+    /**
+     * Builds a list of {@link Matcher}s for the given {@link Method}s.
+     *
+     * @param links Supplier for the links, exceptions are properly handled
+     * @return the matchers
+     */
+    @SafeVarargs
+    public static Matcher<CtElement>[] buildCtElementBlacklist(ObjectCallable<Method>... links) {
+        return buildCtElementBlacklist(
+            Arrays.stream(links)
+                .map(l -> Assertions2.callObject(
+                    l,
+                    Assertions2.emptyContext(),
+                    r -> "The desired Method could not be retrieved. This is likely an Error in the tests."
+                ))
+                .toArray(Method[]::new)
+        );
     }
 }
 
