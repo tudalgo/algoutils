@@ -194,7 +194,7 @@ public class Assertions4 {
             }
             Assertions2.fail(
                 context,
-                r -> "forbidden element " + HTML.tt(e.object().toString()) + " was used."
+                r -> "forbidden statement with characteristic " + HTML.tt(e.characteristic()) + " was used."
             );
         }
     }

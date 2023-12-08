@@ -64,10 +64,10 @@ public class Assertions3 {
         if (match != null) {
             return match;
         }
-        var typeName = ENVIRONMENT.getStringifier().stringify(matcher);
+        var matcherStr = ENVIRONMENT.getStringifier().stringify(matcher);
         return fail(
             emptyContext(),
-            e -> format("type %s does not exist with expected characteristics", tt(typeName))
+            e -> format("there is no Type with expected characteristics %s", tt(matcherStr))
         );
     }
 
@@ -294,9 +294,13 @@ public class Assertions3 {
             return constructor;
         }
         var nameOfType = ENVIRONMENT.getStringifier().stringify(link);
+        var characteristics = ENVIRONMENT.getStringifier().stringify(matcher);
         return fail(
             contextBuilder().subject(link).build(),
-            e -> "there is no constructor of class %s with expected characteristics".formatted(tt(nameOfType))
+            e -> "there is no constructor of class %s with expected characteristics %s".formatted(
+                tt(nameOfType),
+                tt(characteristics)
+            )
         );
     }
 
@@ -434,9 +438,9 @@ public class Assertions3 {
                 continue;
             }
             return fail(
-                of(stream(matchers).map(Matcher::object).toList()),
-                   unexpected(exceptionTypes),
-                   contextBuilder().subject(link).build(),
+                of(stream(matchers).map(Matcher::characteristic).toList()),
+                unexpected(exceptionTypes),
+                contextBuilder().subject(link).build(),
                 e -> "throws is not correct"
             );
         }

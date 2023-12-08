@@ -13,7 +13,10 @@ public class BasicReflectionMatchers {
     }
 
     public static <T extends WithType> Matcher<T> sameType(TypeLink link) {
-        return Matcher.of(l -> Objects.equals(l.type(), link), link.reflection().getName());
+        return Matcher.of(
+            l -> Objects.equals(l.type(), link),
+            String.format("Same type: %s", link.reflection().getName())
+        );
     }
 
     public static <T extends WithType> Matcher<T> sameType(Class<?> clazz) {
@@ -28,10 +31,13 @@ public class BasicReflectionMatchers {
      */
     public static <T extends WithTypeList> Matcher<T> sameTypes(TypeLink... types) {
         var parameterList = List.of(types);
-        return Matcher.of(l -> l.typeList().equals(parameterList), String.format(
-            "Same parameter types: %s",
-            parameterList.stream().map(TypeLink::name).toList()
-        ));
+        return Matcher.of(
+            l -> l.typeList().equals(parameterList),
+            String.format(
+                "Same parameter types: %s",
+                parameterList.stream().map(TypeLink::name).toList()
+            )
+        );
     }
 
     /**
@@ -65,6 +71,9 @@ public class BasicReflectionMatchers {
      * @return the matcher matching the {@link TypeVariable}
      */
     public static Matcher<TypeVariable<?>> sameTypeVariable(TypeVariable<?> typeVariable) {
-        return Matcher.of(l -> l.equals(typeVariable), typeVariable);
+        return Matcher.of(
+            l -> l.equals(typeVariable),
+            String.format("Same generic type: %s", typeVariable.getName())
+        );
     }
 }
