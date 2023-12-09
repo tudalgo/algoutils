@@ -343,8 +343,24 @@ public final class Assertions2 {
         return Assertions2.<T>testOfThrowableCallBuilder().expected(ExpectedExceptional.instanceOf(expected)).build().run(callable).check(context, preCommentSupplier).actual().behavior();
     }
 
+    /**
+     * <p>Asserts that the given callable does not throw an exception.</p>
+     *
+     * @param callable           the callable to call
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     */
     public static void call(Callable callable, Context context, PreCommentSupplier<? super ResultOfCall> preCommentSupplier) {
         Assertions2.testOfCallBuilder().expected(nothing()).build().run(callable).check(context, preCommentSupplier);
+    }
+
+    /**
+     * <p>Asserts that the given callable does not throw an exception.</p>
+     *
+     * @param callable the callable to call
+     */
+    public static void call(Callable callable) {
+        call(callable, emptyContext(), r -> "an unexpected exception was thrown");
     }
 
     /**
@@ -370,8 +386,28 @@ public final class Assertions2 {
             .check(context, preCommentSupplier);
     }
 
+    /**
+     * <p>Asserts that the given callable does not throw an exception and returns the object returned by the callable.</p>
+     *
+     * @param callable           the callable to call
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     * @param <T>                the return type of the callable
+     * @return the object returned by the callable
+     */
     public static <T> T callObject(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(something()).build().run(callable).check(context, preCommentSupplier).object();
+    }
+
+    /**
+     * <p>Asserts that the given callable does not throw an exception and returns the object returned by the callable.</p>
+     *
+     * @param callable the callable to call
+     * @param <T>      the return type of the callable
+     * @return the object returned by the callable
+     */
+    public static <T> T callObject(ObjectCallable<T> callable) {
+        return callObject(callable, emptyContext(), r -> "an unexpected exception was thrown");
     }
 
     /**
