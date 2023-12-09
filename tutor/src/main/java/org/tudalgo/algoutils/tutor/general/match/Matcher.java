@@ -2,6 +2,7 @@ package org.tudalgo.algoutils.tutor.general.match;
 
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -136,6 +137,20 @@ public interface Matcher<T> {
         return Matcher.of(
             this.predicate().or(other.predicate()),
             String.format("(%s) or (%s)", this.characteristic(), other.characteristic())
+        );
+    }
+
+    /**
+     * <p>Returns a new matcher that maps the given mapper before matching with this matcher.</p>
+     *
+     * @param mapper the mapper
+     * @param <U>    the type of the object to match
+     * @return the new matcher
+     */
+    default <U> Matcher<U> map(Function<U, T> mapper) {
+        return Matcher.of(
+            e -> this.match(mapper.apply(e)).matched(),
+            this.characteristic()
         );
     }
 }

@@ -1,8 +1,12 @@
 package org.tudalgo.algoutils.tutor.general.stringify.basic;
 
+import com.google.common.collect.Streams;
 import org.tudalgo.algoutils.tutor.general.SpoonUtils;
+import org.tudalgo.algoutils.tutor.general.match.BasicReflectionMatchers;
 import org.tudalgo.algoutils.tutor.general.match.Matcher;
+import org.tudalgo.algoutils.tutor.general.reflections.BasicTypeLink;
 import org.tudalgo.algoutils.tutor.general.reflections.Link;
+import org.tudalgo.algoutils.tutor.general.reflections.TypeLink;
 import org.tudalgo.algoutils.tutor.general.stringify.Stringifier;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
@@ -11,11 +15,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.lang.String.format;
 
@@ -24,10 +28,56 @@ import static java.lang.String.format;
  */
 public final class ReflectionStringifier implements Stringifier {
 
+    /**
+     * The singleton instance of this class.
+     */
     private static final ReflectionStringifier instance = new ReflectionStringifier();
 
     /**
-     * Returns an instance of this class
+     * Private constructor to prevent instantiation.
+     */
+    private ReflectionStringifier() {
+        registerDefaultTypehandlers();
+    }
+
+    /**
+     * The object handlers. They are processed in the opposite order they were added. This means by adding a handler for
+     * an existing matcher, the new handler will be processed first thus overriding the old handler.
+     */
+    private final Map<Matcher<Object>, Function<Object, String>> objectHandlers = new HashMap<>();
+
+    /**
+     * Registers an object handler for the given matcher.
+     *
+     * @param matcher the matcher to register the handler for
+     * @param handler the handler to register
+     */
+    public void registerObjectHandler(Matcher<Object> matcher, Function<Object, String> handler) {
+        objectHandlers.put(matcher, handler);
+    }
+
+    /**
+     * Registers a type handler for the given matcher.
+     *
+     * @param matcher the matcher to register the handler for
+     * @param handler the handler to register
+     */
+    public void registerTypeHandler(Matcher<TypeLink> matcher, Function<Object, String> handler) {
+        objectHandlers.put(Matcher.of(e -> e.getClass().isAssignableFrom(TypeLink.class)), handler);
+    }
+
+    /**
+     * Registers a type handler for the given class.
+     *
+     * @param clazz   the class to register the handler for
+     * @param handler the handler to register
+     */
+    public void registerTypeHandler(Class<?> clazz, Function<Object, String> handler) {
+        registerTypeHandler(BasicReflectionMatchers.sameType(clazz), handler);
+    }
+
+    /**
+     * Returns an instance of this class.
      *
      * @return the instance of this class
      */
@@ -37,63 +87,96 @@ public final class ReflectionStringifier implements Stringifier {
 
     @Override
     public String stringifyOrElseNull(Object object) {
-        if (object == null)
-            return null;
-        if (object instanceof String s) {
-            return s;
-        } else if (object instanceof boolean[]) {
-            return Arrays.toString((boolean[]) object);
-        } else if (object instanceof byte[]) {
-            return Arrays.toString((byte[]) object);
-        } else if (object instanceof char[]) {
-            return Arrays.toString((char[]) object);
-        } else if (object instanceof double[]) {
-            return Arrays.toString((double[]) object);
-        } else if (object instanceof float[]) {
-            return Arrays.toString((float[]) object);
-        } else if (object instanceof int[]) {
-            return Arrays.toString((int[]) object);
-        } else if (object instanceof long[]) {
-            return Arrays.toString((long[]) object);
-        } else if (object instanceof short[]) {
-            return Arrays.toString((short[]) object);
-        } else if (object instanceof Object[]) {
-            return Arrays.stream((Object[]) object)
-                .map(this::stringifyOrElseNull)
-                .collect(Collectors.joining(", ", "[", "]"));
-        } else if (object instanceof List<?> l) {
-            return l.stream().map(this::stringifyOrElseNull).collect(Collectors.joining(", ", "[", "]"));
-        } else if (object instanceof Matcher<?> m) {
-            return stringifyOrElseNull(m.object());
-        } else if (object instanceof Link l) {
-            return stringifyOrElseNull(l.reflection());
-        } else if (object instanceof Class<?> clazz && clazz.isAssignableFrom(CtElement.class)) {
-            var spoonName = SpoonUtils.getNameOfCtElement(clazz);
-            return spoonName != null ? spoonName : clazz.getSimpleName();
-        } else if (object instanceof Class<?> clazz) {
-            return clazz.getSimpleName();
-        } else if (object instanceof Field field) {
-            var clazzString = field.getDeclaringClass().getSimpleName();
-            var typeString = field.getType().getSimpleName();
-            var name = field.getName();
-            return format("%s#%s %s", clazzString, typeString, name);
-        } else if (object instanceof Method method) {
-            var clazzString = method.getDeclaringClass().getSimpleName();
-            var name = method.getName();
-            var parametersString = Stream.of(method.getParameters())
-                .map(parameter -> format("%s", parameter.getType().getSimpleName()))
-                .collect(Collectors.joining(", "));
-            return format("%s#%s(%s)", clazzString, name, parametersString);
-        } else if (object instanceof Parameter parameter) {
-            var typeString = parameter.getType().getSimpleName();
-            return format("%s", typeString);
-        } else if (object instanceof Constructor<?> c) {
-            return format("constructor of %s", c.getDeclaringClass().getSimpleName());
-        } else if (object instanceof CtNamedElement e) {
-            return e.getSimpleName();
-        } else if (object instanceof CtElement e) {
-            return SpoonUtils.getNameOfCtElement(e);
+        // iterate over all type handlers in reverse order
+        for (var entry : objectHandlers.entrySet()) {
+            var matcher = entry.getKey();
+            var handler = entry.getValue();
+            if (matcher.match(object).matched()) {
+                return handler.apply(object);
+            }
         }
         return Objects.toString(object);
+    }
+
+    private void registerDefaultTypehandlers() {
+        registerObjectHandler(Matcher.of(Objects::isNull), e -> null);
+        registerTypeHandler(
+            String.class, e -> (String) e
+        );
+        // register type handlers for arrays
+        registerObjectHandler(
+            Matcher.of(e -> e.getClass().isArray(), "Array"),
+            e -> Arrays.stream((Object[]) e)
+                .map(this::stringifyOrElseNull)
+                .toList()
+                .toString()
+        );
+        // register type handlers for Iterables
+        registerObjectHandler(
+            Matcher.of(e -> e instanceof Iterable<?>, "Iterable"),
+            e -> StreamSupport.stream(((Iterable<?>) e).spliterator(), false)
+                .map(this::stringifyOrElseNull)
+                .toList()
+                .toString()
+        );
+        // register type handlers for Internal algoutils.tutor types
+        registerTypeHandler(
+            Matcher.class, e -> stringifyOrElseNull(((Matcher<?>) e).characteristic())
+        );
+        registerTypeHandler(
+            Link.class, e -> stringifyOrElseNull(((Link) e).reflection())
+        );
+        registerTypeHandler(
+            Class.class, e -> stringifyOrElseNull(((Class<?>) e).getSimpleName())
+        );
+        registerObjectHandler(
+            Matcher.of(e -> e instanceof Class<?> clazz && clazz.isAssignableFrom(CtElement.class)),
+            e -> {
+                var spoonName = SpoonUtils.getNameOfCtElement((Class<?>) e);
+                return spoonName != null ? spoonName : ((Class<?>) e).getSimpleName();
+            }
+        );
+        registerTypeHandler(
+            Field.class, e -> {
+                var field = (Field) e;
+                var clazzString = field.getDeclaringClass().getSimpleName();
+                var typeString = field.getType().getSimpleName();
+                var name = field.getName();
+                return format("%s#%s %s", clazzString, typeString, name);
+            }
+        );
+        registerTypeHandler(
+            Method.class, e -> {
+                var method = (Method) e;
+                var clazzString = method.getDeclaringClass().getSimpleName();
+                var name = method.getName();
+                var parametersString = Stream.of(method.getParameters())
+                    .map(this::stringifyOrElseNull)
+                    .collect(Collectors.joining(", "));
+                return format("%s#%s(%s)", clazzString, name, parametersString);
+            }
+        );
+        registerTypeHandler(
+            Parameter.class, e -> {
+                var parameter = (Parameter) e;
+                var typeString = parameter.getType().getSimpleName();
+                return format("%s", typeString);
+            }
+        );
+        registerTypeHandler(
+            Constructor.class, e -> {
+                var constructor = (Constructor<?>) e;
+                return format("constructor of %s", constructor.getDeclaringClass().getSimpleName());
+            }
+        );
+        registerTypeHandler(
+            CtElement.class, e -> {
+                var ctElement = (CtElement) e;
+                return SpoonUtils.getNameOfCtElement(ctElement);
+            }
+        );
+        registerTypeHandler(
+            CtNamedElement.class, e -> ((CtNamedElement) e).getSimpleName()
+        );
     }
 }

@@ -536,12 +536,13 @@ public class Assertions3 {
 
     /**
      * Asserts that an interface method is implemented in the given {@link TypeLink}. This method checks that the
-     * method has the correct signature and that it is annotated with {@link Override}.
+     * method has the correct signature and, if strict is true, that it has an @Override annotation.
      *
      * @param link            the {@link TypeLink} to check for the implementation
      * @param interfaceMethod the {@link MethodLink} of the interface method
+     * @param strict          whether to check for the @Override annotation
      */
-    public static MethodLink assertImplementsInterfaceMethod(TypeLink link, MethodLink interfaceMethod) {
+    public static MethodLink assertImplementsInterfaceMethod(TypeLink link, MethodLink interfaceMethod, boolean strict) {
         var method = (BasicMethodLink) assertMethodExists(
             link,
             BasicReflectionMatchers.sameTypes(interfaceMethod.typeList().toArray(TypeLink[]::new))
@@ -554,5 +555,17 @@ public class Assertions3 {
             );
         }
         return method;
+    }
+
+    /**
+     * Asserts that an interface method is implemented in the given {@link TypeLink}. This method checks that the
+     * method has the correct signature and that it has an @Override annotation by calling
+     * {@link #assertImplementsInterfaceMethod(TypeLink, MethodLink, boolean)} with strict = true.
+     *
+     * @param link            the {@link TypeLink} to check for the implementation
+     * @param interfaceMethod the {@link MethodLink} of the interface method
+     */
+    public static MethodLink assertImplementsInterfaceMethod(TypeLink link, MethodLink interfaceMethod) {
+        return assertImplementsInterfaceMethod(link, interfaceMethod, true);
     }
 }
