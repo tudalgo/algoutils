@@ -44,7 +44,7 @@ public final class ReflectionStringifier implements Stringifier {
      * The object handlers. They are processed in the opposite order they were added. This means by adding a handler for
      * an existing matcher, the new handler will be processed first thus overriding the old handler.
      */
-    private final Map<Matcher<Object>, Function<Object, String>> objectHandlers = new HashMap<>();
+    private final Map<Matcher<Object>, Function<Object, String>> objectHandlers = new LinkedHashMap<>();
 
     /**
      * Registers an object handler for the given matcher.
