@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -39,9 +40,22 @@ import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.te
 @SuppressWarnings("unused")
 public class Assertions4 {
 
+    /**
+     * Private constructor to prevent instantiation.
+     */
     private Assertions4() {
     }
 
+    /**
+     * Asserts that the given {@link CtElement} is of the given type.
+     *
+     * @param expected the expected type
+     * @param actual   the actual element
+     * @param context  the context of this test
+     * @param comment  the comment to be displayed in case of a failure
+     * @param <T>      the expected type
+     * @return the actual element
+     */
     public static <T extends CtElement> T assertIsCtElementOfType(
         Class<T> expected,
         CtElement actual,
@@ -56,6 +70,14 @@ public class Assertions4 {
         return (T) actual;
     }
 
+    /**
+     * Asserts that the solution is one statement (containing only one semicolon).
+     *
+     * @param statement the statement
+     * @param context   the context of this test
+     * @param comment   the comment to be displayed in case of a failure
+     * @return the statement
+     */
     public static CtStatement assertIsOneStatement(
         CtStatement statement,
         Context context,
@@ -81,6 +103,14 @@ public class Assertions4 {
         return statements.get(0);
     }
 
+    /**
+     * Asserts that the given {@link CtIf} statement has an else statement.
+     *
+     * @param ifStatement the if statement
+     * @param context     the context of this test
+     * @param comment     the comment to be displayed in case of a failure
+     * @return the else statement
+     */
     public static CtStatement assertHasElseStatement(
         CtIf ifStatement,
         Context context,
@@ -97,9 +127,19 @@ public class Assertions4 {
         return ifStatement.getElseStatement();
     }
 
+    /**
+     * A filter for {@link CtElement}s that are iterative.
+     */
     private static final Filter<CtElement> ITERATIVE_ELEMENTS_FILTER = e ->
         e instanceof CtFor || e instanceof CtForEach || e instanceof WhileStatement || e instanceof DoStatement;
 
+    /**
+     * Asserts that the given method does not contain iterative statements.
+     *
+     * @param method  the method
+     * @param context the context of this test
+     * @param comment the comment to be displayed in case of a failure
+     */
     public static void assertIsNotIteratively(
         CtMethod<?> method,
         Context context,
@@ -114,6 +154,13 @@ public class Assertions4 {
         );
     }
 
+    /**
+     * Asserts that the given method does not contain recursive calls.
+     *
+     * @param method  the method
+     * @param context the context of this test
+     * @param comment the comment to be displayed in case of a failure
+     */
     public static void assertIsNotRecursively(
         CtMethod<?> method,
         Context context,
@@ -122,6 +169,15 @@ public class Assertions4 {
         assertDoesNotCall(method, method, new HashSet<>(), context, comment);
     }
 
+    /**
+     * Asserts that the given method does not contain calls to the given method.
+     *
+     * @param executable   the method
+     * @param calledMethod the method that must not be called
+     * @param visited      the visited methods
+     * @param context      the context of this test
+     * @param comment      the comment to be displayed in case of a failure
+     */
     private static void assertDoesNotCall(
         CtExecutable<?> executable,
         CtMethod<?> calledMethod,
@@ -149,6 +205,9 @@ public class Assertions4 {
         visited.add(executable);
     }
 
+    /**
+     * A filter for {@link CtElement}s that are conditional.
+     */
     private static final Filter<CtElement> CONDITIONAL_ELEMENT_FILTER = e ->
         e instanceof CtIf || e instanceof CtConditional<?> || e instanceof CtFor || e instanceof CtWhile;
 
@@ -189,7 +248,7 @@ public class Assertions4 {
         Matcher<CtElement>... elements
     ) {
         for (var e : elements) {
-            if (method.filterChildren(c -> e.match(c).matched()).list().isEmpty()) {
+            if (method.filterChildren(c -> Assertions2.callObject(() -> e.match(c).matched())).list().isEmpty()) {
                 continue;
             }
             Assertions2.fail(
@@ -209,10 +268,18 @@ public class Assertions4 {
     @SuppressWarnings("unchecked")
     public static Matcher<CtElement>[] buildCtElementBlacklist(BasicMethodLink... links) {
         return Arrays.stream(links).map(m -> Matcher.of(
-            ct -> ct instanceof CtInvocation<?> i
-                && i.getExecutable() != null
-                && i.getExecutable().getActualMethod() != null
-                && i.getExecutable().getActualMethod().equals(m.reflection()),
+            ct -> {
+                try {
+                    return ct instanceof CtInvocation<?> i
+                        && i.getExecutable() != null
+                        && i.getExecutable().getActualMethod() != null
+                        && i.getExecutable().getActualMethod().equals(m.reflection());
+                } catch (SpoonClassNotFoundException e) {
+                    // for some reason Library sources are not available during Jagr runs if using * imports. So we
+                    // just ignore this error and give the student the benefit of the doubt.
+                    return false;
+                }
+            },
             "method " + BasicEnvironment
                 .getInstance()
                 .getStringifier()
