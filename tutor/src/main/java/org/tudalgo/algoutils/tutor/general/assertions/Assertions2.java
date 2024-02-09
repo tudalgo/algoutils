@@ -1,23 +1,100 @@
 package org.tudalgo.algoutils.tutor.general.assertions;
 
+import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.tudalgo.algoutils.tutor.general.Environment;
 import org.tudalgo.algoutils.tutor.general.assertions.actual.Actual;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.*;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicFail;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfCall;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfExceptionalCall;
+import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicTestOfObject;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.Expected;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedExceptional;
 import org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObject;
-import org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing;
 import org.tudalgo.algoutils.tutor.general.basic.BasicEnvironment;
 import org.tudalgo.algoutils.tutor.general.callable.Callable;
 import org.tudalgo.algoutils.tutor.general.callable.ObjectCallable;
+import org.tudalgo.algoutils.tutor.general.reflections.MethodLink;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
-import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.*;
+import static org.tudalgo.algoutils.tutor.general.assertions.actual.Actual.unexpected;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.Expected.of;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.equalTo;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.equalsFalse;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.equalsNull;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.equalsTrue;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.notEqualsNull;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.notEqualsTo;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.notSameAs;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.sameAs;
+import static org.tudalgo.algoutils.tutor.general.assertions.expected.ExpectedObjects.something;
 import static org.tudalgo.algoutils.tutor.general.assertions.expected.Nothing.nothing;
 
 /**
- * A collection of assertion methods.
+ * <p>The Assertions2 class roughly mimics the functionality of the org.junit.jupiter.api.Assertions class while providing
+ * the option to pass along a {@link Context}.</p>
+ *
+ * <p><b>Note:</b> some methods do not provice a 1:1 mapping to the org.junit.jupiter.api.Assertions class. For example,
+ * * instead of using {@link org.junit.jupiter.api.Assertions#assertDoesNotThrow(ThrowingSupplier)} you should use
+ * * {@link Assertions2#call(Callable, Context, PreCommentSupplier)} or if you need the result of the call you should use
+ * * {@link Assertions2#callObject(ObjectCallable, Context, PreCommentSupplier)}.</p>
+ *
+ * <p>Here is an example of how to convert Junit5 assertions to Assertions2 assertions:
+ *
+ * <pre>{@code
+ * // Junit5
+ * Assertions.assertEquals(1 + 1, 2, "The result of 1 + 1 should be 2.");
+ *
+ * // Assertions2
+ * Context context = Assertions2.contextBuilder()
+ *     .add("summand1", 1)
+ *     .add("summand2", 1)
+ *     .build();
+ * Assertions2.assertEquals(2, 1 + 1, context, r -> "The result of 1 + 1 should be 2.");
+ * }</pre>
+ * Of course in this example it doesn't make much sense to use Assertions2 instead of Junit5, since the context is obvoius.
+ * Here is a more practical example:
+ * <pre>{@code
+ *  // Junit5, not using JSON parameter set Tests
+ * @Test
+ * public void testMoveToPosition() {
+ *    World.setSize(10,10);
+ *    var robot = new Robot(1,1, Direction.UP, 0);
+ *    assertions2.assertDoesNotThrow(() -> MyTestClass.moveToPosition(robot, 5, 5), "The Method threw an exception.");
+ *    assertions2.assertEquals(5, robot.getX(), "Wrong final x coordinate.");
+ *    assertions2.assertEquals(5, robot.getY(), "The final y coordinate.");
+ * }
+ *
+ * // assertions2, using JSON parameter set Tests
+ *
+ * public static final Map<String, Function<JsonNode, ?>> customConverters = Map.ofEntries(
+ *         Map.entry("worldWidth", JsonNode::asInt),
+ *         Map.entry("worldHeight", JsonNode::asInt),
+ *         Map.entry("robot", JsonConverters::toRobot),
+ *         Map.entry("expectedEndX", JsonNode::asInt),
+ *         Map.entry("expectedEndY", JsonNode::asInt)
+ *     );
+ * @ParameterizedTest
+ * @JsonParameterSetTest(value = "inputs.json", customConverters = "customConverters")
+ * public void testMovementInvalidDirection(final JsonParameterSet params) {
+ *    var worldWidth = params.getInt("worldWidth");
+ *    var worldHeight = params.getInt("worldHeight");
+ *    World.setSize(worldWidth, worldHeight);
+ *    var robot = params.<Robot>get("robot");
+ *    var expectedEndX = params.getInt("expectedEndX");
+ *    var expectedEndY = params.getInt("expectedEndY");
+ *    var context = params.toContext("expectedEndX", "expectedEndY");
+ *    assertions2.call(() -> MyTestClass.moveToPosition(robot, worldWidth, worldHeight), context, r -> "The Method threw
+ *    an exception.");
+ *    assertions2.assertEquals(expectedEndX, robot.getX(), context, r -> "Wrong final x coordinate.");
+ *    assertions2.assertEquals(expectedEndY, robot.getY(), context, r -> "The final y coordinate.");
+ * }
+ * }</pre>
+ * <p>In this example the student gets way more information about the test failure than in the Junit5 example while also
+ * providing a more readable test method.
+ * </p>
  *
  * @author Dustin Glaser
  */
@@ -266,12 +343,96 @@ public final class Assertions2 {
         return Assertions2.<T>testOfThrowableCallBuilder().expected(ExpectedExceptional.instanceOf(expected)).build().run(callable).check(context, preCommentSupplier).actual().behavior();
     }
 
+    /**
+     * <p>Asserts that the given callable does not throw an exception.</p>
+     *
+     * @param callable           the callable to call
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     */
     public static void call(Callable callable, Context context, PreCommentSupplier<? super ResultOfCall> preCommentSupplier) {
         Assertions2.testOfCallBuilder().expected(nothing()).build().run(callable).check(context, preCommentSupplier);
     }
 
+    /**
+     * <p>Asserts that the given callable does not throw an exception.</p>
+     *
+     * @param callable the callable to call
+     */
+    public static void call(Callable callable) {
+        call(callable, emptyContext(), r -> "an unexpected exception was thrown");
+    }
+
+    /**
+     * <p>Asserts that the given callable does not throw an exception.</p>
+     *
+     * @param methodLink         the method to call
+     * @param instance           the instance to call the method on
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     * @param args               the arguments to pass to the method
+     */
+    public static void call(
+        MethodLink methodLink,
+        Object instance,
+        Context context,
+        PreCommentSupplier<? super ResultOfCall> preCommentSupplier,
+        Object... args
+    ) {
+        Assertions2.testOfCallBuilder()
+            .expected(nothing())
+            .build()
+            .run(() -> methodLink.invoke(instance, args))
+            .check(context, preCommentSupplier);
+    }
+
+    /**
+     * <p>Asserts that the given callable does not throw an exception and returns the object returned by the callable.</p>
+     *
+     * @param callable           the callable to call
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     * @param <T>                the return type of the callable
+     * @return the object returned by the callable
+     */
     public static <T> T callObject(ObjectCallable<T> callable, Context context, PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier) {
         return Assertions2.<T>testOfObjectBuilder().expected(something()).build().run(callable).check(context, preCommentSupplier).object();
+    }
+
+    /**
+     * <p>Asserts that the given callable does not throw an exception and returns the object returned by the callable.</p>
+     *
+     * @param callable the callable to call
+     * @param <T>      the return type of the callable
+     * @return the object returned by the callable
+     */
+    public static <T> T callObject(ObjectCallable<T> callable) {
+        return callObject(callable, emptyContext(), r -> "an unexpected exception was thrown");
+    }
+
+    /**
+     * <p>Asserts that the given callable does not throw an exception and returns the object returned by the callable.</p>
+     *
+     * @param methodLink         the method to call
+     * @param instance           the instance to call the method on
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     * @param args               the arguments to pass to the method
+     * @param <T>                the return type of the method
+     * @return the object returned by the method
+     */
+    public static <T> T callObject(
+        MethodLink methodLink,
+        Object instance,
+        Context context,
+        PreCommentSupplier<? super ResultOfObject<T>> preCommentSupplier,
+        Object... args
+    ) {
+        return Assertions2.<T>testOfObjectBuilder()
+            .expected(something())
+            .build()
+            .run(() -> methodLink.invoke(instance, args))
+            .check(context, preCommentSupplier).object();
     }
 
     /**
@@ -391,5 +552,98 @@ public final class Assertions2 {
             }
         }
         return cb.build();
+    }
+
+    /**
+     * Asserts that two {@link Iterable}s are equal.
+     *
+     * @param expected           the expected iterable
+     * @param actual             the actual iterable
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     * @param iterableName       the name of the iterable
+     */
+    public static void assertIterableEquals(
+        Iterable<?> expected,
+        Iterable<?> actual,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> preCommentSupplier,
+        String iterableName
+    ) {
+        var expectedIterator = expected.iterator();
+        var actualIterator = actual.iterator();
+        int i = 0;
+        while (expectedIterator.hasNext() && actualIterator.hasNext()) {
+            var expectedElement = expectedIterator.next();
+            var actualElement = actualIterator.next();
+            if (!expectedElement.equals(actualElement)) {
+                final int finalI = i;
+                Assertions2.fail(
+                    of(expectedElement),
+                    unexpected(actualElement),
+                    context,
+                    r -> preCommentSupplier.getPreComment(r) + iterableName + " elements differ at index " + finalI + "."
+                );
+            }
+            i++;
+        }
+        if (expectedIterator.hasNext()) {
+            Assertions2.fail(
+                of("no more elements"),
+                unexpected("end of iterable"),
+                context,
+                r -> preCommentSupplier.getPreComment(r)
+                    + String.format("Expected %s has more elements than actual %s.", iterableName, iterableName)
+            );
+        }
+        if (actualIterator.hasNext()) {
+            Assertions2.fail(
+                of("end of iterable"),
+                unexpected("no more elements"),
+                context,
+                r -> preCommentSupplier.getPreComment(r)
+                    + String.format("Actual %s has more elements than expected %s.", iterableName, iterableName)
+            );
+        }
+    }
+
+    /**
+     * Asserts that two {@link Iterable}s are equal.
+     *
+     * @param expected           the expected iterable
+     * @param actual             the actual iterable
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     */
+    public static void assertIterableEquals(
+        Iterable<?> expected,
+        Iterable<?> actual,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> preCommentSupplier
+    ) {
+        assertIterableEquals(expected, actual, context, preCommentSupplier, "Iterable");
+    }
+
+    /**
+     * <p>Asserts that two arrays are equal.</p>
+     *
+     * @param expected           the expected array
+     * @param actual             the actual array
+     * @param context            the context of the test
+     * @param preCommentSupplier the supplier of the pre-comment
+     */
+    public static void assertArrayEquals(
+        Object[] expected,
+        Object[] actual,
+        Context context,
+        PreCommentSupplier<? super ResultOfFail> preCommentSupplier
+    ) {
+        assertIterableEquals(
+            Arrays.asList(expected),
+            Arrays.asList(actual),
+            context,
+            preCommentSupplier,
+            "Array"
+        );
     }
 }

@@ -11,4 +11,15 @@ public final class BasicStringMatchers {
     public static <T extends Stringifiable> Matcher<T> identical(String string) {
         return Matcher.of(stringifiable -> stringifiable.string().equals(string), string);
     }
+
+    public static <T extends Stringifiable> Matcher<T> identicalIgnoreCase(String string) {
+        return Matcher.of(stringifiable -> stringifiable.string().equalsIgnoreCase(string), string);
+    }
+
+    public static <T extends Stringifiable> Matcher<T> similar(String string, double minimumSimilarity) {
+        return Matcher.of(
+            stringifiable -> MatchingUtils.similarity(stringifiable.string(), string) >= minimumSimilarity,
+            string
+        );
+    }
 }

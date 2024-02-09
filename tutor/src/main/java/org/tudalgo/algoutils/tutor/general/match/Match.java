@@ -71,7 +71,7 @@ public interface Match<T> extends Comparable<Match<T>> {
      *
      * @return if this match is a negative match
      */
-    default boolean negative() {
+    default boolean isNegative() {
         return !matched();
     }
 

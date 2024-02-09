@@ -2,8 +2,10 @@ package org.tudalgo.algoutils.tutor.general.match;
 
 import org.tudalgo.algoutils.tutor.general.reflections.*;
 
+import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class BasicReflectionMatchers {
 
@@ -11,7 +13,14 @@ public class BasicReflectionMatchers {
     }
 
     public static <T extends WithType> Matcher<T> sameType(TypeLink link) {
-        return Matcher.of(l -> Objects.equals(l.type(), link), link);
+        return Matcher.of(
+            l -> Objects.equals(l.type(), link),
+            String.format("Same type: %s", link.reflection().getName())
+        );
+    }
+
+    public static <T extends WithType> Matcher<T> sameType(Class<?> clazz) {
+        return sameType(BasicTypeLink.of(clazz));
     }
 
     /**
@@ -22,7 +31,13 @@ public class BasicReflectionMatchers {
      */
     public static <T extends WithTypeList> Matcher<T> sameTypes(TypeLink... types) {
         var parameterList = List.of(types);
-        return Matcher.of(l -> l.typeList().equals(parameterList));
+        return Matcher.of(
+            l -> l.typeList().equals(parameterList),
+            String.format(
+                "Same parameter types: %s",
+                parameterList.stream().map(TypeLink::name).toList()
+            )
+        );
     }
 
     /**
@@ -33,13 +48,32 @@ public class BasicReflectionMatchers {
      * @return the matcher
      */
     public static <T extends WithModifiers> Matcher<T> hasModifiers(Modifier... modifiers) {
-        return Matcher.of(l -> {
-            for (var modifier : modifiers) {
-                if (!modifier.is(l.modifiers())) {
-                    return false;
+        return Matcher.of(
+            l -> {
+                for (var modifier : modifiers) {
+                    if (!modifier.is(l.modifiers())) {
+                        return false;
+                    }
                 }
-            }
-            return true;
-        });
+                return true;
+            },
+            String.format(
+                "Has modifiers: %s",
+                Stream.of(modifiers).map(Modifier::name).toList()
+            )
+        );
+    }
+
+    /**
+     * <p>A matcher matching a {@link TypeVariable} if the {@link TypeVariable} is equal to the given one.</p>
+     *
+     * @param typeVariable the {@link TypeVariable} to match against
+     * @return the matcher matching the {@link TypeVariable}
+     */
+    public static Matcher<TypeVariable<?>> sameTypeVariable(TypeVariable<?> typeVariable) {
+        return Matcher.of(
+            l -> l.equals(typeVariable),
+            String.format("Same generic type: %s", typeVariable.getName())
+        );
     }
 }
