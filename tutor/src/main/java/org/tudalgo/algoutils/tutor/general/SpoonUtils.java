@@ -27,12 +27,17 @@ public class SpoonUtils {
     }
 
     /**
+     * <p>Returns a <code>CtElement</code> for the given source code.</p>
+     *
+     * @param ignoredSourceCode  the source code
+     * @param ignoredKind        the kind of the element
+     * @param ignoredNameMatcher the name matcher
      * @deprecated use {@link #getType(String, Class)} instead
      */
     public static <T, U extends CtType<?>> T getCtElementForSourceCode(
-        String ignoredSourceCode,
-        Class<U> ignoredKind,
-        Matcher<Stringifiable> ignoredNameMatcher
+        final String ignoredSourceCode,
+        final Class<U> ignoredKind,
+        final Matcher<Stringifiable> ignoredNameMatcher
     ) {
         throw new UnsupportedOperationException("use getCtModel instead");
     }
@@ -43,7 +48,7 @@ public class SpoonUtils {
      * @param element the element
      * @return the human-readable name
      */
-    public static String getNameOfCtElement(CtElement element) {
+    public static String getNameOfCtElement(final CtElement element) {
         return getNameOfCtElement(element.getClass());
     }
 
@@ -53,9 +58,9 @@ public class SpoonUtils {
      * @param type the element type
      * @return the human-readable name
      */
-    public static String getNameOfCtElement(Class<?> type) {
+    public static String getNameOfCtElement(final Class<?> type) {
         var name = type.getSimpleName();
-        var match = SPOON_NAME_PATTERN.matcher(name);
+        final var match = SPOON_NAME_PATTERN.matcher(name);
         name = match.results().map(m -> m.group(1).toLowerCase()).collect(Collectors.joining(" "));
         return name;
     }
@@ -74,9 +79,9 @@ public class SpoonUtils {
         if (model != null) {
             return model;
         }
-        var launcher = new Launcher();
+        final var launcher = new Launcher();
         //noinspection UnstableApiUsage
-        var cycle = getTestCycle();
+        final var cycle = getTestCycle();
         if (cycle != null) {
             launcher.getEnvironment().setInputClassLoader((ClassLoader) cycle.getClassLoader());
         }
@@ -89,7 +94,7 @@ public class SpoonUtils {
      * @param className the class to get the spoon type for
      * @return the corresponding {@link CtType} in the spoon world for the given class
      */
-    public static CtType<?> getType(String className) {
+    public static CtType<?> getType(final String className) {
         return getType(className, CtType.class);
     }
 
@@ -101,21 +106,24 @@ public class SpoonUtils {
      * @param <T>       the type of the spoon type to return
      * @return the corresponding {@link CtType} in the spoon world for the given class
      */
-    public static <T extends CtType<?>> T getType(String className, Class<T> type) {
-        Launcher launcher = new Launcher();
+    public static <T extends CtType<?>> T getType(final String className, final Class<T> type) {
+        final Launcher launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(17);
         launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+        launcher.getEnvironment().setNoClasspath(true);
+        launcher.getEnvironment().setPreserveLineNumbers(true);
+        launcher.getEnvironment().setAutoImports(true);
 
-        String sourceCode = ResourceUtils.getTypeContent(className);
-        VirtualFile file = new VirtualFile(sourceCode, className);
+        final String sourceCode = ResourceUtils.getTypeContent(className);
+        final VirtualFile file = new VirtualFile(sourceCode, className);
 
-        @SuppressWarnings("UnstableApiUsage") TestCycle cycle = getTestCycle();
+        @SuppressWarnings("UnstableApiUsage") final TestCycle cycle = getTestCycle();
         if (cycle != null) {
             launcher.getEnvironment().setInputClassLoader((ClassLoader) cycle.getClassLoader());
         }
 
         launcher.addInputResource(file);
-        CtModel model = launcher.buildModel();
+        final CtModel model = launcher.buildModel();
         return model.getAllTypes().stream()
             .filter(type::isInstance)
             .filter(it -> it.getQualifiedName().equals(className))
