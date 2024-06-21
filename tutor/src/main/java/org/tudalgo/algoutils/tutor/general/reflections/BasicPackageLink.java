@@ -17,14 +17,31 @@ public class BasicPackageLink extends BasicLink implements PackageLink {
         this.classes = classes.stream().map(BasicTypeLink::of).toList();
     }
 
-    public static BasicPackageLink of(String name) {
+    /**
+     * Factory method for creating a package link
+     *
+     * @param name      package name
+     * @param recursive whether to include sub-packages
+     * @return package link
+     */
+    public static BasicPackageLink of(String name, boolean recursive) {
         List<Class<?>> classes;
         try {
-            classes = Arrays.stream(ReflectUtils.getClasses(name)).toList();
+            classes = Arrays.stream(ReflectUtils.getClasses(name, recursive)).toList();
         } catch (IOException e) {
             throw new AssertionFailedError("internal error in class BasicPackageLink");
         }
         return INSTANCES.computeIfAbsent(name, n -> new BasicPackageLink(n, classes));
+    }
+
+    /**
+     * Overloaded method for non-recursive package link
+     *
+     * @param name package name
+     * @return package link
+     */
+    public static BasicPackageLink of(String name) {
+        return of(name, false);
     }
 
     @Override
