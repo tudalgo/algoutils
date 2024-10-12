@@ -5,7 +5,7 @@ import org.tudalgo.algoutils.script.AlgoUtilsPublishPlugin
 import java.net.URL
 
 plugins {
-    kotlin("jvm") version "1.9.25"
+    kotlin("jvm") version "2.0.21"
     `java-library`
     alias(libs.plugins.dokka)
 }
