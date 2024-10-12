@@ -47,8 +47,8 @@ class AlgoUtilsPublishPlugin : Plugin<Project> {
             repositories {
                 maven {
                     credentials {
-                        username = project.findProperty("sonatypeUsername") as? String
-                        password = project.findProperty("sonatypePassword") as? String
+                        username = project.findProperty("ossrhUsername") as? String
+                        password = project.findProperty("ossrhPassword") as? String
                     }
                     val releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
                     val snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots"
