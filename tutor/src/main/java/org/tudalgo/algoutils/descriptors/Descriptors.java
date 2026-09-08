@@ -1,17 +1,14 @@
 package org.tudalgo.algoutils.descriptors;
 
 import com.google.common.base.Suppliers;
-import com.google.common.reflect.ClassPath;
 import org.tudalgo.algoutils.AlgoUtils;
 import org.tudalgo.algoutils.descriptors.members.*;
 import org.tudalgo.algoutils.descriptors.types.*;
 import org.tudalgo.algoutils.tutor.general.match.MatchingUtils;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.Callable;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -219,39 +216,54 @@ public final class Descriptors {
     /**
      * Attempts to find a matching class and returns a descriptor for it.
      * If no match is found, this method returns {@code null}.
+     * This method will only work for submission classes.
      * <p>
      * This method can handle typos and similar mistakes up to certain degree for submission classes.
-     * However, this also puts it at risk of returning a descriptor for the wrong class if its name
-     * is too similar.
-     * See {@link AlgoUtils} for information on similarity matching.
+     * However, this also puts it at risk of returning a descriptor for the wrong class if its name is too similar.
+     * See {@link AlgoUtils#SIMILARITY_THRESHOLD} for information on similarity matching.
+     * <p>
+     * This method performs the following steps to find a matching class:
+     * <ol>
+     *     <li>Search the internal {@link ClassDescriptor} cache for an exact match.</li>
+     *     <li>Search {@link AlgoUtils#SUBMISSION_CLASSES} for an exact match.</li>
+     *     <li>Compare all classes in the cache with the given name and return the best match above the similarity threshold.</li>
+     *     <li>Compare all classes in {@link AlgoUtils#SUBMISSION_CLASSES} with the given name and return the best match above the similarity threshold.</li>
+     * </ol>
      *
      * @param name the fully-qualified name of the class to find
      * @return a matching descriptor, or {@code null}
      */
     public static ClassDescriptor findClass(String name) {
-        try {
-            if (!name.startsWith(AlgoUtils.SUBMISSION_ID)) return forClass(Class.forName(name));
+        Function<String, ClassDescriptor> getClass = s -> {
+            try {
+                return forClass(Class.forName(s));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        if (!name.startsWith(AlgoUtils.SUBMISSION_ID)) return getClass.apply(name);
 
-            // Simple lookup
-            ClassDescriptor cacheLookup = CLASS_CACHE.get(name);
-            if (cacheLookup != null) return cacheLookup;
-            if (submissionClasses.contains(name)) return forClass(Class.forName(name));
+        // Simple lookup
+        ClassDescriptor cacheLookup = CLASS_CACHE.get(name);
+        if (cacheLookup != null) return cacheLookup;
+        if (AlgoUtils.SUBMISSION_CLASSES.contains(name)) return getClass.apply(name);
 
-            // Search for closest match
-            ClassDescriptor cacheSearch = findMostSimilar(CLASS_CACHE, name);
-            if (cacheSearch != null) return cacheSearch;
-            Callable<ClassDescriptor> submissionSearch = findMostSimilar(submissionClasses.stream()
-                .map(s -> Map.entry(s, (Callable<ClassDescriptor>) () -> forClass(Class.forName(s))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)), name);
-            if (submissionSearch != null) return submissionSearch.call();
-
-            // no match found
-            return null;
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // Search for closest match
+        ClassDescriptor cacheSearch = CLASS_CACHE.entrySet()
+            .stream()
+            .map(entry -> Map.entry(MatchingUtils.similarity(name, entry.getKey()), entry.getValue()))
+            .filter(entry -> entry.getKey() >= AlgoUtils.SIMILARITY_THRESHOLD)
+            .max(Comparator.comparingDouble(Map.Entry::getKey))
+            .map(Map.Entry::getValue)
+            .orElse(null);
+        if (cacheSearch != null) return cacheSearch;
+        return AlgoUtils.SUBMISSION_CLASSES.stream()
+            .map(s -> Map.entry(MatchingUtils.similarity(name, s), s))
+            .filter(entry -> entry.getKey() >= AlgoUtils.SIMILARITY_THRESHOLD)
+            .max(Comparator.comparingDouble(Map.Entry::getKey))
+            .map(Map.Entry::getValue)
+            .map(getClass)
+            .orElse(null);
     }
 
     /**
@@ -352,36 +364,6 @@ public final class Descriptors {
             .orElse(null);
         return method != null ? forMethod(method) : null;
     }
-
-    // TODO: Move to / merge with more fitting class
-    private static <T> T findMostSimilar(Map<String, ? extends T> map, String target) {
-        return map.entrySet()
-            .stream()
-            .map(entry -> Map.entry(MatchingUtils.similarity(target, entry.getKey()), entry.getValue()))
-            .filter(entry -> entry.getKey() >= AlgoUtils.SIMILARITY_THRESHOLD)
-            .max(Comparator.comparingDouble(Map.Entry::getKey))
-            .map(Map.Entry::getValue)
-            .orElse(null);
-    }
-
-    // TODO: Move to / merge with more fitting class
-    @SuppressWarnings("UnstableApiUsage")
-    private static void setup() {
-        try {
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            ClassPath classPath = ClassPath.from(classLoader);
-            for (ClassPath.ClassInfo classInfo : classPath.getTopLevelClassesRecursive(AlgoUtils.SUBMISSION_ID)) {
-                packages.add(classInfo.getPackageName());
-                submissionClasses.add(classInfo.getName());
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    // TODO: Move to / merge with more fitting class
-    private static Set<String> packages = new HashSet<>();
-    private static Set<String> submissionClasses = new HashSet<>();
 
     // Factory methods
 
