@@ -1,11 +1,12 @@
-package org.tudalgo.algoutils.descriptors.types;
+package org.tudalgo.algoutils.descriptors.generic;
 
 import org.jspecify.annotations.NonNull;
 import org.tudalgo.algoutils.descriptors.Descriptors;
+import org.tudalgo.algoutils.descriptors.TypeDescriptor;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * Basic implementation of {@link WildcardTypeDescriptor}.
@@ -14,30 +15,25 @@ import java.util.function.Supplier;
  * @param lowerBounds the lower bounds
  * @param upperBounds the upper bounds
  */
-record WildcardTypeDescriptorImpl(
-    BoundsType boundsType,
-    Supplier<TypeDescriptor[]> lowerBounds,
-    Supplier<TypeDescriptor[]> upperBounds
-) implements WildcardTypeDescriptor {
+record WildcardTypeDescriptorImpl(BoundsType boundsType, List<TypeDescriptor> lowerBounds, List<TypeDescriptor> upperBounds) implements WildcardTypeDescriptor {
 
     @Override
     public String getName() {
         return switch (boundsType) {
             case NONE -> "?";
-            case LOWER -> "? super " + getLowerBounds()[0].getName();
-            case UPPER -> "? extends " + getUpperBounds()[0].getName();
+            case LOWER -> "? super " + getLowerBounds().getFirst().getName();
+            case UPPER -> "? extends " + getUpperBounds().getFirst().getName();
         };
     }
 
     @Override
-    public TypeDescriptor[] getLowerBounds() {
-        return lowerBounds.get();
+    public List<TypeDescriptor> getLowerBounds() {
+        return Collections.unmodifiableList(lowerBounds);
     }
 
     @Override
-    public TypeDescriptor[] getUpperBounds() {
-        TypeDescriptor[] upperBounds = this.upperBounds.get();
-        return upperBounds.length != 0 ? upperBounds : new TypeDescriptor[] {Descriptors.forClass(Object.class)};
+    public List<TypeDescriptor> getUpperBounds() {
+        return upperBounds.isEmpty() ? Collections.singletonList(Descriptors.forClass(Object.class)) : Collections.unmodifiableList(upperBounds);
     }
 
     @Override

@@ -1,13 +1,15 @@
 package org.tudalgo.algoutils.assertions.verification;
 
+import kotlin.Pair;
+import org.tudalgo.algoutils.AlgoUtils;
 import org.tudalgo.algoutils.assertions.*;
 import org.tudalgo.algoutils.assertions.options.AssertionOption;
+import org.tudalgo.algoutils.descriptors.Descriptor;
 import org.tudalgo.algoutils.descriptors.Descriptors;
-import org.tudalgo.algoutils.descriptors.WithModifiers;
-import org.tudalgo.algoutils.descriptors.members.FieldDescriptor;
-import org.tudalgo.algoutils.descriptors.types.ParameterizedTypeDescriptor;
-import org.tudalgo.algoutils.descriptors.types.TypeDescriptor;
-import org.tudalgo.algoutils.descriptors.types.TypeVariableDescriptor;
+import org.tudalgo.algoutils.descriptors.NotFound;
+import org.tudalgo.algoutils.descriptors.non_generic.*;
+import org.tudalgo.algoutils.descriptors.TypeDescriptor;
+import org.tudalgo.algoutils.descriptors.generic.TypeVariableDescriptor;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -16,10 +18,8 @@ import java.util.stream.Stream;
 
 import static org.tudalgo.algoutils.assertions.verification.ValueBasedVerification.wrap;
 
-// TODO: verifications for type parameters
-
 /**
- * Provides verifications on reflection objects, such as classes and members, and their modifiers.
+ * Provides verifications on reflection objects, such as classes and members, and {@link org.tudalgo.algoutils.descriptors Descriptors}.
  * These verifications can be used with the {@link org.tudalgo.algoutils.assertions.Assertions} class to assert properties of classes and members in tests.
  */
 public final class ReflectionVerifications {
@@ -27,23 +27,73 @@ public final class ReflectionVerifications {
     // Do not instantiate
     private ReflectionVerifications() {}
 
+    // Packages
+
+    /**
+     * Verifies that the package with the given name exists.
+     * <p>
+     * Note that if the package exists and a class within it was not previously loaded, it might be loaded when invoking
+     * {@link AssertionVerification#verify(ActualWrapper)} on this object.
+     * This will cause the class to be linked and the class initializer to be executed.
+     * <p>
+     * Use with {@link Assertions#assertThat(AssertionVerification, AssertionOption[])}.
+     *
+     * @param packageName the fully-qualified name of the class
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<?, ?, Package> packageExists(String packageName) {
+        if (!packageName.startsWith(AlgoUtils.SUBMISSION_ID)) throw new IllegalArgumentException("Package name must start with submission ID");
+        return BehaviorBasedVerification.of(ignored -> wrap(() -> {
+            Optional<Package> pkg = AlgoUtils.SUBMISSION_CLASSES.stream()
+                .filter(s -> s.matches("^%s\\.[^.]+".formatted(packageName)))
+                .findAny()
+                .map(s -> {
+                    try {
+                        return Class.forName(s).getPackage();
+                    } catch (ClassNotFoundException e) {
+                        return null;
+                    }
+                });
+
+            return AssertionResult.of(pkg.isPresent(), null, pkg.orElse(null),
+                "Could not find package " + packageName);
+        }));
+    }
+
+    /**
+     * Verifies that the described package exists.
+     * <p>
+     * Note that if the package exists and a class within it was not previously loaded, it might be loaded when invoking
+     * {@link AssertionVerification#verify(ActualWrapper)} on this object.
+     * This will cause the class to be linked and the class initializer to be executed.
+     * <p>
+     * Use with {@link Assertions#assertThat(AssertionVerification, AssertionOption[])}.
+     *
+     * @param packageDescriptor the descriptor for the package
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<?, ?, Package> packageExists(PackageDescriptor packageDescriptor) {
+        Optional<AssertionResult<Object, Package>> checkResult = checkDescriptors(
+            "Cannot verify if package exists because the expected package was not found",
+            packageDescriptor
+        );
+        return checkResult.isPresent() ? actual -> checkResult.get() : packageExists(packageDescriptor.getName());
+    }
+
     // Common for classes and members
 
     /**
-     * Verifies that the actual value has the given modifiers.
-     * The actual value must be either a class, a class member (i.e., a field, constructor or method) or
-     * a descriptor for either (see {@link org.tudalgo.algoutils.descriptors {@code descriptors} package}).
+     * Verifies that the entity under test has the given modifiers.
+     * The actual value must be either a class or a class member (i.e., a field, constructor or method).
      * This verification only checks if the actual value has the given modifiers set, it may have additional
      * modifiers that are not covered by the ones that were passed to this method.
      * See {@link #hasExactModifiers(int)} for matching modifiers exactly.
-     *
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param modifiers the modifiers to check for
      * @return an {@link AssertionVerification} object to verify the assertion
@@ -55,18 +105,15 @@ public final class ReflectionVerifications {
     }
 
     /**
-     * Verifies that the actual value has exactly the given modifiers.
-     * The actual value must be either a class, a class member (i.e., a field, constructor or method) or
-     * a descriptor for either (see {@link org.tudalgo.algoutils.descriptors {@code descriptors} package}).
+     * Verifies that the entity under test has exactly the given modifiers.
+     * The actual value must be either a class or a class member (i.e., a field, constructor or method).
      * See {@link #hasModifiers(int)} for checking if a class or class member has at least the specified modifiers set.
-     *
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param modifiers the modifiers to check for
      * @return an {@link AssertionVerification} object to verify the assertion
@@ -75,52 +122,6 @@ public final class ReflectionVerifications {
      */
     public static AssertionVerification<Integer, ?, Integer> hasExactModifiers(int modifiers) {
         return hasModifiers(modifiers, true);
-    }
-
-    /**
-     * Verifies that the actual value declares the given type parameters.
-     * The actual value must implement the {@link GenericDeclaration} interface, so it must be either a class or an executable
-     * (i.e., a constructor or method).
-     *
-     * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
-     *
-     * @param typeVariableDescriptors descriptors for the type variables to check for
-     * @return an {@link AssertionVerification} object to verify the assertion
-     * @throws IllegalArgumentException if the actual value is not a class, constructor or method
-     */
-    public static AssertionVerification<List<TypeVariableDescriptor>, GenericDeclaration, List<TypeVariableDescriptor>> declaresTypeParameters(
-        TypeVariableDescriptor... typeVariableDescriptors
-    ) {
-        return ValueBasedVerification.of(actual -> wrap(() -> {
-            GenericDeclaration genericDeclaration = actual.getValue();
-            List<TypeVariableDescriptor> expectedTypeVariables = List.of(typeVariableDescriptors);
-            List<TypeVariableDescriptor> actualTypeVariables;
-            String prefix;
-            switch (genericDeclaration) {
-                case Class<?> clazz -> {
-                    actualTypeVariables = List.of(Descriptors.forClass(clazz).getTypeParameters());
-                    prefix = "Class %s".formatted(clazz.getName());
-                }
-                case Constructor<?> constructor -> {
-                    actualTypeVariables = List.of(Descriptors.forConstructor(constructor).getTypeParameters());
-                    prefix = "Constructor %s".formatted(AssertionUtils.getMethodSignature(constructor));
-                }
-                case Method method -> {
-                    actualTypeVariables = List.of(Descriptors.forMethod(method).getTypeParameters());
-                    prefix = "Method %s".formatted(AssertionUtils.getMethodSignature(method));
-                }
-                default -> throw new IllegalArgumentException("Unsupported actual type");
-            }
-
-            return AssertionResult.of(expectedTypeVariables.equals(actualTypeVariables), expectedTypeVariables, actualTypeVariables,
-                "%s does not declare the correct type parameters".formatted(prefix));
-        }));
     }
 
     private static AssertionVerification<Integer, ?, Integer> hasModifiers(int modifiers, boolean exact) {
@@ -137,10 +138,6 @@ public final class ReflectionVerifications {
                 case Member member -> {
                     actualModifiers = member.getModifiers();
                     prefix = AssertionUtils.getPrettyString(member);
-                }
-                case WithModifiers descriptor -> {
-                    actualModifiers = descriptor.getModifiers();
-                    prefix = "Descriptor " + descriptor;
                 }
                 default -> throw new IllegalArgumentException("Can not get modifiers of non-class or non-member objects");
             }
@@ -164,21 +161,154 @@ public final class ReflectionVerifications {
         }));
     }
 
+    /**
+     * Verifies that the entity under test declares the given type parameters.
+     * The actual value must implement the {@link GenericDeclaration} interface, so it must be either a class or an executable
+     * (i.e., a constructor or method).
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @param typeVariableDescriptors descriptors for the type variables to check for
+     * @return an {@link AssertionVerification} object to verify the assertion
+     * @throws IllegalArgumentException if the actual value is not a class, constructor or method
+     */
+    public static AssertionVerification<List<TypeVariableDescriptor>, GenericDeclaration, List<TypeVariableDescriptor>> declaresTypeParameters(
+        TypeVariableDescriptor... typeVariableDescriptors
+    ) {
+        return ValueBasedVerification.of(actual -> wrap(() -> {
+            GenericDeclaration genericDeclaration = actual.getValue();
+            List<TypeVariableDescriptor> expectedTypeVariables = List.of(typeVariableDescriptors);
+            List<TypeVariableDescriptor> actualTypeVariables = Arrays.stream(genericDeclaration.getTypeParameters())
+                .map(Descriptors::forTypeVariable)
+                .toList();
+            String prefix = switch (genericDeclaration) {
+                case Class<?> clazz -> "Class %s".formatted(clazz.getName());
+                case Constructor<?> constructor -> "Constructor %s".formatted(AssertionUtils.getMethodSignature(constructor));
+                case Method method -> "Method %s".formatted(AssertionUtils.getMethodSignature(method));
+                default -> throw new IllegalArgumentException("Unsupported actual type");
+            };
+
+            return AssertionResult.of(expectedTypeVariables.equals(actualTypeVariables), expectedTypeVariables, actualTypeVariables,
+                "%s does not declare the correct type parameters".formatted(prefix));
+        }));
+    }
+
+    /**
+     * Verifies that the executable (i.e., constructor or method) under test was declared with the given (generic) parameter types.
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @param typeDescriptors descriptors for the expected parameter types, may describe generic and non-generic types
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<List<TypeDescriptor>, Executable, List<TypeDescriptor>> declaresGenericParameters(
+        TypeDescriptor... typeDescriptors
+    ) {
+        return ValueBasedVerification.of(actual -> wrap(() -> {
+            Optional<AssertionResult<List<TypeDescriptor>, List<TypeDescriptor>>> checkResult = checkDescriptors(
+                "Cannot verify actual parameter types because an expected parameter type was not found",
+                typeDescriptors
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
+            Executable executable = actual.getValue();
+            List<TypeDescriptor> expectedParameterTypes = List.of(typeDescriptors);
+            List<TypeDescriptor> actualParameterTypes = Arrays.stream(executable.getGenericParameterTypes())
+                .map(Descriptors::forType)
+                .toList();
+            return AssertionResult.of(
+                actualParameterTypes.equals(expectedParameterTypes),
+                expectedParameterTypes,
+                actualParameterTypes,
+                "Generic parameter types of %s do not match the expected ones".formatted(AssertionUtils.getPrettyString(executable))
+            );
+        }));
+    }
+
+    /**
+     * Verifies that the executable (i.e., constructor or method) under test was declared with the given exceptions.
+     * To check if an executable was declared with the correct generic exceptions, see {@link #declaresExceptions(TypeDescriptor...)}.
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @param exceptions the expected exception types
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<Set<Class<?>>, Executable, Set<Class<?>>> declaresExceptions(Class<?>... exceptions) {
+        return ValueBasedVerification.of(actual -> wrap(() -> {
+            Executable executable = actual.getValue();
+            Set<Class<?>> expectedExceptions = Set.of(exceptions);
+            Set<Class<?>> actualExceptions = Set.of(executable.getExceptionTypes());
+            return AssertionResult.of(
+                actualExceptions.containsAll(expectedExceptions),
+                expectedExceptions,
+                actualExceptions,
+                "Constructor or method does not declare the required exception(s)"
+            );
+        }));
+    }
+
+    /**
+     * Verifies that the executable (i.e., constructor or method) under test was declared with the given (generic) exceptions.
+     * To check if an executable was declared with the correct exception types, regardless of genericity, see {@link #declaresExceptions(Class[])}.
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @param exceptions descriptors for the expected exception types, may describe generic and non-generic types
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<Set<TypeDescriptor>, Executable, Set<TypeDescriptor>> declaresExceptions(TypeDescriptor... exceptions) {
+        return ValueBasedVerification.of(actual -> wrap(() -> {
+            Optional<AssertionResult<Set<TypeDescriptor>, Set<TypeDescriptor>>> checkResult = checkDescriptors(
+                "Cannot verify actual exception types because an expected exception type was not found",
+                exceptions
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
+            Executable executable = actual.getValue();
+            Set<TypeDescriptor> expectedExceptions = Set.of(exceptions);
+            Set<TypeDescriptor> actualExceptions = Arrays.stream(executable.getGenericExceptionTypes())
+                .map(Descriptors::forType)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toUnmodifiableSet());
+            return AssertionResult.of(
+                actualExceptions.containsAll(expectedExceptions),
+                expectedExceptions,
+                actualExceptions,
+                "Constructor or method does not declare the required exception(s)"
+            );
+        }));
+    }
+
     // Classes
 
     /**
      * Verifies that the class with the given name exists.
-     *
      * <p>
-     *     Note that if the class exists and was not previously loaded, it will be loaded when invoking
-     *     {@link AssertionVerification#verify(ActualWrapper)} on this object.
-     *     This will cause the class to be linked and the class initializer to be executed.
-     *     During both operations, errors may occur which will cause this verification to be unsuccessful.
-     *     If a {@link LinkageError} or an {@link ExceptionInInitializerError} is thrown during loading,
-     *     the error gets caught and stored in the result as the cause for this failure.
-     * </p>
-     *
-     * <p>Use with {@link Assertions#assertThat(AssertionVerification, AssertionOption[])}.</p>
+     * Note that if the class exists and was not previously loaded, it will be loaded when invoking
+     * {@link AssertionVerification#verify(ActualWrapper)} on this object.
+     * This will cause the class to be linked and the class initializer to be executed.
+     * During both operations, errors may occur which will cause this verification to be unsuccessful.
+     * If a {@link LinkageError} or an {@link ExceptionInInitializerError} is thrown during loading,
+     * the error gets caught and stored in the result as the cause for this failure.
+     * <p>
+     * Use with {@link Assertions#assertThat(AssertionVerification, AssertionOption[])}.
      *
      * @param className the name of the class
      * @return an {@link AssertionVerification} object to verify the assertion
@@ -204,36 +334,116 @@ public final class ReflectionVerifications {
     }
 
     /**
-     * Verifies that the class for the given descriptor exists.
-     *
+     * Verifies that the described class exists.
      * <p>
-     *     Note that if the class exists and was not previously loaded, it will be loaded when invoking
-     *     {@link AssertionVerification#verify(ActualWrapper)} on this object.
-     *     This will cause the class to be linked and the class initializer to be executed.
-     *     During both operations, errors may occur which will cause this verification to be unsuccessful.
-     *     If a {@link LinkageError} or an {@link ExceptionInInitializerError} is thrown during loading,
-     *     the error gets caught and stored in the result as the cause for this failure.
-     * </p>
-     *
-     * <p>Use with {@link Assertions#assertThat(AssertionVerification, AssertionOption[])}.</p>
+     * Note that if the class exists and was not previously loaded, it will be loaded when invoking
+     * {@link AssertionVerification#verify(ActualWrapper)} on this object.
+     * This will cause the class to be linked and the class initializer to be executed.
+     * During both operations, errors may occur which will cause this verification to be unsuccessful.
+     * If a {@link LinkageError} or an {@link ExceptionInInitializerError} is thrown during loading,
+     * the error gets caught and stored in the result as the cause for this failure.
+     * <p>
+     * Use with {@link Assertions#assertThat(AssertionVerification, AssertionOption[])}.
      *
      * @param descriptor the descriptor for the class
      * @return an {@link AssertionVerification} object to verify the assertion
      */
-    public static AssertionVerification<?, ?, Class<?>> classExists(TypeDescriptor descriptor) {
-        return classExists(descriptor.getName());
+    public static AssertionVerification<?, ?, Class<?>> classExists(ClassDescriptor descriptor) {
+        Optional<AssertionResult<Object, Class<?>>> checkResult = checkDescriptors(
+            "Cannot verify if class exists because the expected class was not found",
+            descriptor
+        );
+        return checkResult.isPresent() ? actual -> checkResult.get() : classExists(descriptor.getName());
+    }
+
+    /**
+     * Verifies that the class under test is a regular class (i.e., not an interface, record or enum).
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<Boolean, Class<?>, Boolean> isClass() {
+        return ValueBasedVerification.of(actual -> {
+            Class<?> clazz = actual.getClass();
+            boolean isClass = !clazz.isInterface() && !clazz.isRecord() && !clazz.isEnum();
+            return AssertionResult.of(isClass, true, isClass,
+                "Class %s is not a regular class".formatted(clazz.getTypeName()));
+        });
+    }
+
+    /**
+     * Verifies that the class under test is an interface.
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<Boolean, Class<?>, Boolean> isInterface() {
+        return ValueBasedVerification.of(actual -> {
+            Class<?> clazz = actual.getClass();
+            boolean isInterface = clazz.isInterface();
+            return AssertionResult.of(isInterface, true, isInterface,
+                "Class %s is not an interface".formatted(clazz.getTypeName()));
+        });
+    }
+
+    /**
+     * Verifies that the class under test is a record class.
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<Boolean, Class<?>, Boolean> isRecord() {
+        return ValueBasedVerification.of(actual -> {
+            Class<?> clazz = actual.getClass();
+            boolean isRecord = clazz.isRecord();
+            return AssertionResult.of(isRecord, true, isRecord,
+                "Class %s is not a record".formatted(clazz.getTypeName()));
+        });
+    }
+
+    /**
+     * Verifies that the class under test is an enum class.
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<Boolean, Class<?>, Boolean> isEnum() {
+        return ValueBasedVerification.of(actual -> {
+            Class<?> clazz = actual.getClass();
+            boolean isEnum = clazz.isEnum();
+            return AssertionResult.of(isEnum, true, isEnum,
+                "Class %s is not an enum".formatted(clazz.getTypeName()));
+        });
     }
 
     /**
      * Verifies that the class under test has the given class as its superclass.
-     *
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param superclass the expected superclass
      * @return an {@link AssertionVerification} object to verify the assertion
@@ -255,38 +465,35 @@ public final class ReflectionVerifications {
     }
 
     /**
-     * Verifies that the class under test has the given class as its superclass.
-     * If {@code descriptor} is generic, the verification will check against the generic superclass.
-     *
+     * Verifies that the class under test has the given (generic) class as its superclass.
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
-     * @param descriptor the descriptor for the expected superclass, may describe a generic type
+     * @param typeDescriptor a descriptor for the expected superclass, may describe a generic type
      * @return an {@link AssertionVerification} object to verify the assertion
      */
-    public static AssertionVerification<TypeDescriptor, Class<?>, Type> hasSuperclass(TypeDescriptor descriptor) {
+    public static AssertionVerification<TypeDescriptor, Class<?>, TypeDescriptor> hasSuperclass(TypeDescriptor typeDescriptor) {
         return ValueBasedVerification.of(actual -> wrap(() -> {
+            Optional<AssertionResult<TypeDescriptor, TypeDescriptor>> checkResult = checkDescriptors(
+                "Cannot verify actual superclass type because the expected superclass type was not found",
+                typeDescriptor
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
             Class<?> clazz = actual.getValue();
             if (clazz.getSuperclass() == null) {
-                return AssertionResult.of(false, "This verification is not applicable to classes without a superclass");
-            } else if (descriptor instanceof ParameterizedTypeDescriptor ptDescriptor) {
-                return AssertionResult.of(
-                    clazz.getGenericSuperclass().getTypeName().equals(ptDescriptor.getName()),
-                    ptDescriptor,
-                    clazz.getGenericSuperclass(),
-                    "Class %s does not have %s as its superclass".formatted(clazz.getName(), ptDescriptor.getName())
-                );
+                return AssertionResult.of(false, "Verification is not applicable to classes without a superclass");
             } else {
+                TypeDescriptor superclassType = Descriptors.forType(clazz.getGenericSuperclass());
                 return AssertionResult.of(
-                    clazz.getSuperclass().getName().equals(descriptor.getName()),
-                    descriptor,
-                    clazz.getSuperclass(),
-                    "Class %s does not have %s as its superclass".formatted(clazz.getName(), descriptor.getName())
+                    Objects.equals(typeDescriptor, superclassType),
+                    typeDescriptor,
+                    superclassType,
+                    "Class %s does not have %s as its superclass".formatted(clazz.getName(), typeDescriptor.getName())
                 );
             }
         }));
@@ -294,14 +501,12 @@ public final class ReflectionVerifications {
 
     /**
      * Verifies that the class under test implements the given interfaces.
-     *
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param interfaces zero or more expected interfaces
      * @return an {@link AssertionVerification} object to verify the assertion
@@ -321,30 +526,33 @@ public final class ReflectionVerifications {
     }
 
     /**
-     * Verifies that the class under test implements the given interfaces.
-     * If an element of {@code interface} is generic, the verification will check against the generic interface for that element.
-     *
+     * Verifies that the class under test implements the given (generic) interfaces.
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
-     * @param interfaces zero or more expected type descriptors, may describe a generic type
+     * @param interfaces zero or more descriptors for the expected interfaces, may describe generic types
      * @return an {@link AssertionVerification} object to verify the assertion
      */
-    public static AssertionVerification<Set<TypeDescriptor>, Class<?>, Set<Type>> implementsInterface(TypeDescriptor... interfaces) {
+    public static AssertionVerification<Set<TypeDescriptor>, Class<?>, Set<TypeDescriptor>> implementsInterface(TypeDescriptor... interfaces) {
         return ValueBasedVerification.of(actual -> wrap(() -> {
+            Optional<AssertionResult<Set<TypeDescriptor>, Set<TypeDescriptor>>> checkResult = checkDescriptors(
+                "Cannot verify actual interface types because an expected interface type was not found",
+                interfaces
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
             Class<?> clazz = actual.getValue();
             Set<TypeDescriptor> expectedInterfaces = Set.of(interfaces);
-            Set<Type> actualInterfaces = Set.of(clazz.getInterfaces());
-            Set<Type> actualGenericInterfaces = Set.of(clazz.getGenericInterfaces());
+            Set<TypeDescriptor> actualInterfaces = Arrays.stream(clazz.getGenericInterfaces())
+                .map(Descriptors::forType)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toUnmodifiableSet());
             return AssertionResult.of(
-                expectedInterfaces.stream()
-                    .allMatch(d -> (d instanceof ParameterizedTypeDescriptor ? actualGenericInterfaces : actualInterfaces).stream()
-                        .anyMatch(c -> c.getTypeName().equals(d.getName()))),
+                actualInterfaces.containsAll(expectedInterfaces),
                 expectedInterfaces,
                 actualInterfaces,
                 "Class %s does not implement the required interface(s)".formatted(clazz.getName())
@@ -352,26 +560,20 @@ public final class ReflectionVerifications {
         }));
     }
 
-    // Fields
-
     /**
      * Verifies that the class under test has access to a field with the given name.
      * The pool of possible fields include any fields within the class itself (including private ones) and
      * those the class has access to via inheritance (superclasses and interfaces).
-     *
      * <p>
-     *     Note that in some cases a class may have access to two or more fields with an identical name but different owners.
-     *     This verification makes no guarantees which of these fields would be returned in the result.
-     *     To check if a class explicitly declares a field, see {@link #declaresField}.
-     * </p>
-     *
+     * Note that in some cases a class may have access to two or more fields with an identical name but different owners.
+     * This verification makes no guarantees which of these fields would be returned in the result.
+     * To check if a class explicitly declares a field, see {@link #declaresField(String)}.
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param fieldName name of the expected field
      * @return an {@link AssertionVerification} object to verify the assertion
@@ -402,42 +604,14 @@ public final class ReflectionVerifications {
     }
 
     /**
-     * Verifies that the class under test has access to a field with the given name.
-     * The pool of possible fields include any fields within the class itself (including private ones) and
-     * those the class has access to via inheritance (superclasses and interfaces).
-     *
-     * <p>
-     *     Note that in some cases a class may have access to two or more fields with an identical name but different owners.
-     *     This verification makes no guarantees which of these fields would be returned in the result.
-     *     To check if a class explicitly declares a field, see {@link #declaresField}.
-     * </p>
-     *
-     * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
-     *
-     * @param fieldDescriptor descriptor for the expected field
-     * @return an {@link AssertionVerification} object to verify the assertion
-     */
-    public static AssertionVerification<?, Class<?>, Field> hasField(FieldDescriptor fieldDescriptor) {
-        return hasField(fieldDescriptor.getName());
-    }
-
-    /**
      * Verifies that the class under test declares a field with the given name.
-     * To check if a class can access a field with the given name, see {@link #hasField}.
-     *
+     * To check if a class can access a field with the given name, see {@link #hasField(String)}.
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param fieldName name of the expected field
      * @return an {@link AssertionVerification} object to verify the assertion
@@ -463,144 +637,23 @@ public final class ReflectionVerifications {
     }
 
     /**
-     * Verifies that the class under test declares a field with the given name.
-     * To check if a class can access a field with the given name, see {@link #hasField}.
-     *
-     * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
-     *
-     * @param fieldDescriptor descriptor for the expected field
-     * @return an {@link AssertionVerification} object to verify the assertion
-     */
-    public static AssertionVerification<?, Class<?>, Field> declaresField(FieldDescriptor fieldDescriptor) {
-        return declaresField(fieldDescriptor.getName());
-    }
-
-    /**
-     * Verifies that the field under test was declared with the expected type.
-     *
-     * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
-     *
-     * @param type the expected type
-     * @return an {@link AssertionVerification} object to verify the assertion
-     */
-    public static AssertionVerification<Class<?>, Field, Class<?>> hasType(Class<?> type) {
-        return ValueBasedVerification.of(actual -> wrap(() -> {
-            Field field = actual.getValue();
-            return AssertionResult.of(field.getType().equals(type), type, field.getType(),
-                "Field %s#%s does not have the expected type".formatted(field.getDeclaringClass().getName(), field.getName()));
-        }));
-    }
-
-    /**
-     * Verifies that the field under test was declared with the expected type.
-     * If {@code typeDescriptor} is generic, the verification will check against the generic type.
-     *
-     * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
-     *
-     * @param typeDescriptor descriptor for the expected type, may describe a generic type
-     * @return an {@link AssertionVerification} object to verify the assertion
-     */
-    public static AssertionVerification<TypeDescriptor, Field, Type> hasType(TypeDescriptor typeDescriptor) {
-        return ValueBasedVerification.of(actual -> wrap(() -> {
-            Field field = actual.getValue();
-            Type fieldType = typeDescriptor.isGeneric() ? field.getGenericType() : field.getType();
-            return AssertionResult.of(fieldType.getTypeName().equals(typeDescriptor.getName()),
-                typeDescriptor,
-                fieldType,
-                "Field %s#%s does not have the expected type".formatted(field.getDeclaringClass().getName(), field.getName()));
-        }));
-    }
-
-    /**
-     * Verifies that the class under test is an enum class and has a constant with the given name.
-     *
-     * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
-     *
-     * @param name the name of the expected constant
-     * @return an {@link AssertionVerification} object to verify the assertion
-     */
-    public static <R extends Enum<?>> AssertionVerification<?, Class<?>, R> hasEnumConstant(String name) {
-        return ValueBasedVerification.of(actual -> wrap(() -> {
-            Class<?> clazz = actual.getValue();
-            Object[] constants = clazz.getEnumConstants();
-            AssertionResult<?, R> result;
-
-            if (constants == null) {
-                result = AssertionResult.of(false, "Class %s is not an enum class".formatted(clazz.getName()));
-            } else {
-                @SuppressWarnings("unchecked") Optional<R> constant = Arrays.stream(constants)
-                    .map(c -> (R) c)
-                    .filter(e -> e.name().equals(name))
-                    .findFirst();
-                result = AssertionResult.of(constant.isPresent(), null, constant.orElse(null),
-                    "Class %s does not have the required enum constant".formatted(clazz.getName()));
-                result.getErrorBuilder()
-                    .setExpectedStringRepresentation("an enum constant with name '%s'".formatted(name))
-                    .setActualStringRepresentation("no such constant");
-            }
-
-            return result;
-        }));
-    }
-
-    private static Set<Field> getFieldsRecursively(Class<?> clazz) {
-        if (clazz.getSuperclass() == null) {
-            return Collections.emptySet();
-        } else {
-            // TODO: Add caching
-            Set<Field> fields = Stream.concat(Arrays.stream(clazz.getFields()), Arrays.stream(clazz.getDeclaredFields()))
-                .collect(Collectors.toSet());
-            fields.addAll(getFieldsRecursively(clazz.getSuperclass()));
-            return Collections.unmodifiableSet(fields);
-        }
-    }
-
-    // Constructors
-
-    /**
      * Verifies that the class under test declares a constructor with the given parameter types.
-     *
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param parameterTypes the expected parameter types
      * @return an {@link AssertionVerification} object to verify the assertion
      */
-    public static <A> AssertionVerification<?, Class<A>, Constructor<A>> declaresConstructor(Class<?>... parameterTypes) {
+    public static <T> AssertionVerification<?, Class<T>, Constructor<T>> declaresConstructor(Class<?>... parameterTypes) {
         return ValueBasedVerification.of(actual -> wrap(() -> {
-            Class<A> clazz = actual.getValue();
-            AssertionResult<?, Constructor<A>> result;
+            Class<T> clazz = actual.getValue();
+            AssertionResult<?, Constructor<T>> result;
             try {
-                Constructor<A> constructor = clazz.getDeclaredConstructor(parameterTypes);
+                Constructor<T> constructor = clazz.getDeclaredConstructor(parameterTypes);
                 result = AssertionResult.of(true, null, constructor);
             } catch (NoSuchMethodException e) {
                 result = AssertionResult.of(false, null, null,
@@ -614,66 +667,19 @@ public final class ReflectionVerifications {
     }
 
     /**
-     * Verifies that the class under test declares a constructor with the given parameter types.
-     * If an element of {@code typeDescriptors} is generic, the verification will check against the generic parameter type for that element.
-     *
-     * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
-     *
-     * @param typeDescriptors descriptors for the expected parameter types, may describe a generic type
-     * @return an {@link AssertionVerification} object to verify the assertion
-     */
-    public static <A> AssertionVerification<?, Class<A>, Constructor<A>> declaresConstructor(TypeDescriptor... typeDescriptors) {
-        return ValueBasedVerification.of(actual -> wrap(() -> {
-            Class<A> clazz = actual.getValue();
-            @SuppressWarnings("unchecked") Constructor<A> constructor = (Constructor<A>) Arrays.stream(clazz.getDeclaredConstructors())
-                .filter(c -> {
-                    Type[] parameterTypes = c.getParameterTypes();
-                    Type[] genericParameterTypes = c.getGenericParameterTypes();
-                    if (parameterTypes.length != typeDescriptors.length) {
-                        return false;
-                    }
-                    for (int i = 0; i < typeDescriptors.length; i++) {
-                        if (!typeDescriptors[i].getName().equals((typeDescriptors[i].isGeneric() ? genericParameterTypes : parameterTypes)[i].getTypeName())) {
-                            return false;
-                        }
-                    }
-                    return true;
-                })
-                .findAny()
-                .orElse(null);
-            AssertionResult<?, Constructor<A>> result = AssertionResult.of(constructor != null, null, constructor,
-                "Could not find constructor with matching parameter types");
-            result.getErrorBuilder()
-                .setExpectedStringRepresentation("a constructor with signature " + AssertionUtils.getMethodSignature(clazz.getName(), typeDescriptors))
-                .setActualStringRepresentation("no such constructor");
-            return result;
-        }));
-    }
-
-    // Methods
-
-    /**
      * Verifies that the class under test has access to a method with the given name and parameter types.
      * The pool of possible methods include any methods within the class itself (including private ones) and
      * those the class has access to via inheritance (superclasses and interfaces).
-     * To check if a class explicitly declares a method, see {@link #declaresMethod}.
-     *
+     * To check if a class explicitly declares a method, see {@link #declaresMethod(String, Class[])}.
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param methodName     name of the expected method
-     * @param parameterTypes the expected parameter types
+     * @param parameterTypes parameter types of the expected method
      * @return an {@link AssertionVerification} object to verify the assertion
      */
     public static AssertionVerification<?, Class<?>, Method> hasMethod(String methodName, Class<?>... parameterTypes) {
@@ -703,76 +709,17 @@ public final class ReflectionVerifications {
     }
 
     /**
-     * Verifies that the class under test has access to a method with the given name and parameter types.
-     * The pool of possible methods include any methods within the class itself (including private ones) and
-     * those the class has access to via inheritance (superclasses and interfaces).
-     * If an element of {@code typeDescriptors} is generic, the verification will check against the generic parameter type for that element.
-     * To check if a class explicitly declares a method, see {@link #declaresMethod}.
-     *
-     * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
-     *
-     * @param methodName      name of the expected method
-     * @param typeDescriptors descriptors for the expected parameter types, may describe a generic type
-     * @return an {@link AssertionVerification} object to verify the assertion
-     */
-    public static AssertionVerification<?, Class<?>, Method> hasMethod(String methodName, TypeDescriptor... typeDescriptors) {
-        return ValueBasedVerification.of(actual -> wrap(() -> {
-            Class<?> clazz = actual.getValue();
-            Optional<Method> method = getMethodsRecursively(clazz)
-                .stream()
-                // filter out private methods of superclasses
-                .filter(m -> m.getDeclaringClass() == clazz || !Modifier.isPrivate(m.getModifiers()))
-                // filter out package-private methods of superclasses
-                .filter(m -> m.getDeclaringClass().getPackage() == clazz.getPackage() || (m.getModifiers() & 0b111) != 0)
-                // look for method with matching name
-                .filter(m -> {
-                    Type[] parameterTypes = m.getParameterTypes();
-                    Type[] genericParameterTypes = m.getGenericParameterTypes();
-                    if (!m.getName().equals(methodName) || parameterTypes.length != typeDescriptors.length) {
-                        return false;
-                    }
-                    for (int i = 0; i < typeDescriptors.length; i++) {
-                        if (!typeDescriptors[i].getName().equals((typeDescriptors[i].isGeneric() ? genericParameterTypes : parameterTypes)[i].getTypeName())) {
-                            return false;
-                        }
-                    }
-                    return true;
-                })
-                .findFirst();
-            AssertionResult<?, Method> result = AssertionResult.of(
-                method.isPresent(),
-                null,
-                method.orElse(null),
-                "Method %s does not exist in class %s or any of its superclasses or interfaces".formatted(AssertionUtils.getMethodSignature(methodName, typeDescriptors),
-                    clazz.getName())
-            );
-            result.getErrorBuilder()
-                .setExpectedStringRepresentation("a method with signature " + AssertionUtils.getMethodSignature(methodName, typeDescriptors))
-                .setActualStringRepresentation("no such method");
-            return result;
-        }));
-    }
-
-    /**
      * Verifies that the class under test declares a method with the given name and parameter types.
-     * To check if a class can access a method with the given name, see {@link #hasMethod}.
-     *
+     * To check if a class can access a method with the given name, see {@link #hasMethod(String, Class[])}.
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param methodName     name of the expected method
-     * @param parameterTypes the expected parameter types
+     * @param parameterTypes parameter types of the expected method
      * @return an {@link AssertionVerification} object to verify the assertion
      */
     public static AssertionVerification<?, Class<?>, Method> declaresMethod(String methodName, Class<?>... parameterTypes) {
@@ -795,65 +742,230 @@ public final class ReflectionVerifications {
         }));
     }
 
+    // Fields
+
     /**
-     * Verifies that the class under test declares a method with the given name and parameter types.
-     * If an element of {@code typeDescriptors} is generic, the verification will check against the generic parameter type for that element.
-     * To check if a class can access a method with the given name, see {@link #hasMethod}.
-     *
+     * Verifies that the given descriptor can be resolved to an actual field.
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Use with {@link Assertions#assertThat(AssertionVerification, AssertionOption[])}.
      *
-     * @param methodName      name of the expected method
-     * @param typeDescriptors descriptors for the expected parameter types, may describe a generic type
+     * @param fieldDescriptor descriptor for the expected field
      * @return an {@link AssertionVerification} object to verify the assertion
      */
-    public static AssertionVerification<?, Class<?>, Method> declaresMethod(String methodName, TypeDescriptor... typeDescriptors) {
-        return ValueBasedVerification.of(actual -> wrap(() -> {
-            Class<?> clazz = actual.getValue();
-            Optional<Method> method = Set.of(clazz.getDeclaredMethods())
-                .stream()
-                .filter(m -> {
-                    Type[] parameterTypes = m.getParameterTypes();
-                    Type[] genericParameterTypes = m.getGenericParameterTypes();
-                    if (!m.getName().equals(methodName) || parameterTypes.length != typeDescriptors.length) {
-                        return false;
-                    }
-                    for (int i = 0; i < typeDescriptors.length; i++) {
-                        if (!typeDescriptors[i].getName().equals((typeDescriptors[i].isGeneric() ? genericParameterTypes : parameterTypes)[i].getTypeName())) {
-                            return false;
-                        }
-                    }
-                    return true;
-                })
-                .findFirst();
-            AssertionResult<?, Method> result = AssertionResult.of(
-                method.isPresent(),
-                null,
-                method.orElse(null),
-                "Class %s does not declare method %s".formatted(clazz.getName(), AssertionUtils.getMethodSignature(methodName, typeDescriptors))
+    public static AssertionVerification<?, ?, Field> fieldExists(FieldDescriptor fieldDescriptor) {
+        return BehaviorBasedVerification.of(ignored -> {
+            Optional<AssertionResult<Object, Field>> checkResult = checkDescriptors(
+                "Cannot verify if field exists because an expected field was not found",
+                fieldDescriptor
             );
-            result.getErrorBuilder()
-                .setExpectedStringRepresentation("a method with signature " + AssertionUtils.getMethodSignature(methodName, typeDescriptors))
-                .setActualStringRepresentation("no such method");
-            return result;
+            if (checkResult.isPresent()) return checkResult.get();
+
+            Pair<Optional<Class<?>>, String> result = resolveClass(fieldDescriptor.getDeclaringType());
+            if (result.getFirst().isEmpty())
+                return AssertionResult.of(false, result.getSecond());
+            Class<?> declaringClass = result.getFirst().get();
+
+            for (Field field : declaringClass.getDeclaredFields()) {
+                if (field.getName().equals(fieldDescriptor.getName())) {
+                    return AssertionResult.of(true, null, field);
+                }
+            }
+            return AssertionResult.of(false, "Could not find field %s in class %s"
+                .formatted(fieldDescriptor.getName(), fieldDescriptor.getDeclaringType().getName()));
+        });
+    }
+
+    /**
+     * Verifies that the field under test was declared with the expected type.
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @param type the expected type
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<Class<?>, Field, Class<?>> hasType(Class<?> type) {
+        return ValueBasedVerification.of(actual -> wrap(() -> {
+            Field field = actual.getValue();
+            return AssertionResult.of(field.getType().equals(type), type, field.getType(),
+                "Field %s#%s does not have the expected type".formatted(field.getDeclaringClass().getName(), field.getName()));
         }));
     }
 
     /**
-     * Verifies that the method under test was declared with the expected return type.
-     *
+     * Verifies that the field under test was declared with the expected type, including any bounds if generic.
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @param typeDescriptor descriptor for the expected type
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<TypeDescriptor, Field, TypeDescriptor> hasType(TypeDescriptor typeDescriptor) {
+        return ValueBasedVerification.of(actual -> wrap(() -> {
+            Optional<AssertionResult<TypeDescriptor, TypeDescriptor>> checkResult = checkDescriptors(
+                "Cannot verify actual field type because the expected field type was not found",
+                typeDescriptor
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
+            Field field = actual.getValue();
+            TypeDescriptor actualTypeDescriptor = Descriptors.forType(field.getGenericType());
+            return AssertionResult.of(Objects.equals(typeDescriptor, actualTypeDescriptor),
+                typeDescriptor,
+                actualTypeDescriptor,
+                "Field %s#%s does not have the expected type".formatted(field.getDeclaringClass().getName(), field.getName()));
+        }));
+    }
+
+    /**
+     * Verifies that the class under test is an enum class and has a constant with the given name.
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
+     *
+     * @param name the name of the expected constant
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static <R extends Enum<?>> AssertionVerification<?, Class<?>, R> hasEnumConstant(String name) {
+        return ValueBasedVerification.of(actual -> wrap(() -> {
+            Class<?> clazz = actual.getValue();
+            Object[] constants = clazz.getEnumConstants();
+            AssertionResult<?, R> result;
+
+            if (constants == null) {
+                result = AssertionResult.of(false, "Class %s is not an enum class".formatted(clazz.getName()));
+            } else {
+                @SuppressWarnings("unchecked") Optional<R> constant = Arrays.stream(constants)
+                    .map(c -> (R) c)
+                    .filter(e -> e.name().equals(name))
+                    .findFirst();
+                result = AssertionResult.of(constant.isPresent(), null, constant.orElse(null),
+                    "Class %s does not have the required enum constant".formatted(clazz.getName()));
+                result.getErrorBuilder()
+                    .setExpectedStringRepresentation("an enum constant with name '%s'".formatted(name))
+                    .setActualStringRepresentation("no such constant");
+            }
+
+            return result;
+        }));
+    }
+
+    // Constructors
+
+    /**
+     * Verifies that the given descriptor can be resolved to an actual constructor.
+     * <p>
+     * Use with {@link Assertions#assertThat(AssertionVerification, AssertionOption[])}.
+     *
+     * @param constructorDescriptor the descriptor for the expected constructor
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<?, ?, Constructor<?>> constructorExists(ConstructorDescriptor constructorDescriptor) {
+        return BehaviorBasedVerification.of(ignored -> {
+            Optional<AssertionResult<Object, Constructor<?>>> checkResult = checkDescriptors(
+                "Cannot verify if constructor exists because the expected constructor was not found",
+                constructorDescriptor
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
+            Pair<Optional<Class<?>>, String> resolvedClass = resolveClass(constructorDescriptor.getDeclaringType());
+            if (resolvedClass.getFirst().isEmpty())
+                return AssertionResult.of(false, resolvedClass.getSecond());
+            Class<?> declaringClass = resolvedClass.getFirst().get();
+            ClassDescriptor[] parameterTypeDescriptors = constructorDescriptor.getParameterTypes().toArray(ClassDescriptor[]::new);
+            checkResult = checkDescriptors(
+                "Cannot verify actual parameter types because an expected parameter type was not found",
+                parameterTypeDescriptors
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
+            Constructor<?> constructor = Arrays.stream(declaringClass.getDeclaredConstructors())
+                .filter(c -> c.getParameterTypes().length == parameterTypeDescriptors.length)
+                .filter(c -> {
+                    Class<?>[] parameterTypes = c.getParameterTypes();
+                    for (int i = 0; i < parameterTypeDescriptors.length; i++) {
+                        if (!parameterTypeDescriptors[i].getName().equals(parameterTypes[i].getTypeName())) return false;
+                    }
+                    return true;
+                })
+                .findAny()
+                .orElse(null);
+            AssertionResult<Object, Constructor<?>> result = AssertionResult.of(constructor != null, null, constructor,
+                "Could not find constructor with matching parameter types");
+            result.getErrorBuilder()
+                .setExpectedStringRepresentation("a constructor with signature " + AssertionUtils.getMethodSignature(declaringClass.getName(), parameterTypeDescriptors))
+                .setActualStringRepresentation("no such constructor");
+            return result;
+        });
+    }
+
+    // Methods
+
+    /**
+     * Verifies that the given descriptor can be resolved to an actual method.
+     * <p>
+     * Use with {@link Assertions#assertThat(AssertionVerification, AssertionOption[])}.
+     *
+     * @param methodDescriptor descriptor for the expected method
+     * @return an {@link AssertionVerification} object to verify the assertion
+     */
+    public static AssertionVerification<?, ?, Method> methodExists(MethodDescriptor methodDescriptor) {
+        return BehaviorBasedVerification.of(ignored -> {
+            Optional<AssertionResult<Object, Method>> checkResult = checkDescriptors(
+                "Cannot verify if method exists because the expected method was not found",
+                methodDescriptor
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
+            Pair<Optional<Class<?>>, String> resolvedClass = resolveClass(methodDescriptor.getDeclaringType());
+            if (resolvedClass.getFirst().isEmpty())
+                return AssertionResult.of(false, resolvedClass.getSecond());
+            Class<?> declaringClass = resolvedClass.getFirst().get();
+            ClassDescriptor[] parameterTypeDescriptors = methodDescriptor.getParameterTypes().toArray(ClassDescriptor[]::new);
+            checkResult = checkDescriptors(
+                "Cannot verify actual parameter types because an expected parameter type was not found",
+                parameterTypeDescriptors
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
+            Method method = Arrays.stream(declaringClass.getDeclaredMethods())
+                .filter(m -> m.getParameterTypes().length == parameterTypeDescriptors.length)
+                .filter(m -> {
+                    Class<?>[] parameterTypes = m.getParameterTypes();
+                    for (int i = 0; i < parameterTypeDescriptors.length; i++) {
+                        if (!parameterTypeDescriptors[i].getName().equals(parameterTypes[i].getTypeName())) return false;
+                    }
+                    return true;
+                })
+                .findAny()
+                .orElse(null);
+            AssertionResult<Object, Method> result = AssertionResult.of(method != null, null, method,
+                "Could not find method with matching parameter types");
+            result.getErrorBuilder()
+                .setExpectedStringRepresentation("a method with signature " + AssertionUtils.getMethodSignature(declaringClass.getName(), parameterTypeDescriptors))
+                .setActualStringRepresentation("no such method");
+            return result;
+        });
+    }
+
+    /**
+     * Verifies that the method under test was declared with the expected return type.
+     * <p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param type the expected return type
      * @return an {@link AssertionVerification} object to verify the assertion
@@ -868,28 +980,66 @@ public final class ReflectionVerifications {
     }
 
     /**
-     * Verifies that the method under test was declared with the expected return type.
-     * If {@code typeDescriptor} is generic, the verification will check against the generic return type.
-     *
+     * Verifies that the method under test was declared with the expected (generic) return type.
      * <p>
-     *     Usable with these assertions:
-     *     <ul>
-     *         <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
-     *         <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
-     *     </ul>
-     * </p>
+     * Usable with these assertions:
+     * <ul>
+     *     <li>{@link Assertions#assertThat(Object, AssertionVerification, AssertionOption[])}</li>
+     *     <li>{@link Assertions#assertThatExpression(ActualWrapper.Expression, AssertionVerification, AssertionOption[])}</li>
+     * </ul>
      *
      * @param typeDescriptor descriptor for the expected return type, may describe a generic type
      * @return an {@link AssertionVerification} object to verify the assertion
      */
-    public static AssertionVerification<TypeDescriptor, Method, Type> hasReturnType(TypeDescriptor typeDescriptor) {
+    public static AssertionVerification<TypeDescriptor, Method, TypeDescriptor> hasReturnType(TypeDescriptor typeDescriptor) {
         return ValueBasedVerification.of(actual -> wrap(() -> {
+            Optional<AssertionResult<TypeDescriptor, TypeDescriptor>> checkResult = checkDescriptors(
+                "Cannot verify actual return type because the expected return type was not found",
+                typeDescriptor
+            );
+            if (checkResult.isPresent()) return checkResult.get();
+
             Method method = actual.getValue();
-            Type returnType = typeDescriptor.isGeneric() ? method.getGenericReturnType() : method.getReturnType();
-            return AssertionResult.of(returnType.getTypeName().equals(typeDescriptor.getName()), typeDescriptor, returnType,
+            TypeDescriptor returnType = Descriptors.forType(method.getGenericReturnType());
+            return AssertionResult.of(Objects.equals(typeDescriptor, returnType), typeDescriptor, returnType,
                 "Method %s#%s does not have the expected return type".formatted(method.getDeclaringClass().getName(),
                     AssertionUtils.getMethodSignature(method.getName(), method.getParameterTypes())));
         }));
+    }
+
+    private static Pair<Optional<Class<?>>, String> resolveClass(ClassDescriptor classDescriptor) {
+        AssertionResult<?, Class<?>> classExistsResult = classExists(classDescriptor).verify(ActualWrapper.ofObject(null));
+        if (classExistsResult.successful()) {
+            return new Pair<>(classExistsResult.getActual(), null);
+        } else {
+            return new Pair<>(Optional.empty(), classExistsResult.getErrorBuilder().getMessage());
+        }
+    }
+
+    private static <E, R> Optional<AssertionResult<E, R>> checkDescriptors(String message, Descriptor... descriptors) {
+        Optional<AssertionResult<E, R>> result = Optional.empty();
+        for (Descriptor descriptor : descriptors) {
+            if (descriptor instanceof NotFound) {
+                result = Optional.of(AssertionResult.of(false, message));
+                break;
+            }
+        }
+        return result;
+    }
+
+    private static Set<Field> getFieldsRecursively(Class<?> clazz) {
+        if (clazz == null) {
+            return Collections.emptySet();
+        } else {
+            // TODO: Add caching
+            Set<Field> fields = Stream.concat(Arrays.stream(clazz.getFields()), Arrays.stream(clazz.getDeclaredFields()))
+                .collect(Collectors.toSet());
+            fields.addAll(getFieldsRecursively(clazz.getSuperclass()));
+            for (Class<?> iface : clazz.getInterfaces()) {
+                fields.addAll(getFieldsRecursively(iface));
+            }
+            return Collections.unmodifiableSet(fields);
+        }
     }
 
     private static Set<Method> getMethodsRecursively(Class<?> clazz) {

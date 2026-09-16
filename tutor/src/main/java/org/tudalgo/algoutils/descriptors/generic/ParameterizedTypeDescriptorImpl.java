@@ -1,10 +1,12 @@
-package org.tudalgo.algoutils.descriptors.types;
+package org.tudalgo.algoutils.descriptors.generic;
 
 import org.jspecify.annotations.NonNull;
+import org.tudalgo.algoutils.descriptors.TypeDescriptor;
+import org.tudalgo.algoutils.descriptors.non_generic.ClassDescriptor;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -13,24 +15,21 @@ import java.util.stream.Collectors;
  * @param rawType       the raw type of the parameterized type
  * @param typeArguments the type arguments of the parameterized type
  */
-record ParameterizedTypeDescriptorImpl(
-    Supplier<TypeDescriptor> rawType,
-    Supplier<TypeDescriptor[]> typeArguments
-) implements ParameterizedTypeDescriptor {
+record ParameterizedTypeDescriptorImpl(ClassDescriptor rawType, List<TypeDescriptor> typeArguments) implements ParameterizedTypeDescriptor {
 
     @Override
     public String getName() {
-        return "%s<%s>".formatted(getRawType().getName(), Arrays.stream(getTypeArguments()).map(TypeDescriptor::getName).collect(Collectors.joining(", ")));
+        return "%s<%s>".formatted(getRawType().getName(), getTypeArguments().stream().map(TypeDescriptor::getName).collect(Collectors.joining(", ")));
     }
 
     @Override
-    public TypeDescriptor getRawType() {
-        return rawType.get();
+    public ClassDescriptor getRawType() {
+        return rawType;
     }
 
     @Override
-    public TypeDescriptor[] getTypeArguments() {
-        return typeArguments.get();
+    public List<TypeDescriptor> getTypeArguments() {
+        return Collections.unmodifiableList(typeArguments);
     }
 
     @Override

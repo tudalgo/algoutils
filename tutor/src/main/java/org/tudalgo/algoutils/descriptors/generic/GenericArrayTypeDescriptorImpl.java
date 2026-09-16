@@ -1,16 +1,16 @@
-package org.tudalgo.algoutils.descriptors.types;
+package org.tudalgo.algoutils.descriptors.generic;
 
 import org.jspecify.annotations.NonNull;
+import org.tudalgo.algoutils.descriptors.TypeDescriptor;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * Basic implementation of {@link GenericArrayTypeDescriptor}.
  *
  * @param componentType the component type of the generic array
  */
-record GenericArrayTypeDescriptorImpl(Supplier<TypeDescriptor> componentType) implements GenericArrayTypeDescriptor {
+record GenericArrayTypeDescriptorImpl(TypeDescriptor componentType) implements GenericArrayTypeDescriptor {
 
     @Override
     public String getName() {
@@ -19,7 +19,7 @@ record GenericArrayTypeDescriptorImpl(Supplier<TypeDescriptor> componentType) im
 
     @Override
     public TypeDescriptor getGenericComponentType() {
-        return componentType.get();
+        return componentType;
     }
 
     @Override

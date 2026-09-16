@@ -1,6 +1,6 @@
 package org.tudalgo.algoutils.assertions;
 
-import org.tudalgo.algoutils.descriptors.types.TypeDescriptor;
+import org.tudalgo.algoutils.descriptors.TypeDescriptor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

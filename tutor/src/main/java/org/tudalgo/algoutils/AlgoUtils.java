@@ -19,6 +19,7 @@ public final class AlgoUtils {
      * Property name: {@code org.tudalgo.algoutils.submissionId}
      */
     public static final String SUBMISSION_ID;
+
     /**
      * Minimum value at which two strings are still considered equal when similarity matching (default: 0.90).
      * <p>
@@ -36,6 +37,7 @@ public final class AlgoUtils {
      * The Jagr test cycle, if running in Jagr's environment.
      */
     public static final TestCycle JAGR_TEST_CYCLE;
+
     /**
      * {@code true} if running in Jagr's environment, {@code false} otherwise.
      */
