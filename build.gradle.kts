@@ -25,8 +25,8 @@ allprojects {
     tasks {
         withType<JavaCompile> {
             options.encoding = "UTF-8"
-            sourceCompatibility = "17"
-            targetCompatibility = "17"
+            sourceCompatibility = "21"
+            targetCompatibility = "21"
         }
     }
     tasks.withType<DokkaTask>().configureEach {
@@ -39,6 +39,12 @@ allprojects {
                 remoteLineSuffix.set("#L")
             }
         }
+    }
+    tasks.withType<Javadoc>().configureEach {
+        val options = options as StandardJavadocDocletOptions
+        options.jFlags("-Duser.language=en", "-Duser.country=US")
+        options.encoding = "UTF-8"
+        options.charSet = "UTF-8"
     }
 }
 
